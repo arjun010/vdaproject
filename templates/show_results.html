@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<ul class=entries>
+  {% for result in results %}
+    <li><h2>{{result.filename}}</h2>{{result.body}}
+  {% else %}
+    <li><em>There are no search results so far.</em>
+  {% endfor %}
+</ul>
+{% endblock %}
