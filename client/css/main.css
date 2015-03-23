@@ -1,0 +1,43 @@
+.switchable.active {
+    display: block;
+}
+
+.switchable {
+    display: none;
+}
+
+#viz-document {
+    height: 100%;
+}
+
+#viz-entity {
+    height: 100%;
+}
+
+#viz-timeline {
+    height: 30%;
+
+}
+
+#viz-graph {
+    top: 30.2%;
+    height: 69.8%;
+}
+
+.content {
+    width: 100%;
+    background: #e0e0e0;
+    position: absolute;
+    display: block;
+    border-radius: 5px;
+    -o-border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+}
+
+.panel {
+    position: relative;
+    min-height: 640px;
+    margin: 0;
+    padding: 0;
+}

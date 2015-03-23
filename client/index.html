@@ -2,9 +2,84 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
-    <title></title>
+    <title>Stego Text Analyzer</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="./css/bootstrap.min.css">
+    <link rel="stylesheet" href="./css/jquery-ui.min.css">
+    <link rel="stylesheet" href="./css/jquery-ui.structure.min.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
 </head>
 <body>
+
+<div class="container-fluid">
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="#">Stego Text Analyzer</a>
+            </div>
+            <div class="navbar-right" style="padding: 8px 15px;">
+                <ul class="nav nav-pills">
+                    <li id="nav-entity" role="presentation" class="active"><a href="#" onclick="main.showEntityView()">Entity
+                        View</a></li>
+                    <li id="nav-analysis" role="presentation"><a href="#" onclick="main.showAnalysisView()">Analysis
+                        View</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div id="panel-entity" class="panel switchable active col-md-8 col-lg-8">
+        <div id="viz-entity" class="content">
+
+        </div>
+    </div>
+
+    <div id="panel-analysis" class="panel switchable col-md-8 col-lg-8">
+        <div id="viz-timeline" class="content">
+
+        </div>
+
+        <div id="viz-graph" class="content">
+
+        </div>
+
+    </div>
+
+    <div id="panel-document" class="panel collapsible col-md-4 col-lg-4">
+        <div id="viz-document" class="content">
+
+        </div>
+    </div>
+</div>
+
+<!-- Reference to javascripts -->
+<script src="./js/vendor/jquery-1.11.2.min.js"></script>
+<script src="./js/vendor/jquery-ui.min.js"></script>
+<script src="./js/vendor/jquery.tmpl.min.js"></script>
+<script src="./js/vendor/bootstrap.min.js"></script>
+<script src="./js/vendor/d3.min.js"></script>
+<script src="./js/classes.js"></script>
+<script src="./js/entity-tool.js"></script>
+<script src="./js/document-tool.js"></script>
+<script src="./js/graph-tool.js"></script>
+<script src="./js/timeline-tool.js"></script>
+<script src="./js/main.js"></script>
+
+<script>
+    //    var params = {data: "data.csv", width:1400,height:800};
+    //    var query = window.location.search.substring(1);
+    //
+    //    var vars = query.split("&");
+    //    vars.forEach(function(v) {
+    //        var p = v.split("=");
+    //        params[p[0]] = p[1]
+    //    })
+    var params = {};
+    main.init(params);
+</script>
 
 </body>
 </html>
