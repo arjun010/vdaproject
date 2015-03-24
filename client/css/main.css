@@ -41,3 +41,26 @@
     margin: 0;
     padding: 0;
 }
+
+.entity-column{
+    display: inline-block;
+    width: 25%;
+    height: 100%;
+    padding-left: 4px;
+    margin-left: -2px;
+    padding-right: 2px;
+    margin-right: -1px;
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+.entity-column-list{
+    overflow: scroll;
+    height: 100%;
+}
+.entity-column-header > h3{
+    display: block;
+    margin: 0 auto;
+    text-align: center;
+    color: #f7f7f7;
+}

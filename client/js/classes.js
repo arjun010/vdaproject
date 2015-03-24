@@ -1,23 +1,37 @@
+EntityType = function (classname, displayname, color) {
+    this.classname = classname;
+    this.displayname = displayname;
+    this.color = color;
+};
+
 /**
  * Entity class
  */
-Entity = function (type, name, id, docList, frequency) {
+Entity = function(type, name, id, docList, frequency) {
     this.type = type;
     this.name = name;
     this.id = id;
     this.docList = docList;
     this.frequency = frequency;
     this.aliases = [];
+    //this.color = type.color;
 };
 
 /**
  *
  * @param type
  */
-Entity.prototype.changeType = function (type) {
-    this.type = type;
+Entity.prototype.__defineSetter__('type', function(value) {
+    this._type = value;
+    if(value){
+        this.color = value.color;
+    }
     // Do some other stuff if we change types?
-};
+});
+
+Entity.prototype.__defineGetter__('type', function() {
+    return this._type;
+});
 
 Doc = function (id, entList, text) {
     this.id = id;
@@ -29,12 +43,6 @@ Doc.prototype.loadMetaData = function (author, date, title) {
     this.author = author;
     this.date = new Date(date);
     this.title = title;
-};
-
-EntityType = function (classname, displayname, color) {
-    this.classname = classname;
-    this.displayname = displayname;
-    this.color = color;
 };
 
 Array.prototype.peekBack = function () {
