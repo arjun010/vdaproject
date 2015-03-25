@@ -3,7 +3,7 @@
     entTool = {};
 
     entTool.init = function (params) {
-
+        entTool.currPage = 1;
     };
 
     entTool.draw = function (params) {
@@ -18,6 +18,12 @@
                 $(this).appendTo(column);
             }
         });
+    };
+
+    entTool.jumpToPage = function(pageNum){
+        $('.entity-page-btn-'+pageNum+', #entity-page-'+pageNum).addClass('active');
+        $('.entity-page-btn-'+this.currPage+', #entity-page-'+this.currPage).removeClass('active');
+        this.currPage = pageNum;
     };
 
 })();

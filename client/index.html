@@ -33,34 +33,70 @@
 
     <div id="panel-entity" class="panel switchable active col-md-8 col-lg-8">
         <div id="viz-entity" class="content">
-            <div class="entity-column">
-                <div class="entity-column-header" style="background: #be3f4f;">
-                    <h3>Person</h3>
-                </div>
-                <ul id="entity-list-person" class="entity-column-list">
-                </ul>
+            <div id="entity-page-btn-group-top" class="btn-group"
+                 role="group" aria-label="Page Buttons">
+                <button type="button" class="btn btn-default btn-sm entity-page-btn-1 active" onclick="entTool.jumpToPage(1)">1</button>
+                <button type="button" class="btn btn-default btn-sm entity-page-btn-2" onclick="entTool.jumpToPage(2)">2</button>
+                <button type="button" class="btn btn-default btn-sm entity-page-btn-3" onclick="entTool.jumpToPage(3)">3</button>
             </div>
-            <div class="entity-column">
-                <div class="entity-column-header" style="background: #5f9f6c;">
-                    <h3>Location</h3>
+            <div id="entity-page-1" class="entity-page switchable active">
+                <div class="entity-column">
+                    <div class="entity-column-header" style="background: #be3f4f;">
+                        <h3>Person</h3>
+                    </div>
+                    <ul id="entity-list-person" class="entity-column-list">
+                    </ul>
                 </div>
-                <ul id="entity-list-location" class="entity-column-list">
-                </ul>
-            </div>
-            <div class="entity-column">
-                <div class="entity-column-header" style="background: #4660ac;">
-                    <h3>Organization</h3>
+                <div class="entity-column">
+                    <div class="entity-column-header" style="background: #5f9f6c;">
+                        <h3>Location</h3>
+                    </div>
+                    <ul id="entity-list-location" class="entity-column-list">
+                    </ul>
                 </div>
-                <ul id="entity-list-organization" class="entity-column-list">
-                </ul>
-            </div>
-            <div class="entity-column">
-                <div class="entity-column-header" style="background: #ffdd17;">
-                    <h3>Date</h3>
+                <div class="entity-column">
+                    <div class="entity-column-header" style="background: #4660ac;">
+                        <h3>Organization</h3>
+                    </div>
+                    <ul id="entity-list-organization" class="entity-column-list">
+                    </ul>
                 </div>
-                <ul id="entity-list-date" class="entity-column-list">
-                </ul>
+                <div class="entity-column">
+                    <div class="entity-column-header" style="background: #ffdd17;">
+                        <h3>Date</h3>
+                    </div>
+                    <ul id="entity-list-date" class="entity-column-list">
+                    </ul>
+                </div>
             </div>
+            <div id="entity-page-2" class="entity-page switchable">
+                <div class="entity-column">
+                    <div class="entity-column-header" style="background: #e6550d;">
+                        <h3>Time</h3>
+                    </div>
+                    <ul id="entity-list-time" class="entity-column-list">
+                    </ul>
+                </div>
+                <div class="entity-column">
+                    <div class="entity-column-header" style="background: #753a7d;">
+                        <h3>Percent</h3>
+                    </div>
+                    <ul id="entity-list-percent" class="entity-column-list">
+                    </ul>
+                </div>
+                <!-- add in the capability to create new entity types - Coming Soon! -->
+            </div>
+            <div id="entity-page-3" class="entity-page switchable">
+                <!-- add in the capability to create new entity types - Coming Soon! -->
+            </div>
+
+            <div id="entity-page-btn-group-btm" class="btn-group"
+                 role="group" aria-label="Page Buttons">
+                <button type="button" class="btn btn-default btn-sm entity-page-btn-1 active" onclick="entTool.jumpToPage(1)">1</button>
+                <button type="button" class="btn btn-default btn-sm entity-page-btn-2" onclick="entTool.jumpToPage(2)">2</button>
+                <button type="button" class="btn btn-default btn-sm entity-page-btn-3" onclick="entTool.jumpToPage(3)">3</button>
+            </div>
+
             <!--<div class="entity-column">-->
                 <!--<div class="entity-column-header" style="background: #006d2c;">-->
                     <!--<h3>Money</h3>-->
@@ -116,7 +152,7 @@
 </script>
 
 <script id="entTemplate" type="text/x-jQuery-tmpl">
-    <li class="entity-list-item">
+    <li class="entity-list-item" draggable="true">
         <span style="color: ${color};">${frequency}</span>
         <span>${name}</span>
     </li>

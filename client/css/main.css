@@ -42,7 +42,16 @@
     padding: 0;
 }
 
-.entity-column{
+#viz-entity .btn-group .btn:focus {
+    outline: none;
+}
+
+.entity-page {
+    width: 100%;
+    height: 100%;
+}
+
+.entity-column {
     display: inline-block;
     width: 25%;
     height: 100%;
@@ -54,10 +63,30 @@
     margin-bottom: 4px;
 }
 
-.entity-column-list{
+.entity-column-list {
+    padding: 0 0;
     overflow: scroll;
     height: 95%;
+    border: 1.5px outset #e7e7e7;
+    background-color: #efefef;
 }
+
+.entity-column-list > li {
+    cursor: pointer;
+    text-overflow: ellipsis;
+    display: block;
+    margin: 0 6px;
+    padding: 6px 0;
+    border-bottom: 1px solid #d7d7d7;
+    background-color: #efefef;
+}
+
+.entity-column-list > li > span {
+    padding-left: 4px;
+    text-overflow: ellipsis;
+}
+
+
 .entity-column-header > h3{
     display: block;
     margin: 0 auto;
