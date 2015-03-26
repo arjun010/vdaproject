@@ -26,4 +26,60 @@
         this.currPage = pageNum;
     };
 
+    entTool.scrollEntity = function(e){
+        console.log(e);
+    }
+
+    entTool.sort = function(param){
+        var sortFun = null;
+        switch(param){
+            case 'alpha':
+                sortFun = function(a,b){
+                    var nameA = $(a).tmplItem().data.name;
+                    var nameB = $(b).tmplItem().data.name;
+
+                    if (nameA < nameB) return -1;
+                    if (nameA > nameB) return 1;
+                    return 0;
+                };
+                break;
+            case 'alpha-rev':
+                sortFun = function(a,b){
+                    var nameA = $(a).tmplItem().data.name;
+                    var nameB = $(b).tmplItem().data.name;
+
+                    if (nameA < nameB) return 1;
+                    if (nameA > nameB) return -1;
+                    return 0;
+                };
+                break;
+            case 'freq':
+                sortFun = function(a,b){
+                    var freqA = $(a).tmplItem().data.frequency;
+                    var freqB = $(b).tmplItem().data.frequency;
+
+                    if (freqA < freqB) return 1;
+                    if (freqA > freqB) return -1;
+                    return 0;
+                };
+                break;
+            case 'freq-rev':
+                sortFun = function(a,b){
+                    var freqA = $(a).tmplItem().data.frequency;
+                    var freqB = $(b).tmplItem().data.frequency;
+
+                    if (freqA < freqB) return -1;
+                    if (freqA > freqB) return 1;
+                    return 0;
+                };
+                break;
+        }
+        Object.keys(main.entityTypes).forEach(function(e){
+            console.log(e);
+            var entities = $('#entity-list-'+ e + ' > .entity-list-item');
+            entities.sort(sortFun);
+            entities.detach().appendTo('#entity-list-'+ e);
+        });
+    }
+
 })();

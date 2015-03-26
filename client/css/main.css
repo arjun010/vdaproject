@@ -42,19 +42,31 @@
     padding: 0;
 }
 
+#viz-entity .btn-group {
+    margin: 2px auto;
+    display: block;
+    width: 100px;
+}
+
+#entity-sort-btn-group.btn-group {
+    width: auto;
+    float: right;
+    margin: 2px 6px;
+}
+
 #viz-entity .btn-group .btn:focus {
     outline: none;
 }
 
 .entity-page {
     width: 100%;
-    height: 100%;
+    height: 88.5%;
 }
 
 .entity-column {
     display: inline-block;
     width: 25%;
-    height: 100%;
+    height: 96%;
     padding-left: 4px;
     margin-left: -2px;
     padding-right: 2px;
@@ -65,15 +77,18 @@
 
 .entity-column-list {
     padding: 0 0;
+    height: 99%;
     overflow: scroll;
-    height: 95%;
-    border: 1.5px outset #e7e7e7;
+    border: 1px outset #e7e7e7;
     background-color: #efefef;
 }
 
 .entity-column-list > li {
     cursor: pointer;
+    width: 94%;
     text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
     display: block;
     margin: 0 6px;
     padding: 6px 0;
@@ -83,6 +98,10 @@
 
 .entity-column-list > li > span {
     padding-left: 4px;
+}
+
+.overflowing {
+    white-space: nowrap;
     text-overflow: ellipsis;
 }
 
@@ -90,6 +109,10 @@
 .entity-column-header > h3{
     display: block;
     margin: 0 auto;
+    padding: 4px 4px;
+    font-size: 18px;
+    font-weight: 400;
+    box-shadow: 0 0 0.5em #bababa;
     text-align: center;
     color: #f7f7f7;
 }
