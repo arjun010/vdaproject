@@ -121,7 +121,7 @@
             var id = parseInt(d['doc_title'].replace('.txt', ''));
 
             // Create the doc and add it to our list
-            data.documents.push(new Doc(id, entList, ''));
+            data.documents.push(new Doc(id, entList, d['text']));
 
             // Link all of the entities back to this doc
             data.documents.peekBack().entList.forEach(function (e) {

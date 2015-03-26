@@ -37,6 +37,8 @@ Doc = function (id, entList, text) {
     this.id = id;
     this.entList = entList;
     this.text = text;
+    this.title = id;
+    this.views = 0;
 };
 
 Doc.prototype.loadMetaData = function (author, date, title) {

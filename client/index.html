@@ -129,7 +129,14 @@
 
     <div id="panel-document" class="panel collapsible col-md-4 col-lg-4">
         <div id="viz-document" class="content">
+            <div id="document-container">
 
+            </div>
+            <div id="document-btn-group" class="btn-group" role="group" aria-label="Document Buttons">
+                <button type="button" class="btn btn-default btn-sm" onclick="docTool.addAll()">Add All</button>
+                <button type="button" class="btn btn-default btn-sm" onclick="docTool.collapseAll()">Collapse</button>
+                <button type="button" class="btn btn-default btn-sm" onclick="docTool.clearAll()">Clear All</button>
+            </div>
         </div>
     </div>
 </div>
@@ -165,6 +172,16 @@
         <span style="color: ${color};">${frequency}</span>
         <span class="overflow">${name}</span>
     </li>
+</script>
+<script id="docTemplate" type="text/x-jQuery-tmpl">
+    <div class="doc-item">
+        <div class="doc-item-header">
+            <span class="glyphicon glyphicon-eye-open"></span> <span>${views}</span><span class="title">${title}</h3>
+        </div>
+        <div class="doc-item-text">
+            <p>${text}</p>
+        </div>
+    </div>
 </script>
 </body>
 </html>
