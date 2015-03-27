@@ -175,10 +175,10 @@
 </script>
 <script id="docTemplate" type="text/x-jQuery-tmpl">
     <div class="doc-item">
-        <div class="doc-item-header">
-            <span class="glyphicon glyphicon-eye-open"></span> <span>${views}</span><span class="title">${title}</h3>
+        <div class="doc-item-header" onclick="docTool.collapse(this)">
+            <span class="glyphicon glyphicon-eye-open"></span> <span class="views">${views}</span><span class="title">${title}</h3>
         </div>
-        <div class="doc-item-text">
+        <div class="doc-item-text" style="display: none;">
             <p>${text}</p>
         </div>
     </div>

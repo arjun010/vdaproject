@@ -129,6 +129,8 @@
 
 #document-container{
     padding: 6px;
+    overflow: scroll;
+    height: 95%;
 }
 
 .doc-item {
@@ -141,6 +143,7 @@
     white-space: nowrap;
     border-bottom: 1px solid #d7d7d7;
     padding: 4px 4px;
+    cursor: pointer;
 }
 
 .doc-item-header > span {
