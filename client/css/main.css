@@ -106,7 +106,6 @@
     text-overflow: ellipsis;
 }
 
-
 .entity-column-header > h3{
     display: block;
     margin: 0 auto;
@@ -119,7 +118,7 @@
 }
 
 #document-btn-group {
-    width: 200px;
+    width: 250px;
     position: absolute;
     left: 50%;
     margin-left: -100px;
@@ -128,6 +127,7 @@
 }
 
 #document-container{
+    position: relative;
     padding: 6px;
     overflow: scroll;
     height: 95%;
@@ -135,9 +135,17 @@
 
 .doc-item {
     border: 1px solid #d7d7d7;
+    position: relative;
+    min-height: 30px;
+    width: 100%;
 }
 
 .doc-item-header {
+    top: 0;
+    left: 0;
+    position: absolute;
+    width: 100%;
+    z-index: 10;
     background-color: #c7e8f0;
     overflow: hidden;
     white-space: nowrap;
@@ -161,6 +169,9 @@
 }
 
 .doc-item-text {
+    left: 0;
+    top: 29px;
+    position: absolute;
     background-color: #f7f7f7;
     padding: 4px;
 }

@@ -129,13 +129,13 @@
 
     <div id="panel-document" class="panel collapsible col-md-4 col-lg-4">
         <div id="viz-document" class="content">
-            <div id="document-container">
+            <div id="document-container" onscroll="docTool.scrollDocList()">
 
             </div>
             <div id="document-btn-group" class="btn-group" role="group" aria-label="Document Buttons">
-                <button type="button" class="btn btn-default btn-sm" onclick="docTool.addAll()">Add All</button>
-                <button type="button" class="btn btn-default btn-sm" onclick="docTool.collapseAll()">Collapse</button>
-                <button type="button" class="btn btn-default btn-sm" onclick="docTool.clearAll()">Clear All</button>
+                <button type="button" class="btn btn-default" onclick="docTool.addAll()">Add All</button>
+                <button type="button" class="btn btn-default" onclick="docTool.collapseAll()">Collapse All</button>
+                <button type="button" class="btn btn-default" onclick="docTool.clearAll()">Clear All</button>
             </div>
         </div>
     </div>

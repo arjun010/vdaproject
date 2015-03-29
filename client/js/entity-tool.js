@@ -24,6 +24,8 @@
         $('.entity-page-btn-'+pageNum+', #entity-page-'+pageNum).addClass('active');
         $('.entity-page-btn-'+this.currPage+', #entity-page-'+this.currPage).removeClass('active');
         this.currPage = pageNum;
+
+        d3.data(data.documents, function(d){return d.id;})
     };
 
     entTool.scrollEntity = function(e){
