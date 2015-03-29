@@ -39,8 +39,8 @@
                     loadMetadata(m);
                     // Do I need to do any processing here? or should I just draw?
                     entTool.draw(params);
-                    graphTool.draw(params);
-                    timeTool.draw(params);
+                    //graphTool.draw(params);
+                    //timeTool.draw(params);
                     docTool.draw(params);
                 });
             });
@@ -72,6 +72,8 @@
         // Add the active class to the entity view & nav
         $('#nav-analysis').addClass('active');
         $('#panel-analysis').addClass('active');
+
+        graphTool.draw();
     };
 
     /**
@@ -96,11 +98,12 @@
      */
     function loadEntities(json) {
         data.entities = [];
+        data.aliases = [];
         json.forEach(function (e) {
-            data.entities.push(
-                new Entity(main.entityTypes[e['entity_type']], e['entity_name'], e['entity_id'],
-                    [], e['entity_frequency'])
-            );
+            var ent = new Entity(main.entityTypes[e['entity_type']], e['entity_name'], e['entity_id'],
+                [], e['entity_frequency']);
+            data.entities.push(ent);
+            data.aliases.push(new Alias(ent.id, ent, null));
         });
     }
 
@@ -111,9 +114,11 @@
     function loadDocuments(json) {
         data.documents = [];
         json.forEach(function (d) {
+            var aliasList = [];
             var entList = [];
             d['list_of_entities_in_doc'].forEach(function (e) {
                 // array location is the same as the id
+                aliasList.push(data.aliases[e['entity_id']]);
                 entList.push(data.entities[e['entity_id']]);
             });
 
@@ -121,7 +126,7 @@
             var id = parseInt(d['doc_title'].replace('.txt', ''));
 
             // Create the doc and add it to our list
-            data.documents.push(new Doc(id, entList, d['text']));
+            data.documents.push(new Doc(id, aliasList, entList, d['text']));
 
             // Link all of the entities back to this doc
             data.documents.peekBack().entList.forEach(function (e) {

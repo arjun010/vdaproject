@@ -24,10 +24,12 @@
         $('.entity-page-btn-'+pageNum+', #entity-page-'+pageNum).addClass('active');
         $('.entity-page-btn-'+this.currPage+', #entity-page-'+this.currPage).removeClass('active');
         this.currPage = pageNum;
+
+        d3.data(data.documents, function(d){return d.id;})
     };
 
     entTool.scrollEntity = function(e){
-        console.log(e);
+
     }
 
     entTool.sort = function(param){
@@ -75,7 +77,6 @@
                 break;
         }
         Object.keys(main.entityTypes).forEach(function(e){
-            console.log(e);
             var entities = $('#entity-list-'+ e + ' > .entity-list-item');
             entities.sort(sortFun);
             entities.detach().appendTo('#entity-list-'+ e);

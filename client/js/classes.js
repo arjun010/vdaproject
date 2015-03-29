@@ -13,7 +13,6 @@ Entity = function(type, name, id, docList, frequency) {
     this.id = id;
     this.docList = docList;
     this.frequency = frequency;
-    this.aliases = [];
     //this.color = type.color;
 };
 
@@ -33,8 +32,9 @@ Entity.prototype.__defineGetter__('type', function() {
     return this._type;
 });
 
-Doc = function (id, entList, text) {
+Doc = function (id, aliasList, entList, text) {
     this.id = id;
+    this.aliasList = aliasList;
     this.entList = entList;
     this.text = text;
     this.title = id;
@@ -46,6 +46,34 @@ Doc.prototype.loadMetaData = function (author, date, title) {
     this.date = new Date(date);
     this.title = title;
 };
+
+Alias = function(id, mainEnt, entList){
+    this.id = id;
+    this.mainEnt = mainEnt;
+    this.entList = entList;
+    this._name = null;
+};
+
+Alias.prototype.__defineGetter__('name', function() {
+    return (this._name) ? this._name : this.mainEnt.name;
+});
+
+Alias.prototype.__defineSetter__('name', function(val) {
+    this._name = val;
+});
+
+Alias.prototype.__defineGetter__('type', function() {
+    return this.mainEnt.type;
+});
+
+Alias.prototype.__defineSetter__('name', function(val) {
+    this.mainEnt.type = val;
+    if(this.entList){
+        this.entList.forEach(function(e){
+            e.type = val;
+        });
+    }
+});
 
 Array.prototype.peekBack = function () {
     if (this.length > 0) {
