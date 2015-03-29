@@ -33,11 +33,9 @@
             doc.tmplItem().data.views++;
             $(d).find(".views").html(doc.tmplItem().data.views);
             var newHeight = doc.height() + text.height();
-            console.log("Adding height:" + newHeight);
             doc.height(newHeight);
         } else {
             var newHeight = doc.height() - text.height();
-            console.log("Removing height:" + newHeight);
             doc.height(newHeight);
         }
         text.slideToggle();
@@ -79,7 +77,6 @@
             var header = d.find(".doc-item-header");
             var t = d.offset().top - d.parent().offset().top;
             var h = d.height();
-            console.log(t + h);
             if(t < 0 && h > 29 && (t + h) > 29) {
                 header.css({top: -t + 'px'});
             } else {
@@ -88,9 +85,5 @@
             }
         });
     };
-
-    //$(window).scroll(function(){
-    //    $("#download-pdf").stop().animate({"marginTop": ($(window).scrollTop()) + "px", "marginLeft":($(window).scrollLeft()) + "px"}, tHover);
-    //});
 
 })();
