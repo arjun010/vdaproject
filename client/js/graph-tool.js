@@ -1,3 +1,22 @@
+if (!Array.prototype.remove) {
+  Array.prototype.remove = function(vals, all) {
+    var i, removedItems = [];
+    if (!Array.isArray(vals)) vals = [vals];
+    for (var j=0;j<vals.length; j++) {
+      if (all) {
+        for(i = this.length; i--;){
+          if (this[i] === vals[j]) removedItems.push(this.splice(i, 1));
+        }
+      }
+      else {
+        i = this.indexOf(vals[j]);
+        if(i>-1) removedItems.push(this.splice(i, 1));
+      }
+    }
+    return removedItems;
+  };
+}
+
 var graphData = {
 	"nodes":[],
 	"links":[]
@@ -54,6 +73,7 @@ function linkExists(source,target){
 function addRelatedDocuments(node){
 	// add new nodes to graph's node list
 	//var newAdditions = [];
+	node.expanded = true;
 	var startLengthOfNodeList = graphData.nodes.length;
 	if(node instanceof Alias){ // double clicked node is an alias
 		for(var i=0;i<data.documents.length;i++){
@@ -61,7 +81,9 @@ function addRelatedDocuments(node){
 			if(getIndexInList(node,aliasesInDoc)!=-1){ // check if current node exists in the document
 				if(getIndexInList(data.documents[i],graphData.nodes)==-1){ // check if the document already exists in graph's node list
 					//console.log("hi")
-					graphData.nodes.push(data.documents[i]); //add new documents to list of graph nodes
+					var curDoc = data.documents[i];
+					curDoc.expanded = false;
+					graphData.nodes.push(curDoc); //add new documents to list of graph nodes
 					//newAdditions.push(data.documents[i])
 				}
 			}
@@ -88,6 +110,7 @@ function addRelatedDocuments(node){
 			//console.log(getIndexInList(aliasesInDoc[i],graphData.nodes))
 			if(getIndexInList(aliasesInDoc[i],graphData.nodes)==-1){
 				//console.log("hi")
+				aliasesInDoc[i].expanded = false;
 				graphData.nodes.push(aliasesInDoc[i]);
 			}			
 		}
@@ -117,10 +140,50 @@ function removeNodeAndLinks(d){
 	}
 }
 
+function linkCount(node){
+	var count = 0;
+	for(var i=0;i<graphData.links.length;i++){
+		if(graphData.links[i].source==node || graphData.links[i].target==node){
+			count += 1;
+		}
+	}
+	return count;
+}
+
+function collapseNode(node){
+	node.expanded=false;
+	var nodesToDelete = [];
+	var linksToDelete = [];
+	for(var i=0; i<graphData.links.length;i++){
+		if(graphData.links[i].source==node){
+			linksToDelete.push(graphData.links[i]);
+			nodesToDelete.push(graphData.links[i].target);
+		}else if(graphData.links[i].target==node){
+			linksToDelete.push(graphData.links[i]);
+			nodesToDelete.push(graphData.links[i].source);
+		}
+	}
+	for(var i=0;i<linksToDelete.length;i++){
+		var x = graphData.links.indexOf(linksToDelete[i]);
+		if(x != -1) {
+			graphData.links.splice(x, 1);
+		}
+	}
+	for(var i=0;i<nodesToDelete.length;i++){
+		if(linkCount(nodesToDelete[i])==0){
+			var x = graphData.nodes.indexOf(nodesToDelete[i]);
+			if(x != -1) {
+				graphData.nodes.splice(x, 1);
+			}
+		}
+	}
+}
+
 function addNode(node){
-	console.log(node)
+	//console.log(node)
 	var startLengthOfNodeList = graphData.nodes.length;
 	if(getIndexInList(node,graphData.nodes)==-1){
+			node.expanded = false;
 			graphData.nodes.push(node);
 	}
 	if(node instanceof Alias){
@@ -199,23 +262,30 @@ function drawGraphViz(){
 	    node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
 	  });
 
-	  nodeCircles.on("dblclick",function(d){
+	  nodeCircles.on("dblclick",function(d){	  	
 	  	doubleClickEvent(d);
 	  });
 
 	  function doubleClickEvent(d){
-	  	//console.log(graphData.nodes.length)
-	  	//console.log(graphData.links.length)
-	  	//console.log("-------------------")
-	  	addRelatedDocuments(d)
-	  	//console.log(graphData.links.length)
+	  	/*
+	  	if(d.expanded==false){
+	  		addRelatedDocuments(d);
+	  	}else{
+	  		collapseNode(d);
+	  	}*/
+	  	addRelatedDocuments(d);
+
 	  	link = link.data(graphData.links);
-		var newLinks = link.enter();
+		var exitingLinks = link.exit();
+		exitingLinks.remove();
+		var newLinks = link.enter();		
 
 		newLinks.insert("line", ".node").attr("class", "link");
 		
 		//console.log(graphData.nodes.length)
 		node = node.data(graphData.nodes,function(i){return i.id;});
+		var exitingNodes = node.exit();
+		exitingNodes.remove();
 		var newNodes = node.enter().insert("g").attr("class", "node").call(force.drag);
 		
 		nodeCircles = newNodes.append("circle").attr("r", 5).style("fill",function(d){ return color(d.type)});
@@ -234,6 +304,7 @@ function drawGraphViz(){
 
 	  $("#addnewnodebutton").on("click",function(){
 	  	addNode(data.aliases[tempIndex]);
+	  	
 	  	link = link.data(graphData.links);
 		var newLinks = link.enter();
 
