@@ -2,7 +2,7 @@ var graphData = {
 	"nodes":[],
 	"links":[]
 };
-
+var tempIndex = 0;
 function getIndexInList(obj,list){
 	for(var i=0;i<list.length;i++){
 		if(list[i]==obj){
@@ -67,7 +67,7 @@ function addRelatedDocuments(node){
 			}
 		}
 		for(var i=startLengthOfNodeList;i<graphData.nodes.length;i++){ // start from new addition index
-			for(var j=0;j<i-1;j++){ // check against all nodes before current one
+			for(var j=0;j<i;j++){ // check against all nodes before current one
 				if(graphData.nodes[j] instanceof Alias){ // if node is a alias (since only new docs are added, only links with aliases can be formed)
 					if(getIndexInList(graphData.nodes[j],graphData.nodes[i].aliasList)!=-1){ // if doc contains the current node (i.e. if there should be a link)
 						var currentLink = {"source":i,"target":j};
@@ -93,7 +93,7 @@ function addRelatedDocuments(node){
 		}
 
 		for(var i=startLengthOfNodeList;i<graphData.nodes.length;i++){
-			for(var j=0;j<i-1;j++){
+			for(var j=0;j<i;j++){
 				if(graphData.nodes[j] instanceof Doc){ // if node is a document (since only new aliases are added, only links with docs can be formed)
 					if(getIndexInList(graphData.nodes[i],graphData.nodes[j].aliasList)!=-1){ // if there is a link which should be drawn
 						var currentLink = {"source":i,"target":j}
@@ -118,33 +118,31 @@ function removeNodeAndLinks(d){
 }
 
 function addNode(node){
+	console.log(node)
 	var startLengthOfNodeList = graphData.nodes.length;
 	if(getIndexInList(node,graphData.nodes)==-1){
 			graphData.nodes.push(node);
 	}
-	if(node instanceof Doc){
-		for(var i=startLengthOfNodeList;i<graphData.nodes.length;i++){
-			for(var j=0;j<i-1;j++){
-				if(graphData.nodes[j] instanceof Doc){ // if node is a document (since only new aliases are added, only links with docs can be formed)
-					if(getIndexInList(graphData.nodes[i],graphData.nodes[j].aliasList)!=-1){ // if there is a link which should be drawn
-						var currentLink = {"source":i,"target":j}
-						if(linkExistsInGraph(currentLink)==-1){ // check if link doesn't already exist
-							graphData.links.push(currentLink);
-						}
+	if(node instanceof Alias){
+		for(var j=0;j<startLengthOfNodeList;j++){
+			if(graphData.nodes[j] instanceof Doc){ // since links can only be formed with documents
+				if(getIndexInList(node,graphData.nodes[j].aliasList)!=-1){// alias exists in document
+					var sourceIndex = getIndexInList(node,graphData.nodes);
+					var currentLink = {"source":sourceIndex,"target":j}
+					if(linkExistsInGraph(currentLink)==-1){ // check if link doesn't already exist
+						graphData.links.push(currentLink);
 					}
 				}
 			}
-		}
+		}				
 	}else{
-		for(var i=startLengthOfNodeList;i<graphData.nodes.length;i++){ // start from new addition index
-			for(var j=0;j<i-1;j++){ // check against all nodes before current one
-				if(graphData.nodes[j] instanceof Alias){ // if node is a alias (since only new docs are added, only links with aliases can be formed)
-					if(getIndexInList(graphData.nodes[j],graphData.nodes[i].aliasList)!=-1){ // if doc contains the current node (i.e. if there should be a link)
-						var currentLink = {"source":i,"target":j};
-						if(linkExistsInGraph(currentLink)==-1){ // check if link doesn't already exist
-							//console.log(currentLink)
-							graphData.links.push(currentLink);
-						}
+		for(var i=0;i<startLengthOfNodeList;i++){
+			if(graphData.nodes[i] instanceof Alias){// since links can only be formed with aliases
+				if(getIndexInList(graphData.nodes[i],node.aliasList)!=-1){
+					var sourceIndex = getIndexInList(node,graphData.nodes);
+					var currentLink = {"source":sourceIndex,"target":i}
+					if(linkExistsInGraph(currentLink)==-1){ // check if link doesn't already exist
+						graphData.links.push(currentLink);
 					}
 				}
 			}
@@ -233,6 +231,32 @@ function drawGraphViz(){
 	  	});
 	  }
 
+
+	  $("#addnewnodebutton").on("click",function(){
+	  	addNode(data.aliases[tempIndex]);
+	  	link = link.data(graphData.links);
+		var newLinks = link.enter();
+
+		newLinks.insert("line", ".node").attr("class", "link");
+		
+		//console.log(graphData.nodes.length)
+		node = node.data(graphData.nodes,function(i){return i.id;});
+		var newNodes = node.enter().insert("g").attr("class", "node").call(force.drag);
+		
+		nodeCircles = newNodes.append("circle").attr("r", 5).style("fill",function(d){ return color(d.type)});
+		
+		nodeLabels = newNodes.append("text")
+				      .attr("dx", 12)
+				      .attr("dy", ".35em")
+				      .text(function(d) { return d.name ? d.name : d.title; });		
+		
+		force.start();
+		nodeCircles.on("dblclick",function(i){
+	  		doubleClickEvent(i);
+	  	});
+	  	tempIndex+=1;
+	  });
+
 }
 
 (function () {
@@ -246,8 +270,9 @@ function drawGraphViz(){
     graphTool.draw = function (params) {
     	//generateGraphData();//temporary call
     	//console.log(data.aliases[1] instanceof Doc)
-    	addNode(data.aliases[1]);
-    	addNode(data.documents[1]);
+    	//addNode(data.aliases[1]);
+    	//addNode(data.documents[1]);
+
     	//addNode(data.aliases[4]);
     	//addNode(data.documents[0]);
     	drawGraphViz();
