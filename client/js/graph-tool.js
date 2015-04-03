@@ -359,6 +359,8 @@ function drawGraphViz(){
 	  var nodeLabels = node.append("text")
 				      .attr("dx", 12)
 				      .attr("dy", ".35em")
+				      .style("font-size",10)
+				      .style("font-family","sans-serif")
 				      .text(function(d) { return d.name ? d.name : d.title; });				 
 
 	  force.on("tick", function() {
@@ -435,6 +437,8 @@ function drawGraphViz(){
 		var nodeLabels = newNodes.append("text")
 				      .attr("dx", 12)
 				      .attr("dy", ".35em")
+				      .style("font-size",10)
+				      .style("font-family","sans-serif")
 				      .text(function(d) { return d.name ? d.name : d.title; });							
 
 		force.start();
@@ -474,6 +478,8 @@ function drawGraphViz(){
 		nodeLabels = newNodes.append("text")
 				      .attr("dx", 12)
 				      .attr("dy", ".35em")
+				      .style("font-size",10)
+				      .style("font-family","sans-serif")
 				      .text(function(d) { return d.name ? d.name : d.title; });		
 
 		force.start();
