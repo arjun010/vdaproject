@@ -85,7 +85,9 @@ function addRelatedDocuments(node){
 	//var newAdditions = [];
 	node.expanded = true;
 	var startLengthOfNodeList = graphData.nodes.length;
+	var alreadyExistingNode = 0;
 	if(node instanceof Alias){ // double clicked node is an alias
+		console.log("here")
 		for(var i=0;i<data.documents.length;i++){
 			var aliasesInDoc = data.documents[i].aliasList;
 			if(getIndexInList(node,aliasesInDoc)!=-1){ // check if current node exists in the document
@@ -95,6 +97,8 @@ function addRelatedDocuments(node){
 					curDoc.expanded = false;
 					graphData.nodes.push(curDoc); //add new documents to list of graph nodes
 					//newAdditions.push(data.documents[i])
+				}else{
+					alreadyExistingNode = 1;
 				}
 			}
 		}
@@ -110,19 +114,37 @@ function addRelatedDocuments(node){
 					}
 				}
 			}
-		}
+		}	
+		if(alreadyExistingNode==1){
+			var sourceIndex = getIndexInList(node,graphData.nodes);
+			for(var i=0;i<graphData.nodes.length;i++){
+				if(i!=sourceIndex){
+					if(graphData.nodes[i] instanceof Doc){
+						if(getIndexInList(node,graphData.nodes[i].aliasList)!=-1){
+							var currentLink = {"source":sourceIndex,"target":i};
+							if(linkExistsInGraph(currentLink)==-1){ // check if link doesn't already exist
+								//console.log(currentLink)
+								graphData.links.push(currentLink);
+							}
+						}
+					}
+				}
+			}
+		}	
 	}else{ // double clicked node is a document
 		//console.log("hi")
 		var aliasesInDoc = node.aliasList; // get all aliases in current document
+		var alreadyExistingNodes = [];
 		//console.log(getIndexInList(aliasesInDoc[1],data.aliases));
 		//console.log(getIndexInList(data.aliases[166],aliasesInDoc))
 		for(var i=0;i<aliasesInDoc.length;i++){
 			//console.log(getIndexInList(aliasesInDoc[i],graphData.nodes))
 			if(getIndexInList(aliasesInDoc[i],graphData.nodes)==-1){
-				//console.log("hi")
 				aliasesInDoc[i].expanded = false;
 				graphData.nodes.push(aliasesInDoc[i]);
-			}			
+			}else{
+				alreadyExistingNodes.push(aliasesInDoc[i]);
+			}	
 		}
 
 		for(var i=startLengthOfNodeList;i<graphData.nodes.length;i++){
@@ -137,6 +159,18 @@ function addRelatedDocuments(node){
 				}
 			}
 		}
+
+		if(alreadyExistingNodes.length>0){
+			var curDocIndex = getIndexInList(node,graphData.nodes);
+			for(var i = 0;i<alreadyExistingNodes.length;i++){
+				var curAliasIndex = getIndexInList(alreadyExistingNodes[i],graphData.nodes);
+				var currentLink = {"source":curDocIndex,"target":curAliasIndex}
+				if(linkExistsInGraph(currentLink)==-1){ // check if link doesn't already exist
+					graphData.links.push(currentLink);
+				}			
+			}
+		}
+
 	}
 	
 }
@@ -180,11 +214,13 @@ function collapseNode(node){
 		}
 	}
 	for(var i=0;i<nodesToDelete.length;i++){
-		console.log(linkCount(nodesToDelete[i]))
-		var x = graphData.nodes.indexOf(nodesToDelete[i]);
-		if(x != -1) {
-			graphData.nodes.splice(x, 1);
-		}		
+		//console.log(linkCount(nodesToDelete[i]))
+		if(linkCount(nodesToDelete[i])==0){
+			var x = graphData.nodes.indexOf(nodesToDelete[i]);
+			if(x != -1) {
+				graphData.nodes.splice(x, 1);
+			}		
+		}
 	}
 }
 
@@ -224,7 +260,6 @@ function addNode(node){
 
 function pathViewDragstarted(d) {
   d3.event.sourceEvent.stopPropagation();
-  d3.select(this).classed("dragging", true);
 }
 
 function pathViewDragged(d) {
@@ -234,10 +269,47 @@ function pathViewDragged(d) {
 }
 
 function pathViewDragended(d) {  
-  d.fixed=true;
-  d3.select(this).classed("dragging", false);
+  d.fixed=true;  
 }
 var force;
+var linkedByIndex = {};
+function neighboring(a, b) {
+    //return a.index == b.index || linkedByIndex[a.index + "," + b.index];
+    return linkedByIndex[a.index + "," + b.index] || linkedByIndex[b.index + "," + a.index] || a.index == b.index;
+}
+
+
+function mouseover(d) {
+      d3.selectAll(".link").transition().duration(500)
+        .style("opacity", function(o) {
+        return o.source === d || o.target === d ? 1 : 0.2;
+      });
+      
+      d3.selectAll(".node").transition().duration(500)
+        .style("opacity", function(o) {
+           return neighboring(d, o) ? 1 : 0.2;
+        });
+      /*
+      d3.selectAll(".node").append("text")
+        .attr("class","nodelabel")
+        .attr("dx", 12)
+		.attr("dy", ".35em")
+		.text(function(o) {
+			if(d.name){
+		 		return neighboring(d, o) ? o.name : "";		 	
+		 	}else{
+		 		return neighboring(d, o) ? o.title : "";
+		 	}
+		 });*/
+}
+
+function mouseout() {
+  d3.selectAll(".link").transition().duration(500)
+        .style("opacity", 1);
+  d3.selectAll(".node").transition().duration(500)
+        .style("opacity", 1);
+  d3.selectAll(".nodelabel").remove();
+}
 
 function drawGraphViz(){
 	var width = document.getElementById("viz-graph").offsetWidth,
@@ -254,9 +326,9 @@ function drawGraphViz(){
 	var color = d3.scale.category10();
 
 	force = d3.layout.force()
-	    .gravity(.05)
-	    .distance(100)
-	    .charge(-100)
+	    .gravity(0)
+    	.distance(150)
+    	.charge(-100)
 	    .size([width, height]);
 
 	 force.nodes(graphData.nodes)
@@ -302,12 +374,29 @@ function drawGraphViz(){
 	  	doubleClickEvent(d);
 	  });
 
+	  nodeCircles.on("mouseout",function(d){	  	
+	  	mouseout(d);
+	  });
+
+	  nodeCircles.on("mouseover",function(d){	  	
+	  	mouseover(d);
+	  });
+
+
+	  graphData.links.forEach(function(d) {
+          linkedByIndex[d.source.index + "," + d.target.index] = 1;
+          linkedByIndex[d.target.index + "," + d.source.index] = 1;
+      });
+
 	  function doubleClickEvent(d){
+	  	linkedByIndex = {};
+	  	//console.log(graphData.links.length)
 	  	if(d.expanded==false){
 	  		addRelatedDocuments(d);
 	  	}else{
 	  		collapseNode(d);
 	  	}
+	  	//console.log(graphData.links.length)
 	  	//addRelatedDocuments(d);
 
 	  	link = link.data(graphData.links);
@@ -319,23 +408,54 @@ function drawGraphViz(){
 		
 		//console.log(graphData.nodes.length)
 		node = node.data(graphData.nodes,function(i){return i.id;});
+
+
 		var exitingNodes = node.exit();
 		exitingNodes.remove();
 		var newNodes = node.enter().insert("g").attr("class", "node").call(drag);
 		
-		nodeCircles = newNodes.append("circle").attr("r", 5).style("fill",function(d){ return color(d.type)});
+		nodeCircles = newNodes.append("circle").attr("r", 5)
+						.style("fill",function(d){ return color(d.type)});
 		
-		nodeLabels = newNodes.append("text")
+		d3.selectAll(".node").select("circle").style("stroke",function(d){
+							if(d.expanded==true){
+								return "black"
+							}else{
+								return ""
+							}
+						})
+						.style("stroke-width",function(d){
+							if(d.expanded==true){
+								return 2
+							}else{
+								return 0
+							}
+						});
+
+		var nodeLabels = newNodes.append("text")
 				      .attr("dx", 12)
 				      .attr("dy", ".35em")
-				      .text(function(d) { return d.name ? d.name : d.title; });		
-		
+				      .text(function(d) { return d.name ? d.name : d.title; });							
+
 		force.start();
 		nodeCircles.on("dblclick",function(i){
 	  		doubleClickEvent(i);
 	  	});
-	  }
 
+	  	nodeCircles.on("mouseout",function(d){	  	
+	  		mouseout(d);
+	  	});
+
+	  	nodeCircles.on("mouseover",function(d){	  	
+	  		mouseover(d);
+	  	});
+		
+		graphData.links.forEach(function(i) {
+          linkedByIndex[i.source.index + "," + i.target.index] = 1;
+          linkedByIndex[i.target.index + "," + i.source.index] = 1;
+      	});
+
+	  }
 
 	  $("#addnewnodebutton").on("click",function(){
 	  	addNode(data.aliases[tempIndex]);
@@ -360,6 +480,20 @@ function drawGraphViz(){
 		nodeCircles.on("dblclick",function(i){
 	  		doubleClickEvent(i);
 	  	});
+
+	  	nodeCircles.on("mouseout",function(d){	  	
+	  		mouseout(d);
+	  	});
+
+	  	nodeCircles.on("mouseover",function(d){	  	
+	  		mouseover(d);
+	  	});
+
+		graphData.links.forEach(function(i) {
+          linkedByIndex[i.source.index + "," + i.target.index] = 1;
+          linkedByIndex[i.target.index + "," + i.source.index] = 1;
+      	});
+
 	  	tempIndex+=1;
 	  });
 
