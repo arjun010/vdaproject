@@ -70,6 +70,16 @@ function linkExists(source,target){
 }
 
 
+function zoomed() {
+  container.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+}
+var container;
+var zoom = d3.behavior.zoom()
+    .scaleExtent([0.2, 10])
+    .on("zoom", zoomed);
+
+
+
 function addRelatedDocuments(node){
 	// add new nodes to graph's node list
 	//var newAdditions = [];
@@ -170,12 +180,11 @@ function collapseNode(node){
 		}
 	}
 	for(var i=0;i<nodesToDelete.length;i++){
-		if(linkCount(nodesToDelete[i])==0){
-			var x = graphData.nodes.indexOf(nodesToDelete[i]);
-			if(x != -1) {
-				graphData.nodes.splice(x, 1);
-			}
-		}
+		console.log(linkCount(nodesToDelete[i]))
+		var x = graphData.nodes.indexOf(nodesToDelete[i]);
+		if(x != -1) {
+			graphData.nodes.splice(x, 1);
+		}		
 	}
 }
 
@@ -213,17 +222,38 @@ function addNode(node){
 	}
 }
 
+function pathViewDragstarted(d) {
+  d3.event.sourceEvent.stopPropagation();
+  d3.select(this).classed("dragging", true);
+}
+
+function pathViewDragged(d) {
+  d.fixed=false;
+  d3.timer(force.resume);
+  d3.select(this).attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y); 
+}
+
+function pathViewDragended(d) {  
+  d.fixed=true;
+  d3.select(this).classed("dragging", false);
+}
+var force;
+
 function drawGraphViz(){
 	var width = document.getElementById("viz-graph").offsetWidth,
     height = document.getElementById("viz-graph").offsetHeight;
 
 	var svg = d3.select("#viz-graph").append("svg")
 	    .attr("width", width)
-	    .attr("height", height);
+	    .attr("height", height)
+	    .call(zoom).on("dblclick.zoom", null);;
+
+	container = svg.append("g");
+
 
 	var color = d3.scale.category10();
 
-	var force = d3.layout.force()
+	force = d3.layout.force()
 	    .gravity(.05)
 	    .distance(100)
 	    .charge(-100)
@@ -233,16 +263,22 @@ function drawGraphViz(){
 	     .links(graphData.links)
 	     .start();
 
-	  var link = svg.selectAll(".link")
+	var drag = d3.behavior.drag()
+      .origin(function(d) { return d; })
+      .on("dragstart", pathViewDragstarted)
+      .on("drag", pathViewDragged)
+      .on("dragend", pathViewDragended);
+
+	  var link = container.selectAll(".link") //svg.selectAll(".link")
 	      .data(graphData.links)
 	    .enter().append("line")
 	      .attr("class", "link");
 
-	  var node = svg.selectAll(".node")
+	  var node = container.selectAll(".node") //svg.selectAll(".node")
 	      .data(graphData.nodes)
 	    	.enter().append("g")
 	      .attr("class", "node")
-	      .call(force.drag);
+	      .call(drag);
 
 	  var nodeCircles = node.append("circle")
 	  				   .attr("r",5)
@@ -267,13 +303,12 @@ function drawGraphViz(){
 	  });
 
 	  function doubleClickEvent(d){
-	  	/*
 	  	if(d.expanded==false){
 	  		addRelatedDocuments(d);
 	  	}else{
 	  		collapseNode(d);
-	  	}*/
-	  	addRelatedDocuments(d);
+	  	}
+	  	//addRelatedDocuments(d);
 
 	  	link = link.data(graphData.links);
 		var exitingLinks = link.exit();
@@ -286,7 +321,7 @@ function drawGraphViz(){
 		node = node.data(graphData.nodes,function(i){return i.id;});
 		var exitingNodes = node.exit();
 		exitingNodes.remove();
-		var newNodes = node.enter().insert("g").attr("class", "node").call(force.drag);
+		var newNodes = node.enter().insert("g").attr("class", "node").call(drag);
 		
 		nodeCircles = newNodes.append("circle").attr("r", 5).style("fill",function(d){ return color(d.type)});
 		
@@ -312,7 +347,7 @@ function drawGraphViz(){
 		
 		//console.log(graphData.nodes.length)
 		node = node.data(graphData.nodes,function(i){return i.id;});
-		var newNodes = node.enter().insert("g").attr("class", "node").call(force.drag);
+		var newNodes = node.enter().insert("g").attr("class", "node").call(drag);
 		
 		nodeCircles = newNodes.append("circle").attr("r", 5).style("fill",function(d){ return color(d.type)});
 		
@@ -320,7 +355,7 @@ function drawGraphViz(){
 				      .attr("dx", 12)
 				      .attr("dy", ".35em")
 				      .text(function(d) { return d.name ? d.name : d.title; });		
-		
+
 		force.start();
 		nodeCircles.on("dblclick",function(i){
 	  		doubleClickEvent(i);
