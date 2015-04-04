@@ -1,3 +1,4 @@
+var firstTimeOnView = 1;
 if (!Array.prototype.remove) {
   Array.prototype.remove = function(vals, all) {
     var i, removedItems = [];
@@ -47,6 +48,17 @@ function linkExistsInGraph(currentLink){
 	}
 	return -1;
 }
+
+function getDocCountForAlias(alias){
+	var count = 0;
+	for(var i=0;i<data.documents.length;i++){
+		if(getIndexInList(alias,data.documents[i].aliasList)!=-1){
+			count+=1;
+		}
+	}
+	return count;
+}
+
 
 // this is just a temporary function
 function generateGraphData(){
@@ -291,6 +303,20 @@ function mouseover(d) {
         .style("opacity", function(o) {
            return neighboring(d, o) ? 1 : 0.2;
         });     
+
+      d3.selectAll(".node")      
+      	.append("text")
+      	.attr("class","countlabel")
+      	.attr("dx", 12)
+		.attr("dy", -10)
+      	.style("font-size",10)
+		.style("font-family","sans-serif")
+      	.text(function(i){
+      		if(i==d){
+      			return d.name ? "("+getDocCountForAlias(d)+")" : "("+d.aliasList.length+")";
+      		}
+      	});
+
 }
 
 function mouseout() {
@@ -298,14 +324,21 @@ function mouseout() {
         .style("opacity", 1);
   d3.selectAll(".node").transition().duration(500)
         .style("opacity", 1);
-  d3.selectAll(".nodelabel").remove();
+  
+  /*d3.selectAll(".node")
+      	.select("text")
+      	.style("font-size",10)
+		.style("font-family","sans-serif")
+      	.text(function(d){
+      		return d.name ? d.name : d.title;
+      	})*/
+	d3.selectAll(".countlabel").remove();
 }
 
 
 function mouseClick(d){
 	if (d3.event.shiftKey) {
         d.isSelected = true;
-		console.log(graphData.nodes);
 		d3.selectAll(".node").select("text")
 		  .style("stroke",function(i){
 		  	return i.isSelected ? "yellow" : "";
@@ -318,13 +351,12 @@ function mouseClick(d){
 			graphData.nodes[i].isSelected = false;
 		}
 		d.isSelected = true;
-		console.log(graphData.nodes);
 		d3.selectAll(".node").select("text")
 		  .style("stroke",function(i){
 		  	return i.isSelected ? "yellow" : "";
 		  })
 		  .style("stroke-width",function(i){
-		  	return i.isSelected ? "4":"0";
+		  	return i.isSelected ? "1":"0";
 		  });
 	}
 }
@@ -489,7 +521,6 @@ function drawGraphViz(){
 	  $("#addnewnodebutton").on("click",function(){
 	  	addNode(data.aliases[tempIndex]);
 	  	
-	  	console.log(graphData.nodes)
 	  	link = link.data(graphData.links);
 		var newLinks = link.enter();
 
@@ -551,7 +582,10 @@ function drawGraphViz(){
 
     	//addNode(data.aliases[4]);
     	//addNode(data.documents[0]);
-    	drawGraphViz();
+    	if(firstTimeOnView==1){
+    		firstTimeOnView = 0;
+    		drawGraphViz();
+    	}    	
     };
 
 })();
