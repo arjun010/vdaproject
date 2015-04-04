@@ -87,7 +87,6 @@ function addRelatedDocuments(node){
 	var startLengthOfNodeList = graphData.nodes.length;
 	var alreadyExistingNode = 0;
 	if(node instanceof Alias){ // double clicked node is an alias
-		console.log("here")
 		for(var i=0;i<data.documents.length;i++){
 			var aliasesInDoc = data.documents[i].aliasList;
 			if(getIndexInList(node,aliasesInDoc)!=-1){ // check if current node exists in the document
@@ -95,6 +94,7 @@ function addRelatedDocuments(node){
 					//console.log("hi")
 					var curDoc = data.documents[i];
 					curDoc.expanded = false;
+					curDoc.isSelected = false;
 					graphData.nodes.push(curDoc); //add new documents to list of graph nodes
 					//newAdditions.push(data.documents[i])
 				}else{
@@ -141,6 +141,7 @@ function addRelatedDocuments(node){
 			//console.log(getIndexInList(aliasesInDoc[i],graphData.nodes))
 			if(getIndexInList(aliasesInDoc[i],graphData.nodes)==-1){
 				aliasesInDoc[i].expanded = false;
+				aliasesInDoc[i].isSelected = false;
 				graphData.nodes.push(aliasesInDoc[i]);
 			}else{
 				alreadyExistingNodes.push(aliasesInDoc[i]);
@@ -229,6 +230,7 @@ function addNode(node){
 	var startLengthOfNodeList = graphData.nodes.length;
 	if(getIndexInList(node,graphData.nodes)==-1){
 			node.expanded = false;
+			node.isSelected = false;
 			graphData.nodes.push(node);
 	}
 	if(node instanceof Alias){
@@ -288,19 +290,7 @@ function mouseover(d) {
       d3.selectAll(".node").transition().duration(500)
         .style("opacity", function(o) {
            return neighboring(d, o) ? 1 : 0.2;
-        });
-      /*
-      d3.selectAll(".node").append("text")
-        .attr("class","nodelabel")
-        .attr("dx", 12)
-		.attr("dy", ".35em")
-		.text(function(o) {
-			if(d.name){
-		 		return neighboring(d, o) ? o.name : "";		 	
-		 	}else{
-		 		return neighboring(d, o) ? o.title : "";
-		 	}
-		 });*/
+        });     
 }
 
 function mouseout() {
@@ -309,6 +299,34 @@ function mouseout() {
   d3.selectAll(".node").transition().duration(500)
         .style("opacity", 1);
   d3.selectAll(".nodelabel").remove();
+}
+
+
+function mouseClick(d){
+	if (d3.event.shiftKey) {
+        d.isSelected = true;
+		console.log(graphData.nodes);
+		d3.selectAll(".node").select("text")
+		  .style("stroke",function(i){
+		  	return i.isSelected ? "yellow" : "";
+		  })
+		  .style("stroke-width",function(i){
+		  	return i.isSelected ? "4":"0";
+		  });
+    }else{
+		for(var i=0;i<graphData.nodes.length;i++){
+			graphData.nodes[i].isSelected = false;
+		}
+		d.isSelected = true;
+		console.log(graphData.nodes);
+		d3.selectAll(".node").select("text")
+		  .style("stroke",function(i){
+		  	return i.isSelected ? "yellow" : "";
+		  })
+		  .style("stroke-width",function(i){
+		  	return i.isSelected ? "4":"0";
+		  });
+	}
 }
 
 function drawGraphViz(){
@@ -384,6 +402,9 @@ function drawGraphViz(){
 	  	mouseover(d);
 	  });
 
+	  nodeCircles.on("click",function(d){
+	  	mouseClick(d);
+	  });
 
 	  graphData.links.forEach(function(d) {
           linkedByIndex[d.source.index + "," + d.target.index] = 1;
@@ -452,8 +473,12 @@ function drawGraphViz(){
 
 	  	nodeCircles.on("mouseover",function(d){	  	
 	  		mouseover(d);
+	  	});		
+
+	  	nodeCircles.on("click",function(d){
+	  		mouseClick(d);
 	  	});
-		
+
 		graphData.links.forEach(function(i) {
           linkedByIndex[i.source.index + "," + i.target.index] = 1;
           linkedByIndex[i.target.index + "," + i.source.index] = 1;
@@ -464,6 +489,7 @@ function drawGraphViz(){
 	  $("#addnewnodebutton").on("click",function(){
 	  	addNode(data.aliases[tempIndex]);
 	  	
+	  	console.log(graphData.nodes)
 	  	link = link.data(graphData.links);
 		var newLinks = link.enter();
 
@@ -493,6 +519,10 @@ function drawGraphViz(){
 
 	  	nodeCircles.on("mouseover",function(d){	  	
 	  		mouseover(d);
+	  	});
+	  	
+	  	nodeCircles.on("click",function(d){
+	  		mouseClick(d);
 	  	});
 
 		graphData.links.forEach(function(i) {
