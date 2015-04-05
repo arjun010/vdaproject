@@ -272,11 +272,11 @@ function addNode(node){
 	}
 }
 
-function pathViewDragstarted(d) {
+function dragStarted(d) {
   d3.event.sourceEvent.stopPropagation();
 }
 
-function pathViewDragged(d) {
+function dragged(d) {
   d.fixed=false;
   d3.timer(force.resume);
   d3.select(this).attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y); 
@@ -309,13 +309,29 @@ function mouseover(d) {
       	.attr("class","countlabel")
       	.attr("dx", 12)
 		.attr("dy", -10)
-      	.style("font-size",10)
+      	.style("font-size",function(i){
+      		if(i==d){
+      			return d.name ? nodeTextScale(getDocCountForAlias(i)) : nodeTextScale(i.aliasList.length);
+      		}
+      	})
 		.style("font-family","sans-serif")
       	.text(function(i){
       		if(i==d){
       			return d.name ? "("+getDocCountForAlias(d)+")" : "("+d.aliasList.length+")";
       		}
       	});
+
+      if(d instanceof Doc){
+      	d3.selectAll(".node")
+      	  .append("title")
+      	  .text(function(i){
+      	  	if(i==d){
+      	  		console.log(d.title);
+      	  		return d.title;
+      	  	}
+      	  });
+      }
+
 
 }
 
@@ -324,19 +340,13 @@ function mouseout() {
         .style("opacity", 1);
   d3.selectAll(".node").transition().duration(500)
         .style("opacity", 1);
-  
-  /*d3.selectAll(".node")
-      	.select("text")
-      	.style("font-size",10)
-		.style("font-family","sans-serif")
-      	.text(function(d){
-      		return d.name ? d.name : d.title;
-      	})*/
-	d3.selectAll(".countlabel").remove();
+    
+  d3.selectAll(".countlabel").remove();
 }
 
 
 function mouseClick(d){
+	d.fixed=true;
 	if (d3.event.shiftKey) {
         d.isSelected = true;
 		d3.selectAll(".node").select("text")
@@ -361,6 +371,10 @@ function mouseClick(d){
 	}
 }
 
+var nodeScale = d3.scale.log().domain([1,70]).range([3,8]);
+var nodeTextScale = d3.scale.log().domain([1,70]).range([7,12]);
+var linkStrokeScale = d3.scale.log().domain([1,7]).range([1,5]);
+
 function drawGraphViz(){
 	var width = document.getElementById("viz-graph").offsetWidth,
     height = document.getElementById("viz-graph").offsetHeight;
@@ -378,7 +392,8 @@ function drawGraphViz(){
 	force = d3.layout.force()
 	    .gravity(0)
     	.distance(150)
-    	.charge(-100)
+    	.charge(-250)
+    	.chargeDistance(300)
 	    .size([width, height]);
 
 	 force.nodes(graphData.nodes)
@@ -387,14 +402,14 @@ function drawGraphViz(){
 
 	var drag = d3.behavior.drag()
       .origin(function(d) { return d; })
-      .on("dragstart", pathViewDragstarted)
-      .on("drag", pathViewDragged)
+      .on("dragstart", dragStarted)
+      .on("drag", dragged)
       .on("dragend", pathViewDragended);
 
 	  var link = container.selectAll(".link") //svg.selectAll(".link")
 	      .data(graphData.links)
 	    .enter().append("line")
-	      .attr("class", "link");
+	      .attr("class", "link");	      
 
 	  var node = container.selectAll(".node") //svg.selectAll(".node")
 	      .data(graphData.nodes)
@@ -403,15 +418,27 @@ function drawGraphViz(){
 	      .call(drag);
 
 	  var nodeCircles = node.append("circle")
-	  				   .attr("r",5)
+	  				   .attr("r",function(d){
+	  				   	 if(d instanceof Alias){
+	  				   	 	return nodeScale(getDocCountForAlias(d));
+	  				   	 }else{
+	  				   	 	return nodeScale(d.aliasList.length);
+	  				   	 }
+	  				   })
 	  				   .style("fill",function(d){ return color(d.type)});	  				   
 	      
 	  var nodeLabels = node.append("text")
 				      .attr("dx", 12)
 				      .attr("dy", ".35em")
-				      .style("font-size",10)
+				      .style("font-size",function(d){
+				      	if(d instanceof Alias){
+	  				   	 	return nodeTextScale(getDocCountForAlias(d));
+	  				   	 }else{
+	  				   	 	return nodeTextScale(d.aliasList.length);
+	  				   	 }
+				      })
 				      .style("font-family","sans-serif")
-				      .text(function(d) { return d.name ? d.name : d.title; });				 
+				      .text(function(d) { return d.name ? d.name : d.id; });				 
 
 	  force.on("tick", function() {
 	    link.attr("x1", function(d) { return d.source.x; })
@@ -469,7 +496,14 @@ function drawGraphViz(){
 		exitingNodes.remove();
 		var newNodes = node.enter().insert("g").attr("class", "node").call(drag);
 		
-		nodeCircles = newNodes.append("circle").attr("r", 5)
+		nodeCircles = newNodes.append("circle")
+						.attr("r",function(d){
+	  				   	 if(d instanceof Alias){
+	  				   	 	return nodeScale(getDocCountForAlias(d));
+	  				   	 }else{
+	  				   	 	return nodeScale(d.aliasList.length);
+	  				   	 }
+	  				   	})
 						.style("fill",function(d){ return color(d.type)});
 		
 		d3.selectAll(".node").select("circle").style("stroke",function(d){
@@ -490,9 +524,15 @@ function drawGraphViz(){
 		var nodeLabels = newNodes.append("text")
 				      .attr("dx", 12)
 				      .attr("dy", ".35em")
-				      .style("font-size",10)
+				      .style("font-size",function(d){
+				      	if(d instanceof Alias){
+	  				   	 	return nodeTextScale(getDocCountForAlias(d));
+	  				   	 }else{
+	  				   	 	return nodeTextScale(d.aliasList.length);
+	  				   	 }
+				      })
 				      .style("font-family","sans-serif")
-				      .text(function(d) { return d.name ? d.name : d.title; });							
+				      .text(function(d) { return d.name ? d.name : d.id; });							
 
 		force.start();
 		nodeCircles.on("dblclick",function(i){
@@ -530,14 +570,28 @@ function drawGraphViz(){
 		node = node.data(graphData.nodes,function(i){return i.id;});
 		var newNodes = node.enter().insert("g").attr("class", "node").call(drag);
 		
-		nodeCircles = newNodes.append("circle").attr("r", 5).style("fill",function(d){ return color(d.type)});
+		nodeCircles = newNodes.append("circle")
+							.attr("r",function(d){
+			  				   	 if(d instanceof Alias){
+			  				   	 	return nodeScale(getDocCountForAlias(d));
+			  				   	 }else{
+			  				   	 	return nodeScale(d.aliasList.length);
+			  				   	 }
+		  				   	})
+							.style("fill",function(d){ return color(d.type)});
 		
 		nodeLabels = newNodes.append("text")
 				      .attr("dx", 12)
 				      .attr("dy", ".35em")
-				      .style("font-size",10)
+				      .style("font-size",function(d){
+				      	if(d instanceof Alias){
+	  				   	 	return nodeTextScale(getDocCountForAlias(d));
+	  				   	 }else{
+	  				   	 	return nodeTextScale(d.aliasList.length);
+	  				   	 }
+				      })
 				      .style("font-family","sans-serif")
-				      .text(function(d) { return d.name ? d.name : d.title; });		
+				      .text(function(d) { return d.name ? d.name : d.id; });		
 
 		force.start();
 		nodeCircles.on("dblclick",function(i){
@@ -582,6 +636,7 @@ function drawGraphViz(){
 
     	//addNode(data.aliases[4]);
     	//addNode(data.documents[0]);
+    	//console.log(data.documents[0])
     	if(firstTimeOnView==1){
     		firstTimeOnView = 0;
     		drawGraphViz();
