@@ -174,13 +174,15 @@
 
 <script id="entTemplate" type="text/x-jQuery-tmpl">
     <li class="entity-list-item" draggable="true">
-        <span style="color: ${color};">${frequency}</span>
-        <span class="overflow">${name}</span>
+        <div>
+            <span class="frequency">${frequency}</span>
+            <span class="name">${name}</span>
+        </div>
     </li>
 </script>
 <script id="docTemplate" type="text/x-jQuery-tmpl">
-    <div class="doc-item">
-        <div class="doc-item-header" onclick="docTool.collapse(this)">
+    <div class="doc-item doc-item-${id}">
+        <div class="doc-item-header" onclick="docTool.collapse(this);">
             <span class="glyphicon glyphicon-eye-open"></span> <span class="views">${views}</span><span class="title">${title}</h3>
         </div>
         <div class="doc-item-text" style="display: none;">

@@ -13,7 +13,6 @@ Entity = function(type, name, id, docList, frequency) {
     this.id = id;
     this.docList = docList;
     this.frequency = frequency;
-    //this.color = type.color;
 };
 
 /**

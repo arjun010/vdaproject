@@ -87,6 +87,13 @@
 .entity-column-list > li {
     cursor: pointer;
     width: 94%;
+    display: block;
+    margin: 1px 1px;
+    background-color: #efefef;
+}
+
+.entity-column-list > li > div{
+    width: 100%;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
@@ -97,8 +104,64 @@
     background-color: #efefef;
 }
 
-.entity-column-list > li > span {
+.entity-column-list > li > div > span {
     padding-left: 4px;
+}
+
+.entity-type-person .frequency{
+    color: #be3f4f;
+}
+
+.entity-type-money .frequency{
+    color: #006d2c;
+}
+
+.entity-type-percent .frequency{
+    color: #753a7d;
+}
+
+.entity-type-location .frequency{
+    color: #5f9f6c;
+}
+
+.entity-type-organization .frequency{
+    color: #4660ac;
+}
+
+.entity-type-date .frequency{
+    color: #ffdd17;
+}
+
+.entity-type-time .frequency {
+    color: #e6550d;
+}
+
+.entity-type-person.ui-selected {
+    background-color: #be3f4f;
+}
+
+.entity-type-money.ui-selected {
+    background-color: #006d2c;
+}
+
+.entity-type-percent.ui-selected {
+    background-color: #753a7d;
+}
+
+.entity-type-location.ui-selected {
+    background-color: #5f9f6c;
+}
+
+.entity-type-organization.ui-selected {
+    background-color: #4660ac;
+}
+
+.entity-type-date.ui-selected {
+    background-color: #ffdd17;
+}
+
+.entity-type-time.ui-selected {
+    background-color: #e6550d;
 }
 
 .overflowing {
@@ -178,5 +241,51 @@
 
 .doc-item-text > p {
     font-size: 12px;
+}
+
+.highlight {
+    background-color: #ffff00;
+}
+
+.doc-entity {
+    color: #ffffff;
+    padding-left: 2px;
+    padding-right: 2px;
+    border-radius: 3px;
+    -o-border-radius: 3px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+}
+
+.doc-entity-type-person {
+    background-color: #be3f4f;
+}
+
+.doc-entity-type-money {
+    background-color: #006d2c;
+}
+
+.doc-entity-type-percent {
+    background-color: #753a7d;
+}
+
+.doc-entity-type-location {
+    background-color: #5f9f6c;
+}
+
+.doc-entity-type-organization {
+    background-color: #4660ac;
+}
+
+.doc-entity-type-date{
+    background-color: #ffdd17;
+}
+
+.doc-entity-type-time {
+    background-color: #e6550d;
+}
+
+.highlight {
+    background-color: #ffdd17;
 }
 
