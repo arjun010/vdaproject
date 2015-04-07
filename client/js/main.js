@@ -40,7 +40,7 @@
                     // Do I need to do any processing here? or should I just draw?
                     entTool.draw(params);
                     //graphTool.draw(params);
-                    //timeTool.draw(params);
+                    timeTool.draw(params);
                     docTool.draw(params);
                 });
             });
