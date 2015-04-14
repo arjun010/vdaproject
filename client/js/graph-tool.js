@@ -369,7 +369,7 @@ function mouseClick(d){
         d.isSelected = true;
 		d3.selectAll(".node").select("text")
 		  .style("stroke",function(i){
-		  	return i.isSelected ? "yellow" : "";
+		  	return i.isSelected ? "blue" : "";
 		  })
 		  .style("stroke-width",function(i){
 		  	return i.isSelected ? "4":"0";
@@ -392,6 +392,8 @@ function mouseClick(d){
 var nodeScale = d3.scale.log().domain([1,70]).range([3,8]);
 var nodeTextScale = d3.scale.log().domain([1,70]).range([7,12]);
 var linkStrokeScale = d3.scale.log().domain([1,7]).range([1,50]);
+var color = d3.scale.category10();
+
 
 function drawGraphViz(){
 	var width = document.getElementById("viz-graph").offsetWidth,
@@ -405,7 +407,7 @@ function drawGraphViz(){
 	container = svg.append("g");
 
 
-	var color = d3.scale.category10();
+	
 
 	force = d3.layout.force()
 	    .gravity(0)
@@ -536,7 +538,7 @@ function drawGraphViz(){
 		
 		d3.selectAll(".node").select("circle").style("stroke",function(d){
 							if(d.expanded==true){
-								return "black"
+								return color(d.type)
 							}else{
 								return ""
 							}
@@ -546,6 +548,13 @@ function drawGraphViz(){
 								return 2
 							}else{
 								return 0
+							}
+						})
+						.style("fill",function(d){
+							if(d.expanded==true){
+								return "white"
+							}else{
+								return color(d.type);
 							}
 						});
 		
