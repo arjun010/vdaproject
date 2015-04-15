@@ -24,11 +24,92 @@
         main.loadData(params);
     };
 
+    main.action = function(item, index){
+        // This is a terrible way to get the action item,
+        // but I can't think of a better one
+        var action = $(item).tmplItem().data.actions[index];
+        // Get the reference to the tool we should use then call the action from there
+        action.params.tool.action(action);
+    };
+
+    // Set up the context menu listener
+    main.contextmenu = function(event, target, tool){
+        if(!event) return;
+        // Check to make sure that this was actually a right-click
+        var right;
+        if ("which" in event) right = event.which == 3;
+        else if ("button" in event) right = event.button == 2;
+        if(!right) return;
+
+        var params = {};
+        params['target'] = target;
+        params['targetId'] = $(target).attr('id');
+        params['targetClass'] = $(target).attr('class');
+        params['parentId'] = $(target).parent().attr('id');
+        params['parentClass'] = $(target).parent().attr('class');
+        params['tool'] = tool;
+        params['targetItem'] = $(target).tmplItem().data;
+
+        var additional = tool.selected(params);
+        params.add = [];
+        params.addItems = [];
+        params.multi = false;
+        console.log(additional);
+        if(additional && additional.length != 0){
+            additional.each(function(i,a){
+               params.addItems.push($(a).tmplItem().data);
+            });
+            params.add = additional;
+            params.multi = true;
+        }
+
+        // Create the context menu
+        var menu = $("#context-menu");
+        menu.empty();
+        var actions = main.createActions(params);
+
+        $("#contextMenuTmpl").tmpl({actions: actions}).appendTo("#context-menu");
+
+        // Move the context menu to the location
+        // TODO make sure we don't put it outside of the page
+        var pos = findEventPosition(event);
+        menu.css({left: pos.x+'px', top: pos.y+'px'});
+        menu.show().animate();
+
+        // Make sure the browser context menu doesn't show up
+        window.event.returnValue = false;
+        window.addEventListener('click', main.dismissContextMenu);
+
+        tool.select(target, event, true, false);
+    };
+
+    main.dismissContextMenu = function(e){
+        $("#context-menu").hide().animate();
+        window.removeEventListener('click', main.dismissContextMenu);
+    };
+
+    main.createActions = function(params){
+        var actions = [];
+        if($(params.target).tmplItem().data instanceof  Entity){
+            actions.push(new Action('entity-edit', 'Edit Entity', true, params));
+            actions.push(new Action('entity-show-docs', 'Show Documents', true, params));
+            actions.push(new Action('entity-remove', 'Remove Entity', true, params));
+            actions.push(new Action('entity-change-type', 'Change Type', true, params));
+            actions.push(new Action('entity-create-alias', 'Create Alias', (params.multi), params));
+        } else if ($(params.target).tmplItem().data instanceof  Doc) {
+
+        } else if ($(params.target).tmplItem().data instanceof  Alias) {
+
+        }
+        return actions;
+    };
+
     /**
      *
      * @param params - functions as the context of the tool
      */
     main.loadData = function (params) {
+
         // Nest the call backs of loading all of the json data so all data sets are available
 
         d3.json('../data/entity_list.json', function (e) {
@@ -83,7 +164,7 @@
         // Create a map of entity types that will not change
         main.entityTypes = {
             person: new EntityType('person', 'Person', '#be3f4f'),
-            location: new EntityType('location', 'Location', '#5f9f6c'),
+            location: new EntityType('location', 'Location', '#3ab6ba'),
             organization: new EntityType('organization', 'Organization', '#4660ac'),
             date: new EntityType('date', 'Date', '#ffdd17'),
             money: new EntityType('money', 'Money', '#006d2c'),
@@ -102,9 +183,20 @@
         json.forEach(function (e) {
             var ent = new Entity(main.entityTypes[e['entity_type']], e['entity_name'], e['entity_id'],
                 [], e['entity_frequency']);
-            data.entities.push(ent);
-            data.aliases.push(new Alias(ent.id, ent, null));
+
+            // XXX need to be very careful we don't get into an infinite loop with entities
+            //     referencing aliases and aliases referencing entities... could get messy
+
+            // Make sure we're putting this at the id
+            data.entities[ent.id] = (ent);
+            var alias = new Alias(ent.id, ent, [ent]);
+            ent.alias = alias;
+
+            // Make sure we're putting this at the id
+            data.aliases[alias.id] = alias;
         });
+        data.entUniqueId = data.entities.length;
+        data.aliasUniqueId = data.aliases.length;
     }
 
     /**
@@ -133,6 +225,7 @@
                 e.docList.push(data.documents.peekBack());
             });
         });
+        data.docUniqueId = data.documents.length;
     }
 
     /**
@@ -152,5 +245,20 @@
             }
             // something went wrong if we don't have it
         });
+    }
+
+    function findEventPosition(e){
+        var pos = {x: 0, y: 0};
+        if (!e) var e = window.event;
+        if (e.pageX || e.pageY) 	{
+            pos.x = e.pageX;
+            pos.y = e.pageY;
+        } else if (e.clientX || e.clientY) 	{
+            pos.x = e.clientX + document.body.scrollLeft
+            + document.documentElement.scrollLeft;
+            pos.y = e.clientY + document.body.scrollTop
+            + document.documentElement.scrollTop;
+        }
+        return pos;
     }
 })();
