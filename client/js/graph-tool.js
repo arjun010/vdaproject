@@ -331,8 +331,7 @@ function mouseover(d) {
 	  				docList.push(data.documents[i].id)
 	  			}
 	  		}
-	  		//console.log(docList)
-		  	d3.selectAll(".discreteBar").style("opacity",function(j){
+	  		d3.selectAll(".discreteBar").style("opacity",function(j){
 		  		if(listsContainCommonElements(j.documentList,docList)){
 					return 1;
 			  	}else{
