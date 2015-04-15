@@ -7,6 +7,17 @@ function getOccuranceCount(object,list){
 	}
 	return count;
 }
+
+function listsContainCommonElements(list1,list2){
+	for(var i=0;i<list1.length;i++){
+		for(var j=0;j<list2.length;j++){
+			if(list1[i]==list2[j]){
+				return 1;
+			}
+		}
+	}
+}
+
 var firstTimeOnView = 1;
 if (!Array.prototype.remove) {
   Array.prototype.remove = function(vals, all) {
@@ -304,6 +315,32 @@ function neighboring(a, b) {
 
 function mouseover(d) {
 	  if(dateBarClicked==0){
+
+	  	if(d instanceof Doc){
+			  d3.selectAll(".discreteBar").style("opacity",function(i){
+			  	if(getIndexInList(d.id,i.documentList)!=-1){
+			  		return 1;
+			  	}else{
+			  		return 0.2;
+			  	}
+			  })
+	  	}else{
+	  		var docList = [];
+	  		for(var i=0;i<data.documents.length;i++){
+	  			if(getIndexInList(d,data.documents[i].aliasList)!=-1){
+	  				docList.push(data.documents[i].id)
+	  			}
+	  		}
+	  		//console.log(docList)
+		  	d3.selectAll(".discreteBar").style("opacity",function(j){
+		  		if(listsContainCommonElements(j.documentList,docList)){
+					return 1;
+			  	}else{
+			  		return 0.2;
+			  	}	
+			})
+	  	}
+
       d3.selectAll(".link").transition().duration(500)
         .style("opacity", function(o) {
         return o.source === d || o.target === d ? 1 : 0.2;
@@ -356,6 +393,7 @@ function mouseover(d) {
 
 function mouseout() {
 	if(dateBarClicked==0){
+		d3.selectAll(".discreteBar").style("opacity",1)
   d3.selectAll(".link").transition().duration(500)
         .style("opacity", 1);
   d3.selectAll(".node").transition().duration(500)
@@ -399,6 +437,7 @@ var color = d3.scale.category10();
 
 
 function drawGraphViz(){
+
 	var width = document.getElementById("viz-graph").offsetWidth,
     height = document.getElementById("viz-graph").offsetHeight;
 
@@ -495,10 +534,10 @@ function drawGraphViz(){
 
 	  d3.selectAll(".link").style("stroke-width",function(d){
 	      	if(d.source instanceof Doc){
-	      		console.log(getOccuranceCount(d.target,d.source.aliasList))
+	      		//console.log(getOccuranceCount(d.target,d.source.aliasList))
 	      		return linkStrokeScale(getOccuranceCount(d.target,d.source.aliasList));
 	      	}else{
-	      		console.log(getOccuranceCount(d.source,d.target.aliasList))
+	      		//console.log(getOccuranceCount(d.source,d.target.aliasList))
 	      		return linkStrokeScale(getOccuranceCount(d.source,d.target.aliasList))
 	      	}
 	      });

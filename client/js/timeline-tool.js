@@ -83,6 +83,7 @@ chart.discretebar.dispatch.on("elementClick", function (e) {
     dateBarClicked = 1;
     var clickedBarDate = e.point.date;
     d3.selectAll(".discreteBar").style("opacity",function(d){
+      //console.log(d)
       if(d.date == clickedBarDate){
         return 1;
       }
