@@ -23,7 +23,8 @@ function drawGraph(time){
 	      .showValues(false) 
 	      .showXAxis(false)      //...instead, show the bar value right on top of each bar.
 	      .tooltipContent(function (key, date, e, graph) {
-	      	var documentsIdsToShow = graph.point.documentList;
+	      	if(dateBarClicked==0){
+          var documentsIdsToShow = graph.point.documentList;
 	      	var documentsToShow = [];
 	      	for(var i=0;i<data.documents.length;i++){
 	      		if(getIndexInList(data.documents[i].id,documentsIdsToShow)!=-1){
@@ -60,13 +61,72 @@ function drawGraph(time){
 	      			return 0.2;
 	      		}
 	      	});
-
+          }
     	 	return  "<p>" + graph.point.date + "<br>"+ graph.point.count + "<br>" + graph.point.documentList + "</p>";
 		   });
 	
+  
 chart.discretebar.dispatch.on("elementMouseout", function (e) {
-	d3.selectAll(".node").style("opacity",1);
-	d3.selectAll(".link").style("opacity",1);
+  if(dateBarClicked==0){
+	 d3.selectAll(".node").style("opacity",1);
+	 d3.selectAll(".link").style("opacity",1);
+  }
+});
+chart.discretebar.dispatch.on("elementClick", function (e) {
+  //console.log(e)
+  if(dateBarClicked==1){
+    dateBarClicked = 0;
+    d3.selectAll(".discreteBar").style("opacity",1)
+    d3.selectAll(".node").style("opacity",1);
+  d3.selectAll(".link").style("opacity",1);
+  }else{
+    dateBarClicked = 1;
+    var clickedBarDate = e.point.date;
+    d3.selectAll(".discreteBar").style("opacity",function(d){
+      if(d.date == clickedBarDate){
+        return 1;
+      }
+      return 0.2;
+      //console.log(d)
+    })
+    var documentsIdsToShow = e.point.documentList;
+          var documentsToShow = [];
+          for(var i=0;i<data.documents.length;i++){
+            if(getIndexInList(data.documents[i].id,documentsIdsToShow)!=-1){
+              documentsToShow.push(data.documents[i]);
+            }
+          }
+
+          var entitiesToShow = [];
+          for(var i =0; i<data.documents.length;i++){
+            if(getIndexInList(data.documents[i].id,documentsIdsToShow)!=-1){
+              for(var j=0;j<data.documents[i].aliasList.length;j++){
+                entitiesToShow.push(data.documents[i].aliasList[j])
+              }
+            }
+          }
+          
+          d3.selectAll(".node").style("opacity",function(d){
+            if(d instanceof Doc){
+              if(getIndexInList(d,documentsToShow)!=-1){
+                return 1;
+              }
+            }else if(d instanceof Alias){
+              if(getIndexInList(d,entitiesToShow)!=-1){
+                return 1;
+              }
+            }
+            return 0.1;
+          });
+
+          d3.selectAll(".link").style("opacity",function(d){
+            if((getIndexInList(d.source,entitiesToShow)!=-1 || getIndexInList(d.source,documentsToShow)!=-1) && (getIndexInList(d.target,entitiesToShow)!=-1 || getIndexInList(d.target,documentsToShow)!=-1)) {
+              return 1;
+            }else{
+              return 0.1;
+            }
+          });
+  }
 });
 
 
@@ -92,6 +152,8 @@ chart.discretebar.dispatch.on("elementMouseout", function (e) {
 
     timeTool.draw = function (params) {
     	drawGraph(1);
+      drawGraph(1);
+      drawGraph(1);
     	drawGraph(2);
     };
 

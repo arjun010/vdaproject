@@ -303,7 +303,7 @@ function neighboring(a, b) {
 
 
 function mouseover(d) {
-	  
+	  if(dateBarClicked==0){
       d3.selectAll(".link").transition().duration(500)
         .style("opacity", function(o) {
         return o.source === d || o.target === d ? 1 : 0.2;
@@ -329,7 +329,8 @@ function mouseover(d) {
       		if(i==d){
       			return d.name ? "("+getDocCountForAlias(d)+")" : "("+d.aliasList.length+")";
       		}
-      	});      
+      	});
+      	}      
       	/*
       	d3.selectAll(".node").append("text")
       				  .attr("class","templabel")
@@ -354,12 +355,14 @@ function mouseover(d) {
 }
 
 function mouseout() {
+	if(dateBarClicked==0){
   d3.selectAll(".link").transition().duration(500)
         .style("opacity", 1);
   d3.selectAll(".node").transition().duration(500)
         .style("opacity", 1);
   d3.selectAll(".templabel").remove();  
   d3.selectAll(".countlabel").remove();
+  }
 }
 
 
