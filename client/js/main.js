@@ -159,6 +159,7 @@
         $('#nav-analysis').addClass('active');
         $('#panel-entity-analysis-document').addClass('active');
         $('#panel-analysis').addClass('active');
+        graphTool.draw(params);
     };
 
     main.showProvenanceView = function () {
@@ -170,7 +171,7 @@
         // Add the active class to the entity view & nav
         $('#nav-provenance').addClass('active');
         $('#panel-provenance').addClass('active');
-        provTool.draw();
+        //provTool.draw();
     };
 
     /**
