@@ -16,13 +16,17 @@
 
 #viz-timeline {
     height: 30%;
-
 }
 
 #viz-graph {
     top: 30.2%;
     height: 69.8%;
 }
+
+#viz-provenance {
+    height: 100%;
+}
+
 
 .content {
     width: 100%;
@@ -169,15 +173,40 @@
     text-overflow: ellipsis;
 }
 
-.entity-column-header > h3{
-    display: block;
-    margin: 0 auto;
+.entity-column-header {
+    box-shadow: 0 0 0.5em #bababa;
     padding: 4px 4px;
+    display: table;
+    width: 100%;
+}
+
+.entity-column-header > h3{
+    text-align: center;
     font-size: 18px;
     font-weight: 400;
-    box-shadow: 0 0 0.5em #bababa;
-    text-align: center;
     color: #f7f7f7;
+    display: table-cell;
+}
+
+.entity-column-header > span{
+    font-size: 14px;
+    font-weight: 600;
+    display: table-cell;
+    padding: 2px 5px;
+    background-color: #ffffff;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    width: 24px;
+}
+
+.entity-column-header > span.right{
+    text-align: right;
+}
+
+.entity-column-header > span.left{
+    text-align: left;
+    visibility: hidden;
 }
 
 #document-btn-group {
@@ -209,22 +238,22 @@
     position: absolute;
     width: 100%;
     z-index: 10;
-    background-color: #c7e8f0;
+    background-color: #999999;
     overflow: hidden;
     white-space: nowrap;
-    border-bottom: 1px solid #d7d7d7;
+    border-bottom: 1px solid #aaaaaa;
     padding: 4px 4px;
     cursor: pointer;
 }
 
 .doc-item-header > span {
-    color: #666666;
+    color: #cccccc;
     margin-left: 4px;
     font-size: 14px;
 }
 
 .doc-item-header > span.title {
-    color: #333333;
+    color: #f7f7f7;
     margin-left: 12px;
     font-weight: 600;
     overflow: hidden;

@@ -22,7 +22,8 @@
 
         entTool.tmpls.single_double_click(210);
 
-        $('.entity-column-list').selectable({distance: 1});
+        $('.entity-column-list').selectable({distance: 1, selected:
+            function(event, target){entTool.selectedCallback(target.selected);}});
     };
 
     entTool.jumpToPage = function(pageNum){
@@ -242,6 +243,19 @@
             clicked.removeClass('ui-selected');
         } else {
             clicked.addClass('ui-selected');
+        }
+        entTool.selectedCallback(target);
+    };
+
+    entTool.selectedCallback = function(target){
+        var classname = $(target).tmplItem().data.type.classname;
+        var selected = $('#entity-list-'+classname+' li.ui-selected');
+        var selectedSpan = $('#entity-column-header-'+classname+' span.right');
+        // If none are selected then remove the select indicator
+        if(selected.length == 0){
+            selectedSpan.css({visibility: 'hidden'});
+        } else {
+            selectedSpan.css({visibility: 'visible'}).html(selected.length);
         }
     };
 

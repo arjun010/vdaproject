@@ -134,10 +134,13 @@
     main.showEntityView = function () {
         // Remove the active class
         $('#nav-analysis').removeClass('active');
+        $('#nav-provenance').removeClass('active');
         $('#panel-analysis').removeClass('active');
+        $('#panel-provenance').removeClass('active');
 
         // Add the active class to the entity view & nav
         $('#nav-entity').addClass('active');
+        $('#panel-entity-analysis-document').addClass('active');
         $('#panel-entity').addClass('active');
     };
 
@@ -148,13 +151,26 @@
     main.showAnalysisView = function () {
         // Remove the active class
         $('#nav-entity').removeClass('active');
+        $('#nav-provenance').removeClass('active');
         $('#panel-entity').removeClass('active');
+        $('#panel-provenance').removeClass('active');
 
         // Add the active class to the entity view & nav
         $('#nav-analysis').addClass('active');
+        $('#panel-entity-analysis-document').addClass('active');
         $('#panel-analysis').addClass('active');
+    };
 
-        graphTool.draw();
+    main.showProvenanceView = function () {
+        // Remove the active class
+        $('#nav-analysis').removeClass('active');
+        $('#nav-entity').removeClass('active');
+        $('#panel-entity-analysis-document').removeClass('active');
+
+        // Add the active class to the entity view & nav
+        $('#nav-provenance').addClass('active');
+        $('#panel-provenance').addClass('active');
+        provTool.draw();
     };
 
     /**
