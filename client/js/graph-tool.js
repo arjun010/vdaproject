@@ -53,19 +53,17 @@ function getIndexInList(obj,list){
 }
 
 function linkExistsInGraph(currentLink){
-	if(typeof(currentLink.source)=="number"){
 		for(var i=0;i<graphData.links.length;i++){
-			if(((graphData.nodes[currentLink.source] == graphData.links[i].source) && (graphData.nodes[currentLink.target] == graphData.links[i].target)) || ((graphData.nodes[currentLink.source] == graphData.links[i].target) && (graphData.nodes[currentLink.target] == graphData.links[i].source))){
+			if(((graphData.nodes[currentLink.source] == graphData.links[i].source) && (graphData.nodes[currentLink.target] == graphData.links[i].target)) || ((graphData.nodes[currentLink.source] == graphData.links[i].target) && (graphData.nodes[currentLink.target] == graphData.links[i].source)) || ((graphData.nodes[currentLink.target] == graphData.links[i].source) && (graphData.nodes[currentLink.source] == graphData.links[i].target))){				
+				return 1;
+			}
+		}
+
+		for(var i=0;i<graphData.links.length;i++){
+			if(((currentLink.source == graphData.links[i].source) && (currentLink.target == graphData.links[i].target)) || ((currentLink.source == graphData.links[i].target) && (currentLink.target == graphData.links[i].source)) || ((currentLink.target == graphData.links[i].source) && (currentLink.source == graphData.links[i].target))){				
 				return 1;
 			}
 		}	
-	}else{
-		for(var i=0;i<graphData.links.length;i++){
-			if(((currentLink.source == graphData.links[i].source) && (currentLink.target == graphData.links[i].target)) || ((currentLink.source == graphData.links[i].target) && (currentLink.target == graphData.links[i].source))){
-				return 2;
-			}
-		}
-	}
 	return -1;
 }
 
@@ -112,7 +110,7 @@ var zoom = d3.behavior.zoom()
 
 
 
-function addRelatedDocuments(node){
+function addRelatedNodes(node){
 	// add new nodes to graph's node list
 	//var newAdditions = [];
 	node.expanded = true;
@@ -140,7 +138,6 @@ function addRelatedDocuments(node){
 					if(getIndexInList(graphData.nodes[j],graphData.nodes[i].aliasList)!=-1){ // if doc contains the current node (i.e. if there should be a link)
 						var currentLink = {"source":i,"target":j};
 						if(linkExistsInGraph(currentLink)==-1){ // check if link doesn't already exist
-							//console.log(currentLink)
 							graphData.links.push(currentLink);
 						}
 					}
@@ -155,14 +152,13 @@ function addRelatedDocuments(node){
 						if(getIndexInList(node,graphData.nodes[i].aliasList)!=-1){
 							var currentLink = {"source":sourceIndex,"target":i};
 							if(linkExistsInGraph(currentLink)==-1){ // check if link doesn't already exist
-								//console.log(currentLink)
 								graphData.links.push(currentLink);
 							}
 						}
 					}
 				}
 			}
-		}	
+		}			
 	}else{ // double clicked node is a document
 		//console.log("hi")
 		var aliasesInDoc = node.aliasList; // get all aliases in current document
@@ -204,7 +200,7 @@ function addRelatedDocuments(node){
 			}
 		}
 
-	}
+	}	
 	
 }
 
@@ -218,12 +214,14 @@ function removeNodeAndLinks(d){
 }
 
 function linkCount(node){
-	var count = 0;
+	var count = 0;	
 	for(var i=0;i<graphData.links.length;i++){
 		if(graphData.links[i].source==node || graphData.links[i].target==node){
+			//console.log(graphData.links[i])
 			count += 1;
 		}
 	}
+	//console.log(count)
 	return count;
 }
 
@@ -233,11 +231,15 @@ function collapseNode(node){
 	var linksToDelete = [];
 	for(var i=0; i<graphData.links.length;i++){
 		if(graphData.links[i].source==node){
-			linksToDelete.push(graphData.links[i]);
-			nodesToDelete.push(graphData.links[i].target);
+			if(linkCount(graphData.links[i].target)==1){
+				linksToDelete.push(graphData.links[i]);			
+				nodesToDelete.push(graphData.links[i].target);			
+			}
 		}else if(graphData.links[i].target==node){
-			linksToDelete.push(graphData.links[i]);
-			nodesToDelete.push(graphData.links[i].source);
+			if(linkCount(graphData.links[i].source)==1){
+				linksToDelete.push(graphData.links[i]);
+				nodesToDelete.push(graphData.links[i].source);			
+			}
 		}
 	}
 	for(var i=0;i<linksToDelete.length;i++){
@@ -315,6 +317,7 @@ function neighboring(a, b) {
 
 
 function mouseover(d) {
+	  //console.log(linkCount(d))
 	  if(dateBarClicked==0){
 
 	  	if(d instanceof Doc){
@@ -586,12 +589,12 @@ function drawGraphViz(){
 	  	linkedByIndex = {};
 	  	//console.log(graphData.links.length)
 	  	if(d.expanded==false){
-	  		addRelatedDocuments(d);
+	  		addRelatedNodes(d);
 	  	}else{
 	  		collapseNode(d);
 	  	}
 	  	//console.log(graphData.links.length)
-	  	//addRelatedDocuments(d);
+	  	//addRelatedNodes(d);
 
 	  	link = link.data(graphData.links);
 		var exitingLinks = link.exit();
@@ -639,9 +642,6 @@ function drawGraphViz(){
 								return color(d.type);
 							}
 						});
-		
-
-
 		var nodeLabels = newNodes.append("text")
 				      .attr("dx", 12)
 				      .attr("dy", ".35em")
@@ -655,8 +655,9 @@ function drawGraphViz(){
 				      .style("font-family","sans-serif")
 				      .text(function(d) { return d.name ? d.name : d.title; });							
 
-		force.start();
-			
+		force.start();		
+		//console.log("duplication")
+
 		nodeCircles.on("dblclick",function(i){
 	  		doubleClickEvent(i);
 	  	});
@@ -675,10 +676,10 @@ function drawGraphViz(){
 
 	  	d3.selectAll(".link").style("stroke-width",function(d){
 	      	if(d.source instanceof Doc){
-	      		console.log(getOccuranceCount(d.target,d.source.aliasList))
+	      		//console.log(getOccuranceCount(d.target,d.source.aliasList))
 	      		return linkStrokeScale(getOccuranceCount(d.target,d.source.aliasList));
 	      	}else{
-	      		console.log(getOccuranceCount(d.source,d.target.aliasList))
+	      		//console.log(getOccuranceCount(d.source,d.target.aliasList))
 	      		return linkStrokeScale(getOccuranceCount(d.source,d.target.aliasList))
 	      	}
 	      });
@@ -738,12 +739,12 @@ function drawGraphViz(){
 
 		force.start();
 		d3.selectAll(".link").style("stroke-width",function(d){
-			console.log(d.source.aliasList)
+			//console.log(d.source.aliasList)
 	      	if(d.source instanceof Doc){
-	      		console.log(getOccuranceCount(d.target,d.source.aliasList))
+	      		//console.log(getOccuranceCount(d.target,d.source.aliasList))
 	      		return linkStrokeScale(getOccuranceCount(d.target,d.source.aliasList));
 	      	}else{
-	      		console.log(getOccuranceCount(d.source,d.target.aliasList))
+	      		//console.log(getOccuranceCount(d.source,d.target.aliasList))
 	      		return linkStrokeScale(getOccuranceCount(d.source,d.target.aliasList))
 	      	}
 	      });
