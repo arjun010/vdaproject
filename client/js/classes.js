@@ -13,6 +13,7 @@ Entity = function(type, name, id, docList, frequency) {
     this.id = id;
     this.docList = docList;
     this.frequency = frequency;
+    this.alias = null;
 };
 
 /**
@@ -25,6 +26,17 @@ Entity.prototype.__defineSetter__('type', function(value) {
         this.color = value.color;
     }
     // Do some other stuff if we change types?
+});
+
+Entity.prototype.__defineSetter__('name', function(value) {
+    this._name = value;
+    if(this.alias && this.alias.mainEnt == this) {
+        this.alias.name = value;
+    }
+});
+
+Entity.prototype.__defineGetter__('name', function() {
+    return this._name;
 });
 
 Entity.prototype.__defineGetter__('type', function() {
@@ -73,6 +85,13 @@ Alias.prototype.__defineSetter__('name', function(val) {
         });
     }
 });
+
+Action = function(classname, name, enabled, params){
+    this.classname = classname;
+    this.name = name;
+    this.params = params;
+    this.enabled = enabled;
+};
 
 Array.prototype.peekBack = function () {
     if (this.length > 0) {

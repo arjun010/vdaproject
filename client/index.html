@@ -74,7 +74,7 @@
                     </ul>
                 </div>
                 <div class="entity-column">
-                    <div class="entity-column-header" style="background: #5f9f6c;">
+                    <div class="entity-column-header" style="background: #3ab6ba;">
                         <h3>Location</h3>
                     </div>
                     <ul id="entity-list-location" class="entity-column-list">
@@ -96,6 +96,13 @@
                 </div>
             </div>
             <div id="entity-page-2" class="entity-page switchable">
+                <div class="entity-column">
+                    <div class="entity-column-header" style="background: #006d2c;">
+                        <h3>Money</h3>
+                    </div>
+                    <ul id="entity-list-money" class="entity-column-list">
+                    </ul>
+                </div>
                 <div class="entity-column">
                     <div class="entity-column-header" style="background: #e6550d;">
                         <h3>Time</h3>
@@ -150,6 +157,26 @@
     </div>
 </div>
 
+<div id="context-menu"></div>
+
+<div class="modal" id="dialog-box">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Modal title</h4>
+            </div>
+            <div class="modal-body">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="dialog-box-enter">Okay</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 <!-- Reference to javascripts -->
 <script src="./js/vendor/jquery-1.11.2.min.js"></script>
 <script src="./js/vendor/jquery-ui.min.js"></script>
@@ -179,7 +206,7 @@
 </script>
 
 <script id="entTemplate" type="text/x-jQuery-tmpl">
-    <li class="entity-list-item" draggable="true">
+    <li class="entity-list-item" oncontextmenu="main.contextmenu(event, this, entTool);">
         <div>
             <span class="frequency">${frequency}</span>
             <span class="name">${name}</span>
@@ -188,13 +215,25 @@
 </script>
 <script id="docTemplate" type="text/x-jQuery-tmpl">
     <div class="doc-item doc-item-${id}">
-        <div class="doc-item-header" onclick="docTool.collapse(this);">
+        <div class="doc-item-header" onclick="docTool.collapse(this);" oncontextmenu="main.contextmenu(event, this);">
             <span class="glyphicon glyphicon-eye-open"></span> <span class="views">${views}</span><span class="title">${title}</h3>
         </div>
         <div class="doc-item-text" style="display: none;">
             <p>${text}</p>
         </div>
     </div>
+</script>
+<script id="contextMenuTmpl" type="text/x-jQuery-tmpl">
+    <ul>
+        {{each(i,a) $data.actions}}
+            <li onclick="main.action(this,${i})" class="{{if !a.enabled}}disabled{{/if}}">${a.name}</li>
+        {{/each}}
+    </ul>
+</script>
+<script id="docEntityTemplate" type="text/x-jQuery-tmpl">
+    <span class="doc-entity-item doc-entity-item-${id} doc-entity-item-type-${type.classname}" oncontextmenu="main.contextmenu(event, $item.data);">
+        ${name}
+    </span>
 </script>
 </body>
 </html>

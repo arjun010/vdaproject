@@ -59,13 +59,11 @@
                     var n = t;
                     var match = re.exec(t.data);
                     while (match != null && n != null) {
-                        var highlight = document.createElement('span');
-                        highlight.className = 'doc-entity doc-entity-type-' + e.type.classname;
+                        var span = $('#docEntityTemplate').tmpl(e);
                         var wordNode = n.splitText(match.index);
                         n = wordNode.splitText(e.name.length);
                         var wordClone = wordNode.cloneNode(true);
-                        highlight.appendChild(wordClone);
-                        wordNode.parentNode.replaceChild(highlight, wordNode);
+                        wordNode.parentNode.replaceChild(span[0], wordNode);
                         if(n != null) match = re.exec(n.data);
                     }
                 });
@@ -89,6 +87,14 @@
         }
         text.slideToggle();
         //doc.parent().update();
+    };
+
+    docTool.find = function(params){
+        var ret = [];
+        if(params.targetItem instanceof Entity){
+            ret = $('.doc-entity-item-'+params.targetItem.id);
+        }
+        return ret;
     };
 
     docTool.collapseAll = function(){
@@ -131,7 +137,7 @@
                 th = d.offset().top;
 
             if(t < 0 && h > 29 && (t + h) > 29) {
-                header.css({position: 'fixed', left: d.offset().left+'px',top: d.parent().offset().top+'px', width: w+'px'});
+                header.css({position: 'fixed', left: (d.offset().left + 1) +'px',top: (d.parent().offset().top)+'px', width: w+'px'});
             } else if(th != 0){
                 // TODO fix this so I'm not setting it every time just when it goes back to normal
                 header.css({position: 'absolute', top: '0px', left: '0px'});
