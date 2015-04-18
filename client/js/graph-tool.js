@@ -305,6 +305,7 @@ function dragged(d) {
 function pathViewDragended(d) {  
   d.fixed=true;  
 }
+
 var force;
 var linkedByIndex = {};
 function neighboring(a, b) {
@@ -437,6 +438,26 @@ var color = d3.scale.category10();
 
 function drawGraphViz(){
 
+	 function dragstart(d, i) {
+        force.stop() // stops the force auto positioning before you start dragging
+        d3.event.sourceEvent.stopPropagation();
+    }
+
+    function dragmove(d, i) {
+        d.px += d3.event.dx;
+        d.py += d3.event.dy;
+        d.x += d3.event.dx;
+        d.y += d3.event.dy; 
+        tick();
+    }
+
+    function dragend(d, i) {
+        d.fixed = true;
+        tick();
+        force.resume();
+    }
+
+
 	var width = document.getElementById("viz-graph").offsetWidth,
     height = document.getElementById("viz-graph").offsetHeight;
 
@@ -454,6 +475,7 @@ function drawGraphViz(){
 	    .gravity(0)
     	.distance(150)
     	.charge(-250)
+    	.alpha(-1)
     	.chargeDistance(300)
 	    .size([width, height]);
 
@@ -461,11 +483,19 @@ function drawGraphViz(){
 	     .links(graphData.links)
 	     .start();
 
+	 var drag = d3.behavior.drag()
+      .origin(function(d) { return d; })
+      .on("dragstart", dragstart)
+      .on("drag", dragmove)
+      .on("dragend", dragend);
+
+	     /*
 	var drag = d3.behavior.drag()
       .origin(function(d) { return d; })
       .on("dragstart", dragStarted)
       .on("drag", dragged)
-      .on("dragend", pathViewDragended);
+      .on("dragend", pathViewDragended);*/
+
 
 	  var link = container.selectAll(".link") //svg.selectAll(".link")
 	      .data(graphData.links)
@@ -499,8 +529,18 @@ function drawGraphViz(){
 	  				   	 }
 				      })
 				      .style("font-family","sans-serif")
-				      .text(function(d) { return d.name ? d.name : d.title; });				 
+				      .text(function(d) { return d.name ? d.name : d.title; });		 
 	
+	 function tick() {
+      link.attr("x1", function(d) { return d.source.x; })
+	        .attr("y1", function(d) { return d.source.y; })
+	        .attr("x2", function(d) { return d.target.x; })
+	        .attr("y2", function(d) { return d.target.y; });
+
+	    node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+    };
+
+    //force.on("tick",tick());
 	  force.on("tick", function() {
 	    link.attr("x1", function(d) { return d.source.x; })
 	        .attr("y1", function(d) { return d.source.y; })
@@ -615,7 +655,7 @@ function drawGraphViz(){
 				      .text(function(d) { return d.name ? d.name : d.title; });							
 
 		force.start();
-				
+			
 		nodeCircles.on("dblclick",function(i){
 	  		doubleClickEvent(i);
 	  	});
@@ -642,6 +682,14 @@ function drawGraphViz(){
 	      	}
 	      });
 	  	
+	  	force.on("tick", function() {
+	    link.attr("x1", function(d) { return d.source.x; })
+	        .attr("y1", function(d) { return d.source.y; })
+	        .attr("x2", function(d) { return d.target.x; })
+	        .attr("y2", function(d) { return d.target.y; });
+
+	    node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+	  });
 
 		graphData.links.forEach(function(i) {
           linkedByIndex[i.source.index + "," + i.target.index] = 1;

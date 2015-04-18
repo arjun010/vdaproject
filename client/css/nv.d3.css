@@ -156,7 +156,7 @@ svg.nvd3-svg {
 }
 
 .nvd3 text {
-  font: normal 12px Arial;
+  font: normal 9px sans-serif;
 }
 
 .nvd3 .title {
@@ -240,7 +240,7 @@ svg.nvd3-svg {
 }
 
 .nvd3 .nv-axis .nv-axisMaxMin text {
-  font-weight: bold;
+  font-weight: none;
 }
 
 .nvd3 .x  .nv-axis .nv-axisMaxMin text,
@@ -569,7 +569,7 @@ svg.nvd3-svg {
 }
 
 .nvd3.nv-ohlcBar .nv-ticks .nv-tick.hover {
-  stroke-width: 2px;
+  stroke-width: 1px;
 }
 
 .nvd3.nv-ohlcBar .nv-ticks .nv-tick.positive {
@@ -581,7 +581,7 @@ svg.nvd3-svg {
 }
 
 .nvd3.nv-historicalStockChart .nv-axis .nv-axislabel {
-  font-weight: bold;
+  font-weight: none;
 }
 
 .nvd3.nv-historicalStockChart .nv-dragTarget {
@@ -631,7 +631,7 @@ svg.nvd3-svg {
 }
 
 .nvd3 .axis text {
-  text-shadow: 0 1px 0 #fff;
+  text-shadow: 0 0px 0 #fff;
 }
 
 /****
