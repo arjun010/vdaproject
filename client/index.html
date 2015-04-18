@@ -35,124 +35,132 @@
                         View</a></li>
                     <li id="nav-analysis" role="presentation"><a href="#" onclick="main.showAnalysisView()">Analysis
                         View</a></li>
+                    <li id="nav-provenance" role="presentation"><a href="#" onclick="main.showProvenanceView()">Provenance
+                        View</a></li>
                 </ul>
             </div>
         </div>
     </nav>
 
-    <div id="panel-entity" class="panel switchable active col-md-8 col-lg-8">
-        <div id="viz-entity" class="content">
-            <div style="width:100%; display:inline-block;">
-                <div id="entity-page-btn-group-top" class="btn-group"
+    <div id="panel-entity-analysis-document" class="switchable active col-md-12 col-lg-12">
+        <div id="panel-entity" class="panel switchable active col-md-8 col-lg-8">
+            <div id="viz-entity" class="content">
+                <div style="width:100%; display:inline-block;">
+                    <div id="entity-page-btn-group-top" class="btn-group"
+                         role="group" aria-label="Page Buttons">
+                        <button type="button" class="btn btn-default btn-sm entity-page-btn-1 active" onclick="entTool.jumpToPage(1)">1</button>
+                        <button type="button" class="btn btn-default btn-sm entity-page-btn-2" onclick="entTool.jumpToPage(2)">2</button>
+                        <button type="button" class="btn btn-default btn-sm entity-page-btn-3" onclick="entTool.jumpToPage(3)">3</button>
+                    </div>
+                    <div id="entity-sort-btn-group" class="btn-group"
+                         role="group" aria-label="Page Buttons">
+                        <button type="button" class="btn btn-default btn-sm" onclick="entTool.sort('alpha')">
+                            <span class="glyphicon glyphicon-sort-by-alphabet" aria-hidden="true"></span>
+                        </button>
+                        <button type="button" class="btn btn-default btn-sm" onclick="entTool.sort('alpha-rev')">
+                            <span class="glyphicon glyphicon-sort-by-alphabet-alt" aria-hidden="true"></span>
+                        </button>
+                        <button type="button" class="btn btn-default btn-sm" onclick="entTool.sort('freq')">
+                            <span class="glyphicon glyphicon-sort-by-order" aria-hidden="true"></span>
+                        </button>
+                        <button type="button" class="btn btn-default btn-sm" onclick="entTool.sort('freq-rev')">
+                            <span class="glyphicon glyphicon-sort-by-order-alt" aria-hidden="true"></span>
+                        </button>
+                    </div>
+                </div>
+                <div id="entity-page-1" class="entity-page switchable active">
+                    <div class="entity-column">
+                        <div id="entity-column-header-person" class="entity-column-header" style="background: #be3f4f;">
+                            <span class="left">1</span><h3>Person</h3><span class="right" style="color: #be3f4f; visibility: hidden;"></span>
+                        </div>
+                        <ul id="entity-list-person" class="entity-column-list">
+                        </ul>
+                    </div>
+                    <div class="entity-column">
+                        <div id="entity-column-header-location" class="entity-column-header" style="background: #3ab6ba;">
+                            <span class="left">1</span><h3>Location</h3><span class="right" style="color: #3ab6ba; visibility: hidden;"></span>
+                        </div>
+                        <ul id="entity-list-location" class="entity-column-list">
+                        </ul>
+                    </div>
+                    <div class="entity-column">
+                        <div id="entity-column-header-organization" class="entity-column-header" style="background: #4660ac;">
+                            <span class="left">1</span><h3>Organization</h3><span class="right" style="color: #4660ac; visibility: hidden;"></span>
+                        </div>
+                        <ul id="entity-list-organization" class="entity-column-list">
+                        </ul>
+                    </div>
+                    <div class="entity-column">
+                        <div id="entity-column-header-date" class="entity-column-header" style="background: #ffdd17;">
+                            <span class="left">1</span><h3>Date</h3><span class="right" style="color: #ffdd17; visibility: hidden;"></span>
+                        </div>
+                        <ul id="entity-list-date" class="entity-column-list">
+                        </ul>
+                    </div>
+                </div>
+                <div id="entity-page-2" class="entity-page switchable">
+                    <div class="entity-column">
+                        <div id="entity-column-header-money" class="entity-column-header" style="background: #006d2c;">
+                            <span class="left">1</span><h3>Money</h3><span class="right" style="color: #006d2c; visibility: hidden;"></span>
+                        </div>
+                        <ul id="entity-list-money" class="entity-column-list">
+                        </ul>
+                    </div>
+                    <div class="entity-column">
+                        <div id="entity-column-header-time" class="entity-column-header" style="background: #e6550d;">
+                            <span class="left">1</span><h3>Time</h3><span class="right" style="color: #e6550d; visibility: hidden;"></span>
+                        </div>
+                        <ul id="entity-list-time" class="entity-column-list">
+                        </ul>
+                    </div>
+                    <div class="entity-column">
+                        <div id="entity-column-header-percent" class="entity-column-header" style="background: #753a7d;" >
+                            <span class="left">1</span><h3>Percent</h3><span class="right" style="color: #753a7d; visibility: hidden;"></span>
+                        </div>
+                        <ul id="entity-list-percent" class="entity-column-list">
+                        </ul>
+                    </div>
+                    <!-- add in the capability to create new entity types - Coming Soon! -->
+                </div>
+                <div id="entity-page-3" class="entity-page switchable">
+                    <!-- add in the capability to create new entity types - Coming Soon! -->
+                </div>
+
+                <div id="entity-page-btn-group-btm" class="btn-group"
                      role="group" aria-label="Page Buttons">
                     <button type="button" class="btn btn-default btn-sm entity-page-btn-1 active" onclick="entTool.jumpToPage(1)">1</button>
                     <button type="button" class="btn btn-default btn-sm entity-page-btn-2" onclick="entTool.jumpToPage(2)">2</button>
                     <button type="button" class="btn btn-default btn-sm entity-page-btn-3" onclick="entTool.jumpToPage(3)">3</button>
                 </div>
-                <div id="entity-sort-btn-group" class="btn-group"
-                     role="group" aria-label="Page Buttons">
-                    <button type="button" class="btn btn-default btn-sm" onclick="entTool.sort('alpha')">
-                        <span class="glyphicon glyphicon-sort-by-alphabet" aria-hidden="true"></span>
-                    </button>
-                    <button type="button" class="btn btn-default btn-sm" onclick="entTool.sort('alpha-rev')">
-                        <span class="glyphicon glyphicon-sort-by-alphabet-alt" aria-hidden="true"></span>
-                    </button>
-                    <button type="button" class="btn btn-default btn-sm" onclick="entTool.sort('freq')">
-                        <span class="glyphicon glyphicon-sort-by-order" aria-hidden="true"></span>
-                    </button>
-                    <button type="button" class="btn btn-default btn-sm" onclick="entTool.sort('freq-rev')">
-                        <span class="glyphicon glyphicon-sort-by-order-alt" aria-hidden="true"></span>
-                    </button>
-                </div>
             </div>
-            <div id="entity-page-1" class="entity-page switchable active">
-                <div class="entity-column">
-                    <div class="entity-column-header" style="background: #be3f4f;">
-                        <h3>Person</h3>
-                    </div>
-                    <ul id="entity-list-person" class="entity-column-list">
-                    </ul>
-                </div>
-                <div class="entity-column">
-                    <div class="entity-column-header" style="background: #3ab6ba;">
-                        <h3>Location</h3>
-                    </div>
-                    <ul id="entity-list-location" class="entity-column-list">
-                    </ul>
-                </div>
-                <div class="entity-column">
-                    <div class="entity-column-header" style="background: #4660ac;">
-                        <h3>Organization</h3>
-                    </div>
-                    <ul id="entity-list-organization" class="entity-column-list">
-                    </ul>
-                </div>
-                <div class="entity-column">
-                    <div class="entity-column-header" style="background: #ffdd17;">
-                        <h3>Date</h3>
-                    </div>
-                    <ul id="entity-list-date" class="entity-column-list">
-                    </ul>
-                </div>
-            </div>
-            <div id="entity-page-2" class="entity-page switchable">
-                <div class="entity-column">
-                    <div class="entity-column-header" style="background: #006d2c;">
-                        <h3>Money</h3>
-                    </div>
-                    <ul id="entity-list-money" class="entity-column-list">
-                    </ul>
-                </div>
-                <div class="entity-column">
-                    <div class="entity-column-header" style="background: #e6550d;">
-                        <h3>Time</h3>
-                    </div>
-                    <ul id="entity-list-time" class="entity-column-list">
-                    </ul>
-                </div>
-                <div class="entity-column">
-                    <div class="entity-column-header" style="background: #753a7d;">
-                        <h3>Percent</h3>
-                    </div>
-                    <ul id="entity-list-percent" class="entity-column-list">
-                    </ul>
-                </div>
-                <!-- add in the capability to create new entity types - Coming Soon! -->
-            </div>
-            <div id="entity-page-3" class="entity-page switchable">
-                <!-- add in the capability to create new entity types - Coming Soon! -->
+        </div>
+
+        <div id="panel-analysis" class="panel switchable col-md-8 col-lg-8">
+            <div id="viz-timeline" class="content">
+            <svg class="timelinesvg" style="height:200px;"></svg>
             </div>
 
-            <div id="entity-page-btn-group-btm" class="btn-group"
-                 role="group" aria-label="Page Buttons">
-                <button type="button" class="btn btn-default btn-sm entity-page-btn-1 active" onclick="entTool.jumpToPage(1)">1</button>
-                <button type="button" class="btn btn-default btn-sm entity-page-btn-2" onclick="entTool.jumpToPage(2)">2</button>
-                <button type="button" class="btn btn-default btn-sm entity-page-btn-3" onclick="entTool.jumpToPage(3)">3</button>
+            <div id="viz-graph" class="content">
+            <button id="addnewnodebutton">add</button>
+            </div>
+
+        </div>
+
+        <div id="panel-document" class="panel collapsible col-md-4 col-lg-4">
+            <div id="viz-document" class="content">
+                <div id="document-container" onscroll="docTool.scrollDocList()">
+
+                </div>
+                <div id="document-btn-group" class="btn-group" role="group" aria-label="Document Buttons">
+                    <button type="button" class="btn btn-default" onclick="docTool.addAll()">Add All</button>
+                    <button type="button" class="btn btn-default" onclick="docTool.collapseAll()">Collapse All</button>
+                    <button type="button" class="btn btn-default" onclick="docTool.clearAll()">Clear All</button>
+                </div>
             </div>
         </div>
     </div>
-
-    <div id="panel-analysis" class="panel switchable col-md-8 col-lg-8">
-        <div id="viz-timeline" class="content">            
-        <svg class="timelinesvg" style="height:200px;"></svg>
-        </div>
-
-        <div id="viz-graph" class="content">
-        <button id="addnewnodebutton">add</button>
-        </div>
-
-    </div>
-
-    <div id="panel-document" class="panel collapsible col-md-4 col-lg-4">
-        <div id="viz-document" class="content">
-            <div id="document-container" onscroll="docTool.scrollDocList()">
-
-            </div>
-            <div id="document-btn-group" class="btn-group" role="group" aria-label="Document Buttons">
-                <button type="button" class="btn btn-default" onclick="docTool.addAll()">Add All</button>
-                <button type="button" class="btn btn-default" onclick="docTool.collapseAll()">Collapse All</button>
-                <button type="button" class="btn btn-default" onclick="docTool.clearAll()">Clear All</button>
-            </div>
+    <div id="panel-provenance" class="panel switchable col-md-12 col-lg-12">
+        <div id="viz-provenance" class="content">
         </div>
     </div>
 </div>
