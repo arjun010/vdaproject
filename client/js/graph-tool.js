@@ -384,9 +384,8 @@ function addNode(node){
 		}
 		curTime = (new Date()-sessionStartTime)/1000;
 		provenanceMap[node.id] = [{"event":"added_to_graph","time":curTime}];
-	}	
-
-	console.log(provenanceMap)
+	}
+	//console.log(provenanceMap)
 }
 
 function dragStarted(d) {
