@@ -50,6 +50,7 @@ Doc = function (id, aliasList, entList, text) {
     this.entList = entList;
     this.text = text;
     this.title = id;
+    this.color = '#0e3b87';
     this.views = 0;
 };
 
