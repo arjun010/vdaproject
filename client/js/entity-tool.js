@@ -40,6 +40,11 @@
         }
     };
 
+    entTool.find = function(targetItem){
+        // TODO maybe make this handle arrays of entities? would I pass this something else?
+        return $('.entity-list-item-'+targetItem.id);
+    };
+
     entTool.action = function(action){
         console.log(action);
         switch(action.classname){
@@ -49,24 +54,40 @@
             case 'entity-remove':
                 remove(action);
                 break;
-            case 'entity-change-type':{
-
-            }
+            case 'entity-change-type':
+                changeType(action);
                 break;
             case 'entity-show-docs':
                 showDocs(action);
                 break;
-            case 'entity-create-alias':{
-
-            }
+            case 'entity-create-alias':
+                alias(action);
                 break;
+            case 'entity-remove-selected':
+                removeSelected(action);
+                break;
+            default:
+            {
+                console.log('Unknown action called!');
+                console.log(action);
+            }
+
         }
     };
+
+    function removeSelected(action){
+        if(confirm('Remove '+(action.params.addItems.length + 1)+' entities from analysis?')){
+            removeEntity(action.params.targetItem, action.params.target, docTool.find(action.params.targetItem, false), null, null);
+            for(var r = 0; r < action.params.add.length; r++){
+                removeEntity(action.params.addItems[r], action.params.add[r], docTool.find(action.params.addItems[r], false), null, null);
+            }
+        }
+    }
 
     function remove(action){
         // TODO check if there's another entity of the same type? and ask to merge or delete that one too
         if(confirm('Remove entity from analysis?')){
-            removeEntity(action.params.targetItem, action.params.target, docTool.find(action.params, false), null, null);
+            removeEntity(action.params.targetItem, action.params.target, docTool.find(action.params.targetItem, false), null, null);
         }
     }
 
@@ -83,6 +104,111 @@
                 });
             });
         }
+    }
+
+    function alias(action){
+        // Get the dialog box and empty the body of it
+        var dialog = $('#dialog-box');
+        dialog.find('.modal-body').empty();
+
+        // Change the title
+        dialog.find('.modal-title').html(action.name+'?');
+
+        // Create the list of entities to choose as the main entity for the alias
+        var sel = document.createElement('select');
+        var firstOption = document.createElement('option');
+        firstOption.value = action.params.targetItem;
+        firstOption.text = action.params.targetItem.name;
+        firstOption.selected = true;
+        sel.appendChild(firstOption);
+        action.params.addItems.forEach(function(e){
+            var option = document.createElement('option');
+            option.value = e;
+            option.text = e.name;
+            sel.appendChild(option);
+        });
+
+        // Add the select DOM element to the modal body
+        dialog.find('.modal-body').append(sel);
+
+        // Show the dialog
+        dialog.modal();
+
+        // Create a callback
+        var createAliasCallback = function(event){
+            var mainEntity = (sel.selectedIndex == 0) ? action.params.targetItem : action.params.addItems[sel.selectedIndex-1];
+            var mainEntVis = (sel.selectedIndex == 0) ? action.params.target : action.params.add[sel.selectedIndex-1];
+            var sub = action.params.addItems.concat(action.params.targetItem);
+            var i = sub.indexOf(mainEntity)
+            sub.splice(i,1);
+            console.log(sub);
+            var subEntVis = action.params.add.add(action.params.target);
+            subEntVis = subEntVis.not('.entity-list-item-'+mainEntity.id);
+            // If the type changed then we'll change the entity's type
+            createAlias(mainEntity, sub, mainEntVis, subEntVis);
+            // Cleanup
+            dialog.find('#dialog-box-enter').off();
+            $(document).off('keyup');
+            dialog.modal('hide');
+        }
+
+        // Listen for a click or enter keypress
+        dialog.find('#dialog-box-enter').on('click', function(event){
+            createAliasCallback(event);
+        });
+        $(document).on('keyup', function(event){
+            if(event.which == 13){
+                createAliasCallback(event);
+            }
+        });
+    }
+
+    function changeType(action){
+        // Get the dialog box and empty the body of it
+        var dialog = $('#dialog-box');
+        dialog.find('.modal-body').empty();
+
+        // Change the title
+        dialog.find('.modal-title').html(action.name+'?');
+
+        // Create the list of entity types to select
+        var sel = document.createElement('select');
+        for(var t in main.entityTypes){
+            var option = document.createElement('option');
+            option.value = main.entityTypes[t].classname;
+            option.text = main.entityTypes[t].displayname;
+            if(main.entityTypes[t] == action.params.targetItem.type) option.selected = true;
+            sel.appendChild(option);
+        }
+
+        // Add the select DOM element to the modal body
+        dialog.find('.modal-body').append(sel);
+
+        // Show the dialog
+        dialog.modal();
+
+        // Create a callback
+        var changeTypeCallback = function(event){
+            var newType = main.entityTypes[sel.options[sel.selectedIndex].value];
+            if(newType != action.params.targetItem.type){
+                // If the type changed then we'll change the entity's type
+                changeEntityType(action.params.targetItem, newType, action.params.target, docTool.find(action.params.targetItem, false));
+            }
+            // Cleanup
+            dialog.find('#dialog-box-enter').off();
+            $(document).off('keyup');
+            dialog.modal('hide');
+        }
+
+        // Listen for a click or enter keypress
+        dialog.find('#dialog-box-enter').on('click', function(event){
+            changeTypeCallback(event);
+        });
+        $(document).on('keyup', function(event){
+            if(event.which == 13){
+                changeTypeCallback(event);
+            }
+        });
     }
 
     function edit(action){
@@ -118,7 +244,8 @@
                             valid = false;
                             if(confirm('Entity name already exists. Do you want to merge?')){
                                 // Merge entities
-                                mergeEntities(data.entities[e], [action.params.targetItem]);
+                                mergeEntities(data.entities[e], [action.params.targetItem], entTool.find(data.entities[e]),
+                                    [action.params.target], docTool.find(data.entities[e], false), [docTool.find(action.params.target, false)]);
                                 // Cleanup
                                 dialog.find('#dialog-box-enter').off();
                                 $(document).off('keyup');
@@ -140,7 +267,6 @@
                 dialog.find('#dialog-box-enter').off();
                 $(document).off('keyup');
                 dialog.modal('hide');
-                console.log(newName);
             }
         };
 
@@ -155,8 +281,86 @@
         });
     }
 
-    function mergeEntities(prime, others){
+    function createAlias(mainE, subE, mainEntVis, subEntVis, mainGraphVis, subGraphVis, mainProVis, subProVis){
+        console.log(subE);
 
+        var concatDocList = mainE.docList;
+        subE.forEach(function(e){
+            // Add the sub entities to the main entity's list
+            mainE.alias.entList.push(e);
+
+            // Merge all of the documents together so we can point back to this alias from the documents
+            concatDocList = concatDocList.mergeUnique(e.docList);
+
+            // Remove the sub entity's alias from the document's aliasList and data's aliaslist
+            e.docList.forEach(function(d){
+                var i = d.aliasList.indexOf(e.alias);
+                if(i != -1) d.aliasList.splice(i,1);
+            });
+            var i = data.aliases.indexOf(e.alias);
+            if(i != -1) data.aliases.splice(i,1);
+        });
+
+        // Go through the doc list and if the main alias isn't in there then add it in
+        concatDocList.forEach(function(d){
+            var i = d.aliasList.indexOf(mainE.alias);
+            if(i == -1) d.aliasList.push(mainE.alias);
+        });
+
+        if(mainEntVis && subEntVis){
+            // For now just remove the li's of the sub's from the list and add them to a ul of the main?
+            subEntVis.remove();
+            console.log(subEntVis);
+            $(mainEntVis).find('.alias-list').append(subEntVis);
+        }
+    }
+
+    function changeEntityType(e, newType, entVis, docVis, graphVis, timeVis, proVis) {
+        // The class also handles changing the linked Alias
+        var oldType = e.type.classname;
+        e.type = newType;
+
+        // Now take the li and remove it from the current list then add it the new list
+        if(entVis){
+            entVis.remove();
+            entVis = $(entVis);
+            // Just add a new one - not sure if this will mess stuff up?
+            var newTmpl = $('#entTemplate').tmpl(e);
+            entVis.removeClass('entity-type-' + oldType);
+            entVis.addClass('entity-type-' + e.type.classname);
+            $('#entity-list-'+newType.classname).append(entVis);
+            entTool.sort(null, entTool.currSort);
+        }
+
+        if(docVis){
+            // Should be easier don't need to remove or anything
+            $(docVis).removeClass('doc-entity-item-type-' + oldType);
+            $(docVis).addClass('doc-entity-item-type-' + e.type.classname);
+        }
+
+    }
+
+    function mergeEntities(prime, others, primeEntVis, othersEntVis, primeDocVis, othersDocVis, primeGraphVis,
+                           othersGraphVis, primeTimeVis, othersTimeVis, primeProVis, othersProVis){
+        // Take the others and merge into the doclist of the prime
+        // Then remove the others while we're looping through
+        for(var o = 0; o < others.length; o++){
+            prime.docList = prime.docList.mergeUnique(others[o].docList);
+            // Loop through the new doclist and add
+            prime.docList.forEach(function(d){
+                if(d.entList.indexOf(prime) == -1){
+                    d.entList.push(prime);
+                    if(prime.alias.mainEnt == prime) d.aliasList.push(prime.alias);
+                }
+            });
+            // TODO update with othersGraphVis
+            if(othersEntVis && othersDocVis) removeEntity(others[o], othersEntVis[o], othersDocVis[o]);
+
+        }
+
+        //Update the frequency of the prime
+        prime.frequency = prime.docList.length;
+        if(primeEntVis) $(primeEntVis).find('.frequency').html(prime.frequency);
     }
 
     function renameEntity(e, newName, entVis, docVis, graphVis, timeVis, pro){
@@ -174,9 +378,6 @@
                 docTool.drawEntities(d.tmplItem().data, d);
             });
         }
-        console.log(e);
-
-
 
         // TODO do a search to see if it's in other documents
     }
@@ -186,9 +387,7 @@
         if(i != -1) data.entities.splice(i, 1);
 
         e.docList.forEach(function(d){
-            console.log(d.entList);
             i = d.entList.indexOf(e);
-            console.log('on remove at '+i);
             if(i != -1)d.entList.splice(i, 1);
         });
 
@@ -205,7 +404,8 @@
             });
         }
         if(entVis) entVis.remove();
-        if(docVis) {
+        // TODO update the entity selected indicator on removing one
+        if(docVis && docVis.length > 0) {
             docVis.each(function(i, span){
                 span = $(span)[0];
                 var text = document.createTextNode(span.innerHTML);
@@ -284,51 +484,54 @@
         });
     };
 
-    entTool.sort = function(param){
-        var sortFun = null;
-        switch(param){
-            case 'alpha':
-                sortFun = function(a,b){
-                    var nameA = $(a).tmplItem().data.name;
-                    var nameB = $(b).tmplItem().data.name;
+    entTool.sort = function(param, sortFun){
+        if(!sortFun) {
+            switch (param) {
+                case 'alpha-first':
+                    sortFun = function (a, b) {
+                        var nameA = $(a).tmplItem().data.name;
+                        var nameB = $(b).tmplItem().data.name;
 
-                    if (nameA < nameB) return -1;
-                    if (nameA > nameB) return 1;
-                    return 0;
-                };
-                break;
-            case 'alpha-rev':
-                sortFun = function(a,b){
-                    var nameA = $(a).tmplItem().data.name;
-                    var nameB = $(b).tmplItem().data.name;
+                        if (nameA < nameB) return -1;
+                        if (nameA > nameB) return 1;
+                        return 0;
+                    };
+                    break;
+                case 'alpha-last':
+                    sortFun = function (a, b) {
+                        var nameA = $(a).tmplItem().data.name.split(/\s+/);
+                        var nameB = $(b).tmplItem().data.name.split(/\s+/);
 
-                    if (nameA < nameB) return 1;
-                    if (nameA > nameB) return -1;
-                    return 0;
-                };
-                break;
-            case 'freq':
-                sortFun = function(a,b){
-                    var freqA = $(a).tmplItem().data.frequency;
-                    var freqB = $(b).tmplItem().data.frequency;
+                        var stringA = '';
+                        var stringB = '';
 
-                    if (freqA < freqB) return 1;
-                    if (freqA > freqB) return -1;
-                    return 0;
-                };
-                break;
-            case 'freq-rev':
-                sortFun = function(a,b){
-                    var freqA = $(a).tmplItem().data.frequency;
-                    var freqB = $(b).tmplItem().data.frequency;
+                        for (var ia = nameA.length - 1; ia > -1; ia--) {
+                            stringA += nameA[ia];
+                        }
 
-                    if (freqA < freqB) return -1;
-                    if (freqA > freqB) return 1;
-                    return 0;
-                };
-                break;
+                        for (var ib = nameB.length - 1; ib > -1; ib--) {
+                            stringB += nameB[ib];
+                        }
+
+                        if (stringA > stringB) return 1;
+                        if (stringA < stringB) return -1;
+                        return 0;
+                    };
+                    break;
+                case 'freq':
+                    sortFun = function (a, b) {
+                        var freqA = $(a).tmplItem().data.frequency;
+                        var freqB = $(b).tmplItem().data.frequency;
+
+                        if (freqA < freqB) return 1;
+                        if (freqA > freqB) return -1;
+                        return 0;
+                    };
+                    break;
+            }
         }
         Object.keys(main.entityTypes).forEach(function(e){
+            entTool.currSort = sortFun;
             var entities = $('#entity-list-'+ e + ' > .entity-list-item');
             entities.sort(sortFun);
             entities.detach().appendTo('#entity-list-'+ e);

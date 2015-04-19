@@ -96,20 +96,20 @@
         //doc.parent().update();
     };
 
-    docTool.find = function(params, docs){
+    docTool.find = function(targetItem, docs){
         var ret = [];
         // Provide a different type as the targetItem but we want to return all the docs
         if(docs){
-            if (params.targetItem instanceof Entity) {
-                params.targetItem.docList.forEach(function(d){
+            if (targetItem instanceof Entity) {
+                targetItem.docList.forEach(function(d){
                     var docInView = $('.doc-item-'+ d.id);
                     if(docInView.length == 1) ret.push(docInView[0]);
                 });
             }
         } else {
             // Return the type that is represented in the view
-            if(params.targetItem instanceof Entity){
-                ret = $('.doc-entity-item-'+params.targetItem.id);
+            if(targetItem instanceof Entity){
+                ret = $('.doc-entity-item-'+targetItem.id);
             }
         }
         return ret;
@@ -125,18 +125,9 @@
     };
 
     docTool.addAll = function(){
-        var enter = data.documents.filter(function(d){
-            var ret = true;
-            $(".doc-item").each(function(i,t){
-                if($(t).tmplItem().data === d){
-                    ret = false;
-                }
-            });
-            return ret;
+        data.documents.forEach(function(d){
+            docTool.add(d);
         });
-        // TODO is there a better way to do this than a for loop?
-        // Get all the current doc's shown
-        $('#docTemplate').tmpl(enter).appendTo('#document-container');
     };
 
     docTool.clearAll = function(){

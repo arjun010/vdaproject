@@ -54,7 +54,6 @@
         params.add = [];
         params.addItems = [];
         params.multi = false;
-        console.log(additional);
         if(additional && additional.length != 0){
             additional.each(function(i,a){
                params.addItems.push($(a).tmplItem().data);
@@ -91,11 +90,13 @@
     main.createActions = function(params){
         var actions = [];
         if($(params.target).tmplItem().data instanceof  Entity){
+            var selRemoveString = (params.multi)? 'Remove '+(params.addItems.length+1)+' Selected' : 'Remove Selected';
             actions.push(new Action('entity-edit', 'Edit Entity', true, params));
             actions.push(new Action('entity-show-docs', 'Show Documents', true, params));
             actions.push(new Action('entity-remove', 'Remove Entity', true, params));
             actions.push(new Action('entity-change-type', 'Change Type', true, params));
             actions.push(new Action('entity-create-alias', 'Create Alias', (params.multi), params));
+            actions.push(new Action('entity-remove-selected', selRemoveString, (params.multi), params));
         } else if ($(params.target).tmplItem().data instanceof  Doc) {
 
         } else if ($(params.target).tmplItem().data instanceof  Alias) {

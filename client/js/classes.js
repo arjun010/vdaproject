@@ -25,6 +25,7 @@ Entity.prototype.__defineSetter__('type', function(value) {
     if(value){
         this.color = value.color;
     }
+    if(this.alias) this.alias.setTypeFromMainEnt(value);
     // Do some other stuff if we change types?
 });
 
@@ -86,6 +87,15 @@ Alias.prototype.__defineSetter__('type', function(val) {
     }
 });
 
+Alias.prototype.setTypeFromMainEnt = function(type){
+    this._type = type;
+    if(this.entList){
+        for(var e = 0; e < this.entList.length; e++){
+            if(this.entList[e] !== this.mainEnt) this.entList[e].type = type;
+        }
+    }
+}
+
 Action = function(classname, name, enabled, params){
     this.classname = classname;
     this.name = name;
@@ -97,5 +107,17 @@ Array.prototype.peekBack = function () {
     if (this.length > 0) {
         return this[this.length - 1];
     }
+};
+
+Array.prototype.mergeUnique = function(other) {
+    var a = this.concat(other);
+    for(var i=0; i < a.length; ++i) {
+        for(var j=i+1; j<a.length; ++j) {
+            if(a[i] === a[j])
+                a.splice(j--, 1);
+        }
+    }
+
+    return a;
 };
 

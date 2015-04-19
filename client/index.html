@@ -84,17 +84,14 @@
                     </div>
                     <div id="entity-sort-btn-group" class="btn-group"
                          role="group" aria-label="Page Buttons">
-                        <button type="button" class="btn btn-default btn-sm" onclick="entTool.sort('alpha')">
-                            <span class="glyphicon glyphicon-sort-by-alphabet" aria-hidden="true"></span>
+                        <button type="button" class="btn btn-default btn-sm" onclick="entTool.sort('alpha-first')">
+                            <sub>fwd</sub><span class="glyphicon glyphicon-sort-by-alphabet" aria-hidden="true"></span>
                         </button>
-                        <button type="button" class="btn btn-default btn-sm" onclick="entTool.sort('alpha-rev')">
-                            <span class="glyphicon glyphicon-sort-by-alphabet-alt" aria-hidden="true"></span>
+                        <button type="button" class="btn btn-default btn-sm" onclick="entTool.sort('alpha-last')">
+                            <sub>rev</sub><span class="glyphicon glyphicon-sort-by-alphabet" aria-hidden="true"></span>
                         </button>
                         <button type="button" class="btn btn-default btn-sm" onclick="entTool.sort('freq')">
                             <span class="glyphicon glyphicon-sort-by-order" aria-hidden="true"></span>
-                        </button>
-                        <button type="button" class="btn btn-default btn-sm" onclick="entTool.sort('freq-rev')">
-                            <span class="glyphicon glyphicon-sort-by-order-alt" aria-hidden="true"></span>
                         </button>
                     </div>
                 </div>
@@ -257,10 +254,14 @@
 </script>
 
 <script id="entTemplate" type="text/x-jQuery-tmpl">
-    <li class="entity-list-item" oncontextmenu="main.contextmenu(event, this, entTool);">
+    <li class="entity-list-item entity-list-item-${id}" oncontextmenu="main.contextmenu(event, this, entTool);">
         <div>
             <span class="frequency">${frequency}</span>
             <span class="name">${name}</span>
+            <div>
+                <ul class="alias-list">
+                </ul>
+            </div>
         </div>
     </li>
 </script>

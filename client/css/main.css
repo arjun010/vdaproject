@@ -108,6 +108,40 @@
     background-color: #efefef;
 }
 
+.entity-column-list > li > div > div > ul {
+    display: block;
+    list-style: none;
+    width: 100%;
+    margin: 0 0;
+    padding: 0 0;
+}
+
+.entity-column-list > li > div > div > ul > li {
+    display:inline-flex;
+    width: auto;
+}
+
+.entity-column-list > li > div > div > ul > li > div {
+    width: auto;
+    display: inline;
+    margin: 0 0;
+    padding: 0 0;
+    border-bottom: none;
+    font-size: 10px;
+}
+
+.entity-column-list > li > div > div > ul > li > div .frequency {
+    display: none;
+}
+
+.entity-column-list > li > div > div > ul > li:after {
+    content: ", ";
+}
+
+.entity-column-list > li > div > div > ul > li:last-child:after {
+    content: "";
+}
+
 .entity-column-list > li > div > span {
     padding-left: 4px;
 }
