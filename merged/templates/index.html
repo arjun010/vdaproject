@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Stego Text Analyzer</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="{{ url_for ('static', filename='css/bootstrap.min.css')}}">
+    <link rel="stylesheet" href="{{ url_for ('static', filename='css/jquery-ui.min.css')}}">
+    <link rel="stylesheet" href="{{ url_for ('static', filename='css/jquery-ui.structure.min.css')}}">
+    <link rel="stylesheet" href="{{ url_for ('static', filename='css/main.css')}}">
+    <link rel="stylesheet" href="{{ url_for ('static', filename='css/nv.d3.css')}}">
+    <link rel="stylesheet" href="{{ url_for ('static', filename='css/handsontable.full.min.css')}}">
+    <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+    <style>
+    .link {
+      stroke: #ccc;
+    }
+    .discreteBar {
+        fill:#1f77b4;
+    }
+
+    .ui-autocomplete {
+        max-height: 100px;
+        overflow-y: auto;
+        /* prevent horizontal scrollbar */
+        overflow-x: hidden;
+    }
+
+    .background path {
+  fill: none;
+  stroke: #ccc;
+  stroke-opacity: 0.1;
+  shape-rendering: crispEdges;
+}
+
+.foreground path {
+  fill: none;
+  stroke: steelblue;
+}
+
+.brush .extent {
+  fill-opacity: .3;
+  stroke: #fff;
+  shape-rendering: crispEdges;
+}
+
+.axis line,
+.axis path {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.axis text {
+  text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
+}
+
+    </style>
+</head>
+<body>
+
+<div class="container-fluid">
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="#">Stego Text Analyzer</a>
+            </div>
+            <div class="navbar-right" style="padding: 8px 15px;">
+                <ul class="nav nav-pills">
+                    <li id="nav-entity" role="presentation" class="active"><a href="#" onclick="main.showEntityView()">Entity
+                        View</a></li>
+                    <li id="nav-analysis" role="presentation"><a href="#" onclick="main.showAnalysisView()">Analysis
+                        View</a></li>
+                    <li id="nav-provenance" role="presentation"><a href="#" onclick="main.showProvenanceView()">Provenance
+                        View</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div id="panel-entity-analysis-document" class="switchable active col-md-12 col-lg-12">
+        <div id="panel-entity" class="panel switchable active col-md-8 col-lg-8">
+            <div id="viz-entity" class="content">
+                <div style="width:100%; display:inline-block;">
+                    <div id="entity-page-btn-group-top" class="btn-group"
+                         role="group" aria-label="Page Buttons">
+                        <button type="button" class="btn btn-default btn-sm entity-page-btn-1 active" onclick="entTool.jumpToPage(1)">1</button>
+                        <button type="button" class="btn btn-default btn-sm entity-page-btn-2" onclick="entTool.jumpToPage(2)">2</button>
+                        <button type="button" class="btn btn-default btn-sm entity-page-btn-3" onclick="entTool.jumpToPage(3)">3</button>
+                    </div>
+                    <div id="entity-sort-btn-group" class="btn-group"
+                         role="group" aria-label="Page Buttons">
+                        <button type="button" class="btn btn-default btn-sm" onclick="entTool.sort('alpha-first')">
+                            <sub>fwd</sub><span class="glyphicon glyphicon-sort-by-alphabet" aria-hidden="true"></span>
+                        </button>
+                        <button type="button" class="btn btn-default btn-sm" onclick="entTool.sort('alpha-last')">
+                            <sub>rev</sub><span class="glyphicon glyphicon-sort-by-alphabet" aria-hidden="true"></span>
+                        </button>
+                        <button type="button" class="btn btn-default btn-sm" onclick="entTool.sort('freq')">
+                            <span class="glyphicon glyphicon-sort-by-order" aria-hidden="true"></span>
+                        </button>
+                    </div>
+                </div>
+                <div id="entity-page-1" class="entity-page switchable active">
+                    <div class="entity-column">
+                        <div id="entity-column-header-person" class="entity-column-header" style="background: #be3f4f;">
+                            <span class="left">1</span><h3>Person</h3><span class="right" style="color: #be3f4f; visibility: hidden;"></span>
+                        </div>
+                        <ul id="entity-list-person" class="entity-column-list">
+                        </ul>
+                    </div>
+                    <div class="entity-column">
+                        <div id="entity-column-header-location" class="entity-column-header" style="background: #3ab6ba;">
+                            <span class="left">1</span><h3>Location</h3><span class="right" style="color: #3ab6ba; visibility: hidden;"></span>
+                        </div>
+                        <ul id="entity-list-location" class="entity-column-list">
+                        </ul>
+                    </div>
+                    <div class="entity-column">
+                        <div id="entity-column-header-organization" class="entity-column-header" style="background: #56a0d3;">
+                            <span class="left">1</span><h3>Organization</h3><span class="right" style="color: #56a0d3; visibility: hidden;"></span>
+                        </div>
+                        <ul id="entity-list-organization" class="entity-column-list">
+                        </ul>
+                    </div>
+                    <div class="entity-column">
+                        <div id="entity-column-header-date" class="entity-column-header" style="background: #ffdd17;">
+                            <span class="left">1</span><h3>Date</h3><span class="right" style="color: #ffdd17; visibility: hidden;"></span>
+                        </div>
+                        <ul id="entity-list-date" class="entity-column-list">
+                        </ul>
+                    </div>
+                </div>
+                <div id="entity-page-2" class="entity-page switchable">
+                    <div class="entity-column">
+                        <div id="entity-column-header-money" class="entity-column-header" style="background: #006d2c;">
+                            <span class="left">1</span><h3>Money</h3><span class="right" style="color: #006d2c; visibility: hidden;"></span>
+                        </div>
+                        <ul id="entity-list-money" class="entity-column-list">
+                        </ul>
+                    </div>
+                    <div class="entity-column">
+                        <div id="entity-column-header-time" class="entity-column-header" style="background: #e6550d;">
+                            <span class="left">1</span><h3>Time</h3><span class="right" style="color: #e6550d; visibility: hidden;"></span>
+                        </div>
+                        <ul id="entity-list-time" class="entity-column-list">
+                        </ul>
+                    </div>
+                    <div class="entity-column">
+                        <div id="entity-column-header-percent" class="entity-column-header" style="background: #753a7d;" >
+                            <span class="left">1</span><h3>Percent</h3><span class="right" style="color: #753a7d; visibility: hidden;"></span>
+                        </div>
+                        <ul id="entity-list-percent" class="entity-column-list">
+                        </ul>
+                    </div>
+                    <!-- add in the capability to create new entity types - Coming Soon! -->
+                </div>
+                <div id="entity-page-3" class="entity-page switchable">
+                    <!-- add in the capability to create new entity types - Coming Soon! -->
+                </div>
+
+                <div id="entity-page-btn-group-btm" class="btn-group"
+                     role="group" aria-label="Page Buttons">
+                    <button type="button" class="btn btn-default btn-sm entity-page-btn-1 active" onclick="entTool.jumpToPage(1)">1</button>
+                    <button type="button" class="btn btn-default btn-sm entity-page-btn-2" onclick="entTool.jumpToPage(2)">2</button>
+                    <button type="button" class="btn btn-default btn-sm entity-page-btn-3" onclick="entTool.jumpToPage(3)">3</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="panel-analysis" class="panel switchable col-md-8 col-lg-8">
+            <div id="viz-timeline" class="content">
+            </div>
+
+            <div id="viz-graph" class="content">
+                <input id="newNode" placeholder="new node" style="width:174px;" >
+                <button id="addnewnodebutton">add</button>
+                <input onkeyup="searchNodeInGraph();" style="position:absolute;margin-left:750px" id="searchNode" placeholder="search in graph" style="width:174px;" >
+                <!--<input id="search" placeholder="search in network" title="Type to search for company" style="margin-left:5px;width:174px;">-->
+            </div>
+
+        </div>
+
+        <div id="panel-document" class="panel collapsible col-md-4 col-lg-4">
+            <div id="viz-document" class="content">
+                <div id="search-document">
+                    <input type="text" name=term size="21" maxlength="120">
+                    <div id="search-control">
+                        <p>View:</p>
+                        <select id="search_size">
+                            <option>All</option>
+                            <option>1</option>
+                            <option>5</option>
+                            <option>10</option>
+                        </select>
+                    </div>
+                    <button type="button" class="btn btn-default" onclick="docTool.doSearch();">Search</button>
+                </div>
+                <div id="document-container" onscroll="docTool.scrollDocList()">
+
+                </div>
+                <div id="document-btn-group" class="btn-group" role="group" aria-label="Document Buttons">
+                    <button type="button" class="btn btn-default" onclick="docTool.addAll()">Add All</button>
+                    <button type="button" class="btn btn-default" onclick="docTool.collapseAll()">Collapse All</button>
+                    <button type="button" class="btn btn-default" onclick="docTool.removeAll()">Remove All</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="panel-provenance" class="panel switchable col-md-12 col-lg-12">
+        <div id="viz-provenance" class="content" style="float:left">
+            <input id="search" onkeyup="searchProvView();" placeholder="search in prov view">            
+            <button onclick="showACHTable()">Show Table</button>
+        </div>        
+        <div id="dialog">
+            <div id="achtable"></div>
+        </div>
+        <div  id="donutchart" style="position:absolute;margin-top:50px;margin-left:1000px;width:500px;height:500px"><svg></svg></div>
+    </div>
+</div>
+
+<div id="context-menu"></div>
+
+<div class="modal" id="dialog-box">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Modal title</h4>
+            </div>
+            <div class="modal-body">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="dialog-box-enter">Okay</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<!-- Reference to javascripts -->
+
+
+<script src="{{ url_for('static', filename='js/vendor/jquery-1.11.2.min.js')}}"></script>
+<script src="{{ url_for('static', filename='js/vendor/jquery-ui.min.js')}}"></script>
+<script src="{{ url_for('static', filename='js/vendor/jquery.tmpl.min.js')}}"></script>
+<script src="{{ url_for('static', filename='js/vendor/bootstrap.min.js')}}"></script>
+<script src="{{ url_for('static', filename='js/vendor/d3.min.js')}}"></script>
+<script src="{{ url_for('static', filename='js/vendor/nv.d3.min.js')}}"></script>
+<script src="{{ url_for('static', filename='js/vendor/handsontable.full.min.js')}}"></script>
+<script src="{{ url_for('static', filename='js/classes.js')}}"></script>
+<script src="{{ url_for('static', filename='js/entity-tool.js')}}"></script>
+<script src="{{ url_for('static', filename='js/document-tool.js')}}"></script>
+<script src="{{ url_for('static', filename='js/graph-tool.js')}}"></script>
+<script src="{{ url_for('static', filename='js/timeline-tool.js')}}"></script>
+<script src="{{ url_for('static', filename='js/provenance-tool.js')}}"></script>
+<script src="{{ url_for('static', filename='js/main.js')}}"></script>
+
+{% raw %}
+<script>
+    //    var params = {data: "data.csv", width:1400,height:800};
+    //    var query = window.location.search.substring(1);
+    //
+    //    var vars = query.split("&");
+    //    vars.forEach(function(v) {
+    //        var p = v.split("=");
+    //        params[p[0]] = p[1]
+    //    })
+    // <input id="search" onkeyup="searchNode();" placeholder="search in prov view">
+    /*
+        optArray=unique(optArray.sort());
+        $(function(){
+        $("#search").autocomplete({
+                source: optArray
+        });});
+        }
+    */
+    var params = {};
+    var dateBarClicked = 0;
+    var provenanceMap = {};
+    var sessionStartTime = new Date();
+    main.init(params);
+/*
+$(function() {
+    $( "#dialog" ).dialog();
+});
+
+    
+    var data1 = [
+    ['', 'Kia', 'Nissan', 'Toyota', 'Honda'],
+    ['2008', 10, 11, 12, 13],
+    ['2009', 20, 11, 14, 13],
+    ['2010', 30, 15, 12, 13]
+  ];
+    container1 = document.getElementById('achtable');
+  settings1 = {
+    data: data1
+  };
+  var hot1;
+
+hot1 = new Handsontable(container1, settings1);
+
+hot1.render();
+
+function showACHTable(){
+   $( "#dialog" ).dialog();
+}*/
+function unique(list) {
+    var result = [];
+    $.each(list, function(i, e) {
+        if ($.inArray(e, result) == -1) result.push(e);
+    });
+    return result;
+}
+</script>
+
+<script id="entTemplate" type="text/x-jQuery-tmpl">
+    <li class="entity-list-item entity-list-item-${id}" oncontextmenu="main.contextmenu(event, this, entTool);">
+        <div>
+            <span class="frequency">${frequency}</span>
+            <span class="name">${name}</span>
+            <div>
+                <ul class="alias-list">
+                </ul>
+            </div>
+        </div>
+    </li>
+</script>
+<script id="docTemplate" type="text/x-jQuery-tmpl">
+    <div class="doc-item doc-item-${id}">
+        <div class="doc-item-header" onclick="docTool.collapse(this);" oncontextmenu="main.contextmenu(event, this, docTool);">
+            <span class="glyphicon glyphicon-eye-open"></span> <span class="views">${views}</span><span class="title">${title}</h3>
+        </div>
+        <div class="doc-item-text" style="display: none;">
+            <p>${text}</p>
+        </div>
+    </div>
+</script>
+<script id="contextMenuTmpl" type="text/x-jQuery-tmpl">
+    <ul>
+        {{each(i,a) $data.actions}}
+            <li onclick="main.action(this,${i})" class="{{if !a.enabled}}disabled{{/if}}">${a.name}</li>
+        {{/each}}
+    </ul>
+</script>
+<script id="docEntityTemplate" type="text/x-jQuery-tmpl">
+    <span class="doc-entity-item doc-entity-item-${id} doc-entity-item-type-${type.classname}" oncontextmenu="main.contextmenu(event, this, docTool);">
+        ${name}
+    </span>
+</script>
+{% endraw %}
+</body>
+</html>

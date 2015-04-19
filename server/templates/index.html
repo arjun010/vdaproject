@@ -136,6 +136,15 @@
         <div id="viz-document" class="content">
             <div id="search-document">
                 <input type="text" name=term size="21" maxlength="120">
+                <div id="search-control">
+                    <p>View:</p>
+                    <select id="search_size">
+                        <option>All</option>
+                        <option>1</option>
+                        <option>5</option>
+                        <option>10</option>
+                    </select>
+                </div>
                 <button type="button" class="btn btn-default" onclick="docTool.doSearch();">Search</button>
             </div>
             <div id="document-container" onscroll="docTool.scrollDocList()">

@@ -90,6 +90,7 @@
         $(".doc-item").remove();
         $.getJSON('/_do_search', {
             term: $('input[name="term"]').val(),
+            search_count: $("#search_size option:selected").val(),
             }, function(ret) {
                 var ids = ret.ids
                 for(var i = 0; i < ids.length; i++){
