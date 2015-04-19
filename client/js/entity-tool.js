@@ -66,7 +66,7 @@
     function remove(action){
         // TODO check if there's another entity of the same type? and ask to merge or delete that one too
         if(confirm('Remove entity from analysis?')){
-            removeEntity(action.params.targetItem, action.params.target, docTool.find(action.params), null, null);
+            removeEntity(action.params.targetItem, action.params.target, docTool.find(action.params, false), null, null);
         }
     }
 
@@ -129,7 +129,7 @@
                     }
                 }
                 if(valid){
-                    renameEntity(action.params.targetItem, newName);
+                    renameEntity(action.params.targetItem, newName, action.params.target, docTool.find(action.params, true));
                 } else {
                     alert('Not a valid entity input. Don\'t be a smart-ass.');
                 }
@@ -159,8 +159,26 @@
 
     }
 
-    function renameEntity(e, newName){
+    function renameEntity(e, newName, entVis, docVis, graphVis, timeVis, pro){
+        // Rename the entity itself
+        // If it is the main entity for an alias then rename that alias, Entity class handles this
+        e.name = newName;
 
+        // Change the view that's in the entVis
+        if(entVis) $(entVis).find('.name').html(newName);
+
+        // Change the view that's in the docVis
+        if(docVis) {
+            docVis.forEach(function(doc){
+                var d = $(doc);
+                docTool.drawEntities(d.tmplItem().data, d);
+            });
+        }
+        console.log(e);
+
+
+
+        // TODO do a search to see if it's in other documents
     }
 
     function removeEntity(e, entVis, docVis, graphVis, timeVis){

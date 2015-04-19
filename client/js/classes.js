@@ -77,7 +77,7 @@ Alias.prototype.__defineGetter__('type', function() {
     return this.mainEnt.type;
 });
 
-Alias.prototype.__defineSetter__('name', function(val) {
+Alias.prototype.__defineSetter__('type', function(val) {
     this.mainEnt.type = val;
     if(this.entList){
         this.entList.forEach(function(e){

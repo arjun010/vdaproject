@@ -238,10 +238,10 @@
     position: absolute;
     width: 100%;
     z-index: 10;
-    background-color: #999999;
+    background-color: #777777;
     overflow: hidden;
     white-space: nowrap;
-    border-bottom: 1px solid #aaaaaa;
+    border-bottom: 1px solid #999999;
     padding: 4px 4px;
     cursor: pointer;
 }

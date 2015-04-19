@@ -21,54 +21,61 @@
             var contents = tmpl.find('.doc-item-text > p').contents();
             var text = contents[contents.length-1];
 
-            // Sort all of the entities from longest to shortest
-            doc.entList = doc.entList.sort(function(a,b){
-                if(a.name.length > b.name.length) {
-                    return -1;
-                } else if (a.name.length < b.name.length){
-                    return 1;
-                }
-                return 0;
-            });
-
-            doc.entList.forEach(function(e){
-                var numContent = tmpl.find('.doc-item-text > p').contents().length;
-
-                // Get all of the text elements - this means elements that aren't spans
-                var text = tmpl.find('.doc-item-text > p').contents().filter(function(i,c){
-                    return c.nodeType == 3;
-                });
-
-                var words = e.name;
-                if (words.constructor === String) {
-                    words = [words];
-                }
-                words = jQuery.grep(words, function(word, i){
-                    return word != '';
-                });
-                words = jQuery.map(words, function(word, i) {
-                    return word.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-                });
-
-                var pattern = "(" + words.join("|") + ")";
-                pattern = pattern.replace(/\s/g, '\s{0,}');
-                var re = new RegExp(pattern);
-                // loop through all of the text elements and find all of the matches
-                var splitText = [];
-                text.each(function(i,t){
-                    var n = t;
-                    var match = re.exec(t.data);
-                    while (match != null && n != null) {
-                        var span = $('#docEntityTemplate').tmpl(e);
-                        var wordNode = n.splitText(match.index);
-                        n = wordNode.splitText(e.name.length);
-                        var wordClone = wordNode.cloneNode(true);
-                        wordNode.parentNode.replaceChild(span[0], wordNode);
-                        if(n != null) match = re.exec(n.data);
-                    }
-                });
-            });
+            docTool.drawEntities(doc,tmpl);
         }
+    };
+
+    docTool.drawEntities = function(doc, docTmpl){
+        console.log(docTmpl);
+        // Sort all of the entities from longest to shortest
+        doc.entList = doc.entList.sort(function(a,b){
+            if(a.name.length > b.name.length) {
+                return -1;
+            } else if (a.name.length < b.name.length){
+                return 1;
+            }
+            return 0;
+        });
+
+        docTmpl.find('.doc-item-text > p').html(doc.text);
+
+        doc.entList.forEach(function(e){
+            var numContent = docTmpl.find('.doc-item-text > p').contents().length;
+
+            // Get all of the text elements - this means elements that aren't spans
+            var text = docTmpl.find('.doc-item-text > p').contents().filter(function(i,c){
+                return c.nodeType == 3;
+            });
+
+            var words = e.name;
+            if (words.constructor === String) {
+                words = [words];
+            }
+            words = jQuery.grep(words, function(word, i){
+                return word != '';
+            });
+            words = jQuery.map(words, function(word, i) {
+                return word.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+            });
+
+            var pattern = "(" + words.join("|") + ")";
+            pattern = pattern.replace(/\s/g, '\s{0,}');
+            var re = new RegExp(pattern);
+            // loop through all of the text elements and find all of the matches
+            var splitText = [];
+            text.each(function(i,t){
+                var n = t;
+                var match = re.exec(t.data);
+                while (match != null && n != null) {
+                    var span = $('#docEntityTemplate').tmpl(e);
+                    var wordNode = n.splitText(match.index);
+                    n = wordNode.splitText(e.name.length);
+                    var wordClone = wordNode.cloneNode(true);
+                    wordNode.parentNode.replaceChild(span[0], wordNode);
+                    if(n != null) match = re.exec(n.data);
+                }
+            });
+        });
     };
 
     docTool.collapse = function(d){
@@ -89,10 +96,21 @@
         //doc.parent().update();
     };
 
-    docTool.find = function(params){
+    docTool.find = function(params, docs){
         var ret = [];
-        if(params.targetItem instanceof Entity){
-            ret = $('.doc-entity-item-'+params.targetItem.id);
+        // Provide a different type as the targetItem but we want to return all the docs
+        if(docs){
+            if (params.targetItem instanceof Entity) {
+                params.targetItem.docList.forEach(function(d){
+                    var docInView = $('.doc-item-'+ d.id);
+                    if(docInView.length == 1) ret.push(docInView[0]);
+                });
+            }
+        } else {
+            // Return the type that is represented in the view
+            if(params.targetItem instanceof Entity){
+                ret = $('.doc-entity-item-'+params.targetItem.id);
+            }
         }
         return ret;
     };
