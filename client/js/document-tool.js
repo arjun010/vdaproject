@@ -26,7 +26,7 @@
     };
 
     docTool.drawEntities = function(doc, docTmpl){
-        console.log(docTmpl);
+//        console.log(docTmpl);
         // Sort all of the entities from longest to shortest
         doc.entList = doc.entList.sort(function(a,b){
             if(a.name.length > b.name.length) {

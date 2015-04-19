@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="./css/jquery-ui.structure.min.css">
     <link rel="stylesheet" href="./css/main.css">
     <link rel="stylesheet" href="./css/nv.d3.css">
+    <link rel="stylesheet" href="./css/handsontable.full.min.css">    
     <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
     <style>
     .link {
@@ -20,10 +21,17 @@
         fill:#1f77b4;
     }
 
+    .ui-autocomplete {
+        max-height: 100px;
+        overflow-y: auto;
+        /* prevent horizontal scrollbar */
+        overflow-x: hidden;
+    }
+
     .background path {
   fill: none;
-  stroke: black;
-  stroke-opacity: 0.5;
+  stroke: #ccc;
+  stroke-opacity: 0.1;
   shape-rendering: crispEdges;
 }
 
@@ -168,7 +176,10 @@
             </div>
 
             <div id="viz-graph" class="content">
-            <button id="addnewnodebutton">add</button>
+                <input id="newNode" placeholder="new node" style="width:174px;" >
+                <button id="addnewnodebutton">add</button>
+                <input onkeyup="searchNodeInGraph();" style="position:absolute;margin-left:750px" id="searchNode" placeholder="search in graph" style="width:174px;" >
+                <!--<input id="search" placeholder="search in network" title="Type to search for company" style="margin-left:5px;width:174px;">-->
             </div>
 
         </div>
@@ -187,9 +198,14 @@
         </div>
     </div>
     <div id="panel-provenance" class="panel switchable col-md-12 col-lg-12">
-        <div id="viz-provenance" class="content">
-            <input id="search" onkeyup="searchProvView();" placeholder="search in prov view">
+        <div id="viz-provenance" class="content" style="float:left">
+            <input id="search" onkeyup="searchProvView();" placeholder="search in prov view">            
+            <button onclick="showACHTable()">Show Table</button>
+        </div>        
+        <div id="dialog">
+            <div id="achtable"></div>
         </div>
+        <div  id="donutchart" style="position:absolute;margin-top:50px;margin-left:1000px;width:500px;height:500px"><svg></svg></div>
     </div>
 </div>
 
@@ -220,6 +236,7 @@
 <script src="./js/vendor/bootstrap.min.js"></script>
 <script src="./js/vendor/d3.min.js"></script>
 <script src="./js/vendor/nv.d3.min.js"></script>
+<script src="./js/vendor/handsontable.full.min.js"></script>
 <script src="./js/classes.js"></script>
 <script src="./js/entity-tool.js"></script>
 <script src="./js/document-tool.js"></script>
@@ -251,6 +268,38 @@
     var provenanceMap = {};
     var sessionStartTime = new Date();
     main.init(params);
+/*
+$(function() {
+    $( "#dialog" ).dialog();
+});
+
+    
+    var data1 = [
+    ['', 'Kia', 'Nissan', 'Toyota', 'Honda'],
+    ['2008', 10, 11, 12, 13],
+    ['2009', 20, 11, 14, 13],
+    ['2010', 30, 15, 12, 13]
+  ];
+    container1 = document.getElementById('achtable');
+  settings1 = {
+    data: data1
+  };
+  var hot1;
+
+hot1 = new Handsontable(container1, settings1);
+
+hot1.render();
+
+function showACHTable(){
+   $( "#dialog" ).dialog();
+}*/
+function unique(list) {
+    var result = [];
+    $.each(list, function(i, e) {
+        if ($.inArray(e, result) == -1) result.push(e);
+    });
+    return result;
+}
 </script>
 
 <script id="entTemplate" type="text/x-jQuery-tmpl">

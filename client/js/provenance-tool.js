@@ -8,6 +8,8 @@
 
     provTool.draw = function (params) {
 		drawProvenanceView();    	
+//		drawACHTable();
+		//hot1.render();
     };
 
 })();
@@ -169,12 +171,34 @@ function searchProvView(){
 	var selectedVal = document.getElementById('search').value.toLowerCase();
 	if (selectedVal=="") {
 		d3.selectAll(".dataline").style("opacity",1).style("stroke","steelblue");
-	}else{
+		drawDonut([])
+	}else{		
 		d3.selectAll(".dataline").style("opacity",function(d){
 			if(d.name.toLowerCase()==selectedVal){
+				var provObject = provenanceMap[d.name]
+				var tempDonutData = [];
+				var countMap  = {
+					"added_to_graph":0,
+					"added_to_graph_by_expanding":0,
+					"removed_from_graph":0,
+					"removed_from_graph_by_deletion":0,
+					"removed_from_graph_by_collapse":0,
+					"collapsed_in_graph":0,
+					"expanded_in_graph":0,
+					"clicked_with_time_freeze":0
+				};
+				for(var eIndex=0;eIndex<provObject.length;eIndex++){
+					countMap[provObject[eIndex]["event"]] += 1
+				}
+				//console.log(countMap)
+				var events = Object.keys(countMap)
+				for(var i=0;i<events.length;i++){
+					tempDonutData.push({"label":events[i],"value":countMap[events[i]]})
+				}
+				drawDonut(tempDonutData)
 				return 1;
 			}else{
-				return 0.2;
+				return 0;
 			}
 		}).style("stroke",function(d){
 			if(d.name.toLowerCase()==selectedVal){
@@ -184,4 +208,32 @@ function searchProvView(){
 			}
 		});		
 	}
+}
+
+
+function  drawDonut(dataToUse) {
+	//console.log(dataToUse)
+	if(dataToUse.length==0){
+		d3.select("#donutchart").selectAll("svg").style("opacity",0)
+	}else{
+		d3.select("#donutchart").selectAll("svg").style("opacity",1)
+	}
+	nv.addGraph(function() {
+		  var chart = nv.models.pieChart()
+		      .x(function(d) { return d.label })
+		      .y(function(d) { return d.value })
+		      .showLabels(true)     //Display pie labels
+		      .labelThreshold(.05)  //Configure the minimum slice size for labels to show up
+		      .labelType("percent") //Configure what type of data to show in the label. Can be "key", "value" or "percent"
+		      .donut(true)          //Turn on Donut mode. Makes pie chart look tasty!
+		      .donutRatio(0.35)     //Configure how big you want the donut hole size to be.
+		      ;
+
+		    d3.select("#donutchart svg")
+		        .datum(dataToUse)
+		        .transition().duration(350)
+		        .call(chart);
+
+		  return chart;
+	});
 }

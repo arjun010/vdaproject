@@ -33,7 +33,8 @@
     };
 
     // Set up the context menu listener
-    main.contextmenu = function(event, target, tool){
+    main.contextmenu = function(event, target, tool, targetItem){
+        console.log("here")
         if(!event) return;
         // Check to make sure that this was actually a right-click
         var right;
