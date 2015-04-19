@@ -3,3 +3,4 @@ Run these commands if starting for the first time:
 virtualenv venv
 source venv/bin/activate
 pip install -r requirements.txt
+foreman start
