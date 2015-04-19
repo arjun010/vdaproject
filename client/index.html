@@ -22,7 +22,7 @@
 
     .background path {
   fill: none;
-  stroke: steelblue;
+  stroke: black;
   stroke-opacity: 0.5;
   shape-rendering: crispEdges;
 }
@@ -191,6 +191,7 @@
     </div>
     <div id="panel-provenance" class="panel switchable col-md-12 col-lg-12">
         <div id="viz-provenance" class="content">
+            <input id="search" onkeyup="searchProvView();" placeholder="search in prov view">
         </div>
     </div>
 </div>
@@ -239,6 +240,15 @@
     //        var p = v.split("=");
     //        params[p[0]] = p[1]
     //    })
+    // <input id="search" onkeyup="searchNode();" placeholder="search in prov view">
+    /*
+        optArray=unique(optArray.sort());
+        $(function(){
+        $("#search").autocomplete({
+                source: optArray
+        });});
+        }
+    */
     var params = {};
     var dateBarClicked = 0;
     var provenanceMap = {};

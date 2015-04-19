@@ -508,11 +508,21 @@ function mouseClick(d){
         d.isSelected = true;
 		d3.selectAll(".node").select("text")
 		  .style("stroke",function(i){
-		  	return i.isSelected ? "blue" : "";
+		  	return i.isSelected ? "yellow" : "";
 		  })
 		  .style("stroke-width",function(i){
 		  	return i.isSelected ? "4":"0";
 		  });
+
+		if(dateBarClicked==1){
+			if(d instanceof Doc){
+				curTime = (new Date()-sessionStartTime)/1000;
+				provenanceMap[d.id].push({"event":"clicked_with_time_freeze","time":curTime})
+			}else{
+				curTime = (new Date()-sessionStartTime)/1000;
+				provenanceMap[d.name+"_"+d.id].push({"event":"clicked_with_time_freeze","time":curTime})
+			}
+		}
     }else{
 		for(var i=0;i<graphData.nodes.length;i++){
 			graphData.nodes[i].isSelected = false;
@@ -525,6 +535,16 @@ function mouseClick(d){
 		  .style("stroke-width",function(i){
 		  	return i.isSelected ? "1":"0";
 		  });
+
+		if(dateBarClicked==1){
+			if(d instanceof Doc){
+				curTime = (new Date()-sessionStartTime)/1000;
+				provenanceMap[d.id].push({"event":"clicked_with_time_freeze","time":curTime})
+			}else{
+				curTime = (new Date()-sessionStartTime)/1000;
+				provenanceMap[d.name+"_"+d.id].push({"event":"clicked_with_time_freeze","time":curTime})
+			}
+		}
 	}
 }
 

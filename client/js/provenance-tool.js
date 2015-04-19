@@ -19,7 +19,8 @@ scoreMap  = {
 	"removed_from_graph_by_deletion":-0.5,
 	"removed_from_graph_by_collapse":-0.5,
 	"collapsed_in_graph":-2,
-	"expanded_in_graph":2
+	"expanded_in_graph":2,
+	"clicked_with_time_freeze":2
 }
 
 
@@ -113,8 +114,12 @@ var svg = d3.select("#viz-provenance").append("svg")
     .selectAll("path")
       .data(cars)
     .enter().append("path")
+      .attr("class","dataline")
       .attr("d", path);
 
+  foreground.on("mouseover",function(d){
+  	console.log(d)
+  })
   // Add a group element for each dimension.
   var g = svg.selectAll(".dimension")
       .data(dimensions)
@@ -154,4 +159,29 @@ function brush() {
     }) ? null : "none";
   });
 }
+}
+
+
+function searchProvView(){
+	$("#search").autocomplete({
+		source: Object.keys(provenanceMap)
+	});
+	var selectedVal = document.getElementById('search').value.toLowerCase();
+	if (selectedVal=="") {
+		d3.selectAll(".dataline").style("opacity",1).style("stroke","steelblue");
+	}else{
+		d3.selectAll(".dataline").style("opacity",function(d){
+			if(d.name.toLowerCase()==selectedVal){
+				return 1;
+			}else{
+				return 0.2;
+			}
+		}).style("stroke",function(d){
+			if(d.name.toLowerCase()==selectedVal){
+				return "steelblue";
+			}else{
+				return "black";
+			}
+		});		
+	}
 }
