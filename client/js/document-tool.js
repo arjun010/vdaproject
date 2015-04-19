@@ -25,8 +25,12 @@
         }
     };
 
+    docTool.removeDoc = function(doc, docId){
+        var docVis = docTool.find(doc, false);
+        removeDocument(doc, docVis, null, null, null);
+    };
+
     docTool.drawEntities = function(doc, docTmpl){
-//        console.log(docTmpl);
         // Sort all of the entities from longest to shortest
         doc.entList = doc.entList.sort(function(a,b){
             if(a.name.length > b.name.length) {
@@ -105,11 +109,15 @@
                     var docInView = $('.doc-item-'+ d.id);
                     if(docInView.length == 1) ret.push(docInView[0]);
                 });
+            } else if (targetItem instanceof Doc) {
+                ret = $('.doc-item-'+targetItem.id);
             }
         } else {
             // Return the type that is represented in the view
             if(targetItem instanceof Entity){
                 ret = $('.doc-entity-item-'+targetItem.id);
+            } else if (targetItem instanceof Doc) {
+                ret = $('.doc-item-'+targetItem.id);
             }
         }
         return ret;
@@ -130,8 +138,34 @@
         });
     };
 
-    docTool.clearAll = function(){
+    docTool.removeAll = function(){
         $(".doc-item").remove();
+    };
+
+    docTool.action = function(action){
+        console.log(action);
+        // If this is an entity action then just pass it to the entTool
+        if(action.classname.indexOf('entity')===0){
+            entTool.action(action);
+        }
+        switch (action.classname){
+            case 'doc-delete':
+                del(action);
+                break;
+            case 'doc-remove':
+                remove(action);
+                break;
+        }
+    };
+
+    docTool.selected = function(params){
+        // For now we'll return an empty array since we don't have multiselect in the doc view
+        // TODO change when we add in selection for document view
+        return [];
+    };
+
+    docTool.select = function(target, event, force, clear){
+        // TODO change when we add in selection for document view
     };
 
     docTool.scrollDocList = function(){
@@ -153,6 +187,72 @@
             }
         });
     };
+
+    function del(action){
+        if(confirm('Delete document from analysis?')){
+            delDocument(action.params.targetItem, docTool.find(action.params.targetItem, false), null, null);
+        }
+    }
+
+    function remove(action){
+        removeDocument(action.params.targetItem, docTool.find(action.params.targetItem, false), null, null);
+    }
+
+    function delDocument(d, docVis, graphVis, timeVis, proVis){
+        // Delete from the data structure
+        var i = data.documents.indexOf(d);
+        if(i != -1) data.documents.splice(i, 1);
+
+        console.log(d);
+        // Remove references in each entity and alias list
+        d.entList.forEach(function(e){
+            i = e.docList.indexOf(d);
+            if(i != -1) {
+                e.docList.splice(i, 1);
+                e.frequency = e.docList.length;
+                if(e.frequency > 0){
+                    entTool.update(e, 'frequency');
+                } else {
+                    entTool.deleteEntity(e);
+                }
+            }
+        });
+
+        d.aliasList.forEach(function(a){
+            i = a.entList.forEach(function(e){
+                i = e.docList.indexOf(d);
+                if(i != -1) {
+                    e.docList.splice(i, 1);
+                    e.frequency = e.docList.length;
+                    if(e.frequency > 0){
+                        entTool.update(e, 'frequency');
+                    } else {
+                        entTool.deleteEntity(e);
+                    }
+                }
+            });
+        });
+
+
+        //Reuse the remove function to get rid of element from view
+        removeDocument(d, docVis, graphVis, timeVis, proVis);
+    }
+
+    function removeDocument(d, docVis, graphVis, timeVis, proVis) {
+        // If the document is currently in view then delete it
+        if(docVis) {
+            $(docVis).remove();
+        }
+        if(graphVis){
+            // TODO Remove from graph vis
+        }
+        if(timeVis){
+            // TODO remove from time vis?
+        }
+        if(proVis){
+            // TODO remove from time vis?
+        }
+    }
 
     jQuery.extend({
         highlight: function (node, re, nodeName, className) {

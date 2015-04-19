@@ -45,14 +45,24 @@
         return $('.entity-list-item-'+targetItem.id);
     };
 
+    entTool.update = function(entity, prop, element){
+        var e = (element) ? $(element) : $(entTool.find(entity));
+        console.log(e);
+        console.log(entity[prop]);
+        if(e) e.find('.'+prop).html(entity[prop]);
+    };
+
+    entTool.deleteEntity = function(entity) {
+        deleteEntity(entity, entTool.find(entity), docTool.find(entity, false), null, null);
+    };
+
     entTool.action = function(action){
-        console.log(action);
         switch(action.classname){
             case 'entity-edit':
                 edit(action);
                 break;
-            case 'entity-remove':
-                remove(action);
+            case 'entity-delete':
+                del(action);
                 break;
             case 'entity-change-type':
                 changeType(action);
@@ -63,8 +73,8 @@
             case 'entity-create-alias':
                 alias(action);
                 break;
-            case 'entity-remove-selected':
-                removeSelected(action);
+            case 'entity-delete-selected':
+                deleteSelected(action);
                 break;
             default:
             {
@@ -75,19 +85,19 @@
         }
     };
 
-    function removeSelected(action){
-        if(confirm('Remove '+(action.params.addItems.length + 1)+' entities from analysis?')){
-            removeEntity(action.params.targetItem, action.params.target, docTool.find(action.params.targetItem, false), null, null);
+    function deleteSelected(action){
+        if(confirm('Delete '+(action.params.addItems.length + 1)+' entities from analysis?')){
+            deleteEntity(action.params.targetItem, entTool.find(action.params.targetItem), docTool.find(action.params.targetItem, false), null, null);
             for(var r = 0; r < action.params.add.length; r++){
-                removeEntity(action.params.addItems[r], action.params.add[r], docTool.find(action.params.addItems[r], false), null, null);
+                deleteEntity(action.params.addItems[r], action.params.add[r], docTool.find(action.params.addItems[r], false), null, null);
             }
         }
     }
 
-    function remove(action){
+    function del(action){
         // TODO check if there's another entity of the same type? and ask to merge or delete that one too
-        if(confirm('Remove entity from analysis?')){
-            removeEntity(action.params.targetItem, action.params.target, docTool.find(action.params.targetItem, false), null, null);
+        if(confirm('Delete entity from analysis?')){
+            deleteEntity(action.params.targetItem, entTool.find(action.params.targetItem), docTool.find(action.params.targetItem, false), null, null);
         }
     }
 
@@ -192,13 +202,13 @@
             var newType = main.entityTypes[sel.options[sel.selectedIndex].value];
             if(newType != action.params.targetItem.type){
                 // If the type changed then we'll change the entity's type
-                changeEntityType(action.params.targetItem, newType, action.params.target, docTool.find(action.params.targetItem, false));
+                changeEntityType(action.params.targetItem, newType, entTool.find(action.params.targetItem), docTool.find(action.params.targetItem, false));
             }
             // Cleanup
             dialog.find('#dialog-box-enter').off();
             $(document).off('keyup');
             dialog.modal('hide');
-        }
+        };
 
         // Listen for a click or enter keypress
         dialog.find('#dialog-box-enter').on('click', function(event){
@@ -233,6 +243,7 @@
             var valid = true;
             // Change the entities name
             var newName = dialog.find('.modal-body input').val();
+            console.log(newName);
             // See if the new name is actually different then before
             if(newName != action.params.targetItem.name){
                 // Check if it's a valid name to use
@@ -245,7 +256,7 @@
                             if(confirm('Entity name already exists. Do you want to merge?')){
                                 // Merge entities
                                 mergeEntities(data.entities[e], [action.params.targetItem], entTool.find(data.entities[e]),
-                                    [action.params.target], docTool.find(data.entities[e], false), [docTool.find(action.params.target, false)]);
+                                    [entTool.find(action.params.targetItem)], docTool.find(data.entities[e], false), [docTool.find(action.params.target, false)]);
                                 // Cleanup
                                 dialog.find('#dialog-box-enter').off();
                                 $(document).off('keyup');
@@ -256,7 +267,7 @@
                     }
                 }
                 if(valid){
-                    renameEntity(action.params.targetItem, newName, action.params.target, docTool.find(action.params, true));
+                    renameEntity(action.params.targetItem, newName, entTool.find(action.params.targetItem), docTool.find(action.params.targetItem, true));
                 } else {
                     alert('Not a valid entity input. Don\'t be a smart-ass.');
                 }
@@ -282,8 +293,6 @@
     }
 
     function createAlias(mainE, subE, mainEntVis, subEntVis, mainGraphVis, subGraphVis, mainProVis, subProVis){
-        console.log(subE);
-
         var concatDocList = mainE.docList;
         subE.forEach(function(e){
             // Add the sub entities to the main entity's list
@@ -310,8 +319,7 @@
         if(mainEntVis && subEntVis){
             // For now just remove the li's of the sub's from the list and add them to a ul of the main?
             subEntVis.remove();
-            console.log(subEntVis);
-            $(mainEntVis).find('.alias-list').append(subEntVis);
+            $('.entity-list-item-'+mainE.id+' > div > div > .alias-list').append(subEntVis);
         }
     }
 
@@ -323,12 +331,11 @@
         // Now take the li and remove it from the current list then add it the new list
         if(entVis){
             entVis.remove();
-            entVis = $(entVis);
             // Just add a new one - not sure if this will mess stuff up?
             var newTmpl = $('#entTemplate').tmpl(e);
-            entVis.removeClass('entity-type-' + oldType);
-            entVis.addClass('entity-type-' + e.type.classname);
-            $('#entity-list-'+newType.classname).append(entVis);
+            //entVis.removeClass('entity-type-' + oldType);
+            newTmpl.addClass('entity-type-' + e.type.classname);
+            $('#entity-list-'+newType.classname).append(newTmpl);
             entTool.sort(null, entTool.currSort);
         }
 
@@ -354,13 +361,13 @@
                 }
             });
             // TODO update with othersGraphVis
-            if(othersEntVis && othersDocVis) removeEntity(others[o], othersEntVis[o], othersDocVis[o]);
+            if(othersEntVis && othersDocVis) deleteEntity(others[o], othersEntVis[o], othersDocVis[o]);
 
         }
 
         //Update the frequency of the prime
         prime.frequency = prime.docList.length;
-        if(primeEntVis) $(primeEntVis).find('.frequency').html(prime.frequency);
+        if(primeEntVis) entTool.update(prime, 'frequency', primeEntVis);
     }
 
     function renameEntity(e, newName, entVis, docVis, graphVis, timeVis, pro){
@@ -382,7 +389,7 @@
         // TODO do a search to see if it's in other documents
     }
 
-    function removeEntity(e, entVis, docVis, graphVis, timeVis){
+    function deleteEntity(e, entVis, docVis, graphVis, timeVis){
         var i = data.entities.indexOf(e);
         if(i != -1) data.entities.splice(i, 1);
 
@@ -409,7 +416,6 @@
             docVis.each(function(i, span){
                 span = $(span)[0];
                 var text = document.createTextNode(span.innerHTML);
-                console.log(text);
                 if(span.nextSibling) span.parentNode.insertBefore(text, span.nextSibling);
                 else span.parentNode.append(text);
                 span.remove();

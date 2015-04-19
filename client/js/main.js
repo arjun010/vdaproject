@@ -20,6 +20,8 @@
         timeTool.init(params);
         docTool.init(params);
 
+        console.log(timeTool);
+
         // load data for the entire tool
         main.loadData(params);
     };
@@ -34,7 +36,6 @@
 
     // Set up the context menu listener
     main.contextmenu = function(event, target, tool, targetItem){
-        console.log("here")
         if(!event) return;
         // Check to make sure that this was actually a right-click
         var right;
@@ -42,6 +43,7 @@
         else if ("button" in event) right = event.button == 2;
         if(!right) return;
 
+        console.log(target);
         var params = {};
         params['target'] = target;
         params['targetId'] = $(target).attr('id');
@@ -90,15 +92,34 @@
 
     main.createActions = function(params){
         var actions = [];
-        if($(params.target).tmplItem().data instanceof  Entity){
-            var selRemoveString = (params.multi)? 'Remove '+(params.addItems.length+1)+' Selected' : 'Remove Selected';
-            actions.push(new Action('entity-edit', 'Edit Entity', true, params));
-            actions.push(new Action('entity-show-docs', 'Show Documents', true, params));
-            actions.push(new Action('entity-remove', 'Remove Entity', true, params));
-            actions.push(new Action('entity-change-type', 'Change Type', true, params));
-            actions.push(new Action('entity-create-alias', 'Create Alias', (params.multi), params));
-            actions.push(new Action('entity-remove-selected', selRemoveString, (params.multi), params));
-        } else if ($(params.target).tmplItem().data instanceof  Doc) {
+        if(params.targetItem instanceof  Entity){
+            if($(params.target).hasClass('entity-list-item')){
+                var selRemoveString = (params.multi)? 'Delete '+(params.addItems.length+1)+' Selected' : 'Delete Selected';
+                actions.push(new Action('entity-edit', 'Edit Entity', true, params));
+                actions.push(new Action('entity-show-docs', 'Show Documents', true, params));
+                actions.push(new Action('entity-delete', 'Delete Entity', true, params));
+                actions.push(new Action('entity-change-type', 'Change Type', true, params));
+                actions.push(new Action('entity-create-alias', 'Create Alias', (params.multi), params));
+                actions.push(new Action('entity-delete-selected', selRemoveString, (params.multi), params));
+            } else if ($(params.target).hasClass('doc-entity-item')) {
+                actions.push(new Action('entity-edit', 'Edit Entity', true, params));
+                actions.push(new Action('entity-show-docs', 'Show Documents', true, params));
+                actions.push(new Action('entity-delete', 'Delete Entity', true, params));
+                actions.push(new Action('entity-change-type', 'Change Type', true, params));
+                // TODO uncomment if we add multi select for document view
+                //actions.push(new Action('entity-create-alias', 'Create Alias', (params.multi), params));
+                //actions.push(new Action('entity-delete-selected', selRemoveString, (params.multi), params));
+            } else {
+                actions.push(new Action('entity-edit', 'Edit Entity', true, params));
+                actions.push(new Action('entity-show-docs', 'Show Documents', true, params));
+                actions.push(new Action('entity-delete', 'Delete Entity', true, params));
+                actions.push(new Action('entity-change-type', 'Change Type', true, params));
+            }
+        } else if (params.targetItem instanceof  Doc) {
+            if($(params.target).hasClass('doc-item-header')){
+                actions.push(new Action('doc-remove', 'Remove Document', true, params));
+                actions.push(new Action('doc-delete', 'Delete Document', true, params));
+            }
 
         } else if ($(params.target).tmplItem().data instanceof  Alias) {
 
@@ -123,7 +144,7 @@
                     // Do I need to do any processing here? or should I just draw?
                     entTool.draw(params);
                     //graphTool.draw(params);
-                    timeTool.draw(params);
+                    //timeTool.draw(params);
                     docTool.draw(params);
                 });
             });
@@ -162,6 +183,7 @@
         $('#panel-entity-analysis-document').addClass('active');
         $('#panel-analysis').addClass('active');
         graphTool.draw(params);
+        timeTool.draw(params)
     };
 
     main.showProvenanceView = function () {
@@ -184,7 +206,7 @@
         main.entityTypes = {
             person: new EntityType('person', 'Person', '#be3f4f'),
             location: new EntityType('location', 'Location', '#3ab6ba'),
-            organization: new EntityType('organization', 'Organization', '#4660ac'),
+            organization: new EntityType('organization', 'Organization', '#56a0d3'),
             date: new EntityType('date', 'Date', '#ffdd17'),
             money: new EntityType('money', 'Money', '#006d2c'),
             percent: new EntityType('percent', 'Percent', '#753a7d'),

@@ -724,7 +724,7 @@ function drawGraphViz(){
 	  				   	if(d instanceof Alias){
 	  				   		return d.mainEnt.color;
 	  				   	}else{
-	  				   		return "black"
+	  				   		return d.color;
 	  				   	}
 	  				   	//return color(d.type)
 	  				   });	  				   
@@ -828,7 +828,7 @@ function drawGraphViz(){
 							if(d instanceof Alias){
 		  				   		return d.mainEnt.color;
 		  				   	}else{
-		  				   		return "black"
+		  				   		return d.color;
 		  				   	}
 							//return color(d.type)
 						});
@@ -838,7 +838,7 @@ function drawGraphViz(){
 								if(d instanceof Alias){
 			  				   		return d.mainEnt.color;
 			  				   	}else{
-			  				   		return "black"
+			  				   		return d.color;
 			  				   	}
 								//return color(d.type)
 							}else{
@@ -859,7 +859,7 @@ function drawGraphViz(){
 								if(d instanceof Alias){
 			  				   		return d.mainEnt.color;
 			  				   	}else{
-			  				   		return "black"
+			  				   		return d.color;
 			  				   	}
 								//return color(d.type);
 							}
@@ -965,7 +965,7 @@ function drawGraphViz(){
 							if(d instanceof Alias){
 		  				   		return d.mainEnt.color;
 		  				   	}else{
-		  				   		return "black"
+		  				   		return d.color;
 		  				   	}
 							//return color(d.type)
 						});
@@ -975,7 +975,7 @@ function drawGraphViz(){
 								if(d instanceof Alias){
 			  				   		return d.mainEnt.color;
 			  				   	}else{
-			  				   		return "black"
+			  				   		return d.color;
 			  				   	}
 								//return color(d.type)
 							}else{
@@ -996,7 +996,7 @@ function drawGraphViz(){
 								if(d instanceof Alias){
 			  				   		return d.mainEnt.color;
 			  				   	}else{
-			  				   		return "black"
+			  				   		return d.color;
 			  				   	}
 								//return color(d.type);
 							}
@@ -1043,8 +1043,7 @@ function drawGraphViz(){
 	      		console.log(d.target.mainEnt,d.source.aliasList)
 	      		return linkStrokeScale(getOccuranceCount(d.target.mainEnt,d.source.aliasList));
 	      	}else{
-	      		console.log(d.target.mainEnt,d.source.aliasList)
-	      		console.log(d)
+	      		console.log(d.target.mainEnt,d.source.aliasList)	      		
 	      		return linkStrokeScale(getOccuranceCount(d.source.mainEnt,d.target.aliasList))
 	      	}
 	      });
@@ -1089,7 +1088,7 @@ function drawGraphViz(){
 								if(d instanceof Alias){
 			  				   		return d.mainEnt.color;
 			  				   	}else{
-			  				   		return "black"
+			  				   		return d.color;
 			  				   	}
 								//return color(d.type)
 							});
