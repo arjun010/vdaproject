@@ -113,6 +113,14 @@ var zoom = d3.behavior.zoom()
 function addRelatedNodes(node){
 	// add new nodes to graph's node list
 	//var newAdditions = [];
+	if(node instanceof Alias){
+		curTime = (new Date()-sessionStartTime)/1000;
+		provenanceMap[node.name+"_"+node.id].push({"event":"expanded_in_graph","time":curTime})
+	}else{
+		curTime = (new Date()-sessionStartTime)/1000;
+		provenanceMap[node.id].push({"event":"expanded_in_graph","time":curTime})
+	}
+
 	node.expanded = true;
 	var startLengthOfNodeList = graphData.nodes.length;
 	var alreadyExistingNode = 0;
@@ -126,6 +134,13 @@ function addRelatedNodes(node){
 					curDoc.expanded = false;
 					curDoc.isSelected = false;
 					graphData.nodes.push(curDoc); //add new documents to list of graph nodes
+					if(getIndexInList(curDoc.id,Object.keys(provenanceMap))==-1){
+						curTime = (new Date()-sessionStartTime)/1000;
+						provenanceMap[curDoc.id] = [{"event":"added_to_graph_by_expanding","time":curTime}];
+					}else{
+						curTime = (new Date()-sessionStartTime)/1000;
+						provenanceMap[curDoc.id].push({"event":"added_to_graph_by_expanding","time":curTime});
+					}
 					//newAdditions.push(data.documents[i])
 				}else{
 					alreadyExistingNode = 1;
@@ -171,6 +186,13 @@ function addRelatedNodes(node){
 				aliasesInDoc[i].expanded = false;
 				aliasesInDoc[i].isSelected = false;
 				graphData.nodes.push(aliasesInDoc[i]);
+				if(getIndexInList(aliasesInDoc[i].name+"_"+aliasesInDoc[i].id,Object.keys(provenanceMap))==-1){
+					curTime = (new Date()-sessionStartTime)/1000;
+					provenanceMap[aliasesInDoc[i].name+"_"+aliasesInDoc[i].id] = [{"event":"added_to_graph_by_expanding","time":curTime}];
+				}else{
+					curTime = (new Date()-sessionStartTime)/1000;
+					provenanceMap[aliasesInDoc[i].name+"_"+aliasesInDoc[i].id].push({"event":"added_to_graph_by_expanding","time":curTime});
+				}
 			}else{
 				alreadyExistingNodes.push(aliasesInDoc[i]);
 			}	
@@ -205,6 +227,13 @@ function addRelatedNodes(node){
 }
 
 function removeNodeAndLinks(node){
+	if(node instanceof Doc){
+		curTime = (new Date()-sessionStartTime)/1000;
+		provenanceMap[node.id].push({"event":"removed_from_graph","time":curTime})
+	}else{
+		curTime = (new Date()-sessionStartTime)/1000;
+		provenanceMap[node.name+"_"+node.id].push({"event":"removed_from_graph","time":curTime})
+	}
 	node.expanded=false;
 	var nodesToDelete = [];
 	var linksToDelete = [];
@@ -213,9 +242,23 @@ function removeNodeAndLinks(node){
 		if(graphData.links[i].source==node){
 			linksToDelete.push(graphData.links[i]);			
 			nodesToDelete.push(graphData.links[i].target);						
+			if(graphData.links[i].target instanceof Doc){
+				curTime = (new Date()-sessionStartTime)/1000;
+				provenanceMap[graphData.links[i].target.id].push({"event":"removed_from_graph_by_deletion","time":curTime})
+			}else{
+				curTime = (new Date()-sessionStartTime)/1000;
+				provenanceMap[graphData.links[i].target.name+"_"+graphData.links[i].target.id].push({"event":"removed_from_graph_by_deletion","time":curTime})
+			}
 		}else if(graphData.links[i].target==node){			
 			linksToDelete.push(graphData.links[i]);
 			nodesToDelete.push(graphData.links[i].source);			
+			if(graphData.links[i].source instanceof Doc){
+				curTime = (new Date()-sessionStartTime)/1000;
+				provenanceMap[graphData.links[i].source.id].push({"event":"removed_from_graph_by_deletion","time":curTime})
+			}else{
+				curTime = (new Date()-sessionStartTime)/1000;
+				provenanceMap[graphData.links[i].source.name+"_"+graphData.links[i].source.id].push({"event":"removed_from_graph_by_deletion","time":curTime})
+			}
 		}
 	}
 	for(var i=0;i<linksToDelete.length;i++){
@@ -248,6 +291,13 @@ function linkCount(node){
 }
 
 function collapseNode(node){
+	if(node instanceof Doc){
+		curTime = (new Date()-sessionStartTime)/1000;
+		provenanceMap[node.id].push({"event":"collapsed_in_graph","time":curTime})
+	}else{
+		curTime = (new Date()-sessionStartTime)/1000;
+		provenanceMap[node.name+"_"+node.id].push({"event":"collapsed_in_graph","time":curTime})
+	}
 	node.expanded=false;
 	var nodesToDelete = [];
 	var linksToDelete = [];
@@ -255,12 +305,26 @@ function collapseNode(node){
 		if(graphData.links[i].source==node){
 			if(linkCount(graphData.links[i].target)==1){
 				linksToDelete.push(graphData.links[i]);			
-				nodesToDelete.push(graphData.links[i].target);			
+				nodesToDelete.push(graphData.links[i].target);
+				if(graphData.links[i].target instanceof Doc){
+					curTime = (new Date()-sessionStartTime)/1000;
+					provenanceMap[graphData.links[i].target.id].push({"event":"removed_from_graph_by_collapse","time":curTime})
+				}else{
+					curTime = (new Date()-sessionStartTime)/1000;
+					provenanceMap[graphData.links[i].target.name+"_"+graphData.links[i].target.id].push({"event":"removed_from_graph_by_collapse","time":curTime})
+				}
 			}
 		}else if(graphData.links[i].target==node){
 			if(linkCount(graphData.links[i].source)==1){
 				linksToDelete.push(graphData.links[i]);
 				nodesToDelete.push(graphData.links[i].source);			
+				if(graphData.links[i].source instanceof Doc){
+					curTime = (new Date()-sessionStartTime)/1000;
+					provenanceMap[graphData.links[i].source.id].push({"event":"removed_from_graph_by_collapse","time":curTime})
+				}else{
+					curTime = (new Date()-sessionStartTime)/1000;
+					provenanceMap[graphData.links[i].source.name+"_"+graphData.links[i].source.id].push({"event":"removed_from_graph_by_collapse","time":curTime})
+				}
 			}
 		}
 	}
@@ -300,7 +364,12 @@ function addNode(node){
 					}
 				}
 			}
-		}				
+		}
+		//console.log((new Date()-sessionStartTime)/1000);
+		curTime = (new Date()-sessionStartTime)/1000;
+		provenanceMap[node.name+"_"+node.id] = [{"event":"added_to_graph","time":curTime}];
+		//console.log(provenanceMap)
+
 	}else{
 		for(var i=0;i<startLengthOfNodeList;i++){
 			if(graphData.nodes[i] instanceof Alias){// since links can only be formed with aliases
@@ -313,7 +382,11 @@ function addNode(node){
 				}
 			}
 		}
-	}
+		curTime = (new Date()-sessionStartTime)/1000;
+		provenanceMap[node.id] = [{"event":"added_to_graph","time":curTime}];
+	}	
+
+	console.log(provenanceMap)
 }
 
 function dragStarted(d) {
@@ -555,7 +628,7 @@ function drawGraphViz(){
 	  				   	 }
 				      })
 				      .style("font-family","sans-serif")
-				      .text(function(d) { return d.name ? d.name : d.title; });		 
+				      .text(function(d) { return d.name ? d.name : d.id; });		 
 	
 	 function tick() {
       link.attr("x1", function(d) { return d.source.x; })
@@ -673,7 +746,7 @@ function drawGraphViz(){
 	  				   	 }
 				      })
 				      .style("font-family","sans-serif")
-				      .text(function(d) { return d.name ? d.name : d.title; });							
+				      .text(function(d) { return d.name ? d.name : d.id; });							
 
 		force.start();		
 		//console.log("duplication")
@@ -793,7 +866,7 @@ function drawGraphViz(){
 	  				   	 }
 				      })
 				      .style("font-family","sans-serif")
-				      .text(function(d) { return d.name ? d.name : d.title; });							
+				      .text(function(d) { return d.name ? d.name : d.id; });							
 
 		force.start();		
 		//console.log("duplication")
@@ -878,7 +951,7 @@ function drawGraphViz(){
 	  				   	 }
 				      })
 				      .style("font-family","sans-serif")
-				      .text(function(d) { return d.name ? d.name : d.title; });		
+				      .text(function(d) { return d.name ? d.name : d.id; });		
 	
 
 

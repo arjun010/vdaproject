@@ -7,7 +7,11 @@
     };
 
     provTool.draw = function (params) {
-
+    	console.log("here")
     };
 
 })();
+
+function drawProvenanceView(){
+	
+}

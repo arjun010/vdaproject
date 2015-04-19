@@ -171,7 +171,7 @@
         // Add the active class to the entity view & nav
         $('#nav-provenance').addClass('active');
         $('#panel-provenance').addClass('active');
-        //provTool.draw();
+        provTool.draw();
     };
 
     /**
