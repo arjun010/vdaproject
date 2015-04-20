@@ -178,9 +178,13 @@
 
             <div id="viz-graph" class="content">
                 <input id="newNodeInputBox" placeholder="new node" style="width:200px;" >
-                <button id="addnewnodebutton">add</button>
-                <button id="cleargraphbutton">clear graph</button>
-                <input onkeyup="searchNodeInGraph();" style="position:absolute;margin-left:750px" id="searchNode" placeholder="search in graph" style="width:200px;" >
+                <button id="addnewnodebutton" title="add to graph">
+                    <span class="glyphicon glyphicon-plus" style="font-size:16px;margin-left:5px"></span>&nbsp;
+                </button>
+                <button id="cleargraphbutton" title="remove all elements from graph">
+                <span class="glyphicon glyphicon-trash" style="font-sze:14px;"></span>&nbsp;
+                </button>                
+                <span title="search graph" style="position:absolute;margin-left:580px;margin-top:5px;font-size:16px;" class="glyphicon glyphicon-search" style="font-sze:14px;"></span>&nbsp;<input onkeyup="searchNodeInGraph();" style="position:absolute;margin-left:600px" id="searchNode" placeholder="search in graph" style="width:200px;" >
                 <!--<input id="search" placeholder="search in network" title="Type to search for company" style="margin-left:5px;width:174px;">-->
             </div>
 
@@ -219,12 +223,17 @@
     <div id="panel-provenance" class="panel switchable col-md-12 col-lg-12">        
         <div id="viz-provenance" class="content">                        
             <input id="search" onkeyup="searchProvView();" placeholder="search in prov view" style="200px">
-            <button onclick="showACHTable()">Show Table</button>
+            <!--<button onclick="showACHTable()">Show Table</button>-->
         </div>        
         <div id="dialog">
             <div id="achtable"></div>
         </div>
-        <div  id="donutchart" style="position:absolute;margin-top:50px;margin-left:1000px;width:500px;height:500px"><svg></svg></div>
+        <div id="donutchart" style="position:absolute;margin-top:50px;margin-left:1000px;width:500px;height:250px"><svg></svg><div id="focusentity" align="center"></div>
+        </div>        
+        <table id="event_table" style="position:absolute;margin-top:300px;margin-left:1000px;width:300px;height:250px">
+        <tr>            
+        </tr>        
+        </table>
     </div>
 </div>
 

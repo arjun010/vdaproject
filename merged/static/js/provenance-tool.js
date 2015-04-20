@@ -52,7 +52,7 @@ scoreMap  = {
 
 function drawProvenanceView(){
 	d3.select("#viz-provenance").selectAll("svg").remove()
-	curTime = parseInt((new Date()-sessionStartTime)/1000);
+	curTime = parseInt((new Date()-sessionStartTime)/1000)+1;
 	//console.log(curTime)
 	parallels = [0];
 	pcJson = [];
@@ -193,9 +193,11 @@ function brush() {
 
 function searchProvView(){		
 	var selectedVal = document.getElementById('search').value.toLowerCase();
+	$("#focusentity").html("<p style='font-size:15px;'>"+document.getElementById('search').value+"</p>")
 	if (selectedVal=="") {
 		d3.selectAll(".dataline").style("opacity",1).style("stroke","steelblue");
 		drawDonut([])
+		drawTable([])
 	}else{		
 		d3.selectAll(".dataline").style("opacity",function(d){
 			if(d.name.toLowerCase()==selectedVal){
@@ -220,6 +222,7 @@ function searchProvView(){
 					tempDonutData.push({"label":events[i],"value":countMap[events[i]]})
 				}
 				drawDonut(tempDonutData)
+				drawTable(provenanceMap[d.name])
 				return 1;
 			}else{
 				return 0;
@@ -250,8 +253,8 @@ function  drawDonut(dataToUse) {
 		      .labelThreshold(.05)  //Configure the minimum slice size for labels to show up
 		      .labelType("percent") //Configure what type of data to show in the label. Can be "key", "value" or "percent"
 		      .donut(true)          //Turn on Donut mode. Makes pie chart look tasty!
-		      .donutRatio(0.35)     //Configure how big you want the donut hole size to be.
-		      ;
+		      .donutRatio(0.35);     //Configure how big you want the donut hole size to be.
+		      
 
 		    d3.select("#donutchart svg")
 		        .datum(dataToUse)
@@ -265,4 +268,27 @@ function  drawDonut(dataToUse) {
 		        }
 		  return chart;
 	});
+}
+
+function drawTable(dataObject){
+	console.log(dataObject)
+	var rowCount = document.getElementById("event_table").rows.length;
+	var table = document.getElementById("event_table");
+	for(var i=0;i<rowCount;i++){
+		table.deleteRow(0);
+	}
+	if(dataObject!=[]){
+		var headerRow = table.insertRow(document.getElementById("event_table").rows.length);
+		var cell1 = headerRow.insertCell(0)
+		var cell2 = headerRow.insertCell(1)
+		cell1.innerHTML = "Event";
+	    cell2.innerHTML = "Time";
+    }
+	for(var i=0;i<dataObject.length;i++){
+		var row = table.insertRow(document.getElementById("event_table").rows.length);	
+		var cell1 = row.insertCell(0)
+		var cell2 = row.insertCell(1)
+		cell1.innerHTML = dataObject[i]["event"];
+    	cell2.innerHTML = dataObject[i]["time"];
+	}	
 }
