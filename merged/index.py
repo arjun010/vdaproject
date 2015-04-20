@@ -9,10 +9,6 @@ search_url = "https://q52gl5mw7d:k3u1ejwxrm@cs8803vda-search-clu-7980180164.us-e
 app = Flask(__name__)
 
 def search_by_term(term, search_count):
-    if search_count == "All":
-        search_count = 250
-    else:
-        search_count = int(search_count)
     response_buffer = BytesIO()
     c = pycurl.Curl()
     c.setopt(c.URL, search_url + "/documents/_search?size=" + str(search_count) + "&q=" + term)
@@ -47,7 +43,7 @@ def search():
 def do_search():
     term = request.args.get("term", 0, type=str)
     term = urllib.quote(term)
-    search_count = request.args.get("search_count", 250, type=str)
+    search_count = request.args.get("search_count", 250, type=int)
     print term
     print search_count
     hits = search_by_term(term, search_count)
