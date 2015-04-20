@@ -292,7 +292,9 @@ function addRelatedNodes(node){
 }
 
 function removeNodeAndLinks(node){
+	node.alreadyExpanded = false;
 	if(node instanceof Doc){
+		//docTool.removeDoc(node)
 		curTime = (new Date()-sessionStartTime)/1000;
 		provenanceMap[node.id].push({"event":"removed_from_graph","time":curTime})
 	}else{
@@ -302,12 +304,16 @@ function removeNodeAndLinks(node){
 	node.expanded=false;
 	var nodesToDelete = [];
 	var linksToDelete = [];
-	nodesToDelete.push(node)	
+	nodesToDelete.push(node)
 	for(var i=0; i<graphData.links.length;i++){
 		if(graphData.links[i].source==node){
 			linksToDelete.push(graphData.links[i]);			
 			nodesToDelete.push(graphData.links[i].target);						
+			graphData.links[i].target.alreadyExpanded = false;
 			if(graphData.links[i].target instanceof Doc){
+				/*if(linkCount(graphData.links[i].target)==1){					
+					docTool.removeDoc(graphData.links[i].target)
+				}*/
 				curTime = (new Date()-sessionStartTime)/1000;
 				provenanceMap[graphData.links[i].target.id].push({"event":"removed_from_graph_by_deletion","time":curTime})
 			}else{
@@ -317,7 +323,11 @@ function removeNodeAndLinks(node){
 		}else if(graphData.links[i].target==node){			
 			linksToDelete.push(graphData.links[i]);
 			nodesToDelete.push(graphData.links[i].source);			
+			graphData.links[i].source.alreadyExpanded=false;
 			if(graphData.links[i].source instanceof Doc){
+				/*if(linkCount(graphData.links[i].source)){
+					docTool.removeDoc(graphData.links[i].source)
+				}*/
 				curTime = (new Date()-sessionStartTime)/1000;
 				provenanceMap[graphData.links[i].source.id].push({"event":"removed_from_graph_by_deletion","time":curTime})
 			}else{
@@ -338,7 +348,10 @@ function removeNodeAndLinks(node){
 			var x = graphData.nodes.indexOf(nodesToDelete[i]);
 			if(x != -1) {
 				graphData.nodes.splice(x, 1);
-			}		
+			}
+			if(nodesToDelete[i] instanceof Doc){
+				docTool.removeDoc(nodesToDelete[i])
+			}
 		}
 	}	
 }
@@ -371,7 +384,9 @@ function collapseNode(node){
 			if(linkCount(graphData.links[i].target)==1){
 				linksToDelete.push(graphData.links[i]);			
 				nodesToDelete.push(graphData.links[i].target);
+				graphData.links[i].target.alreadyExpanded = false;
 				if(graphData.links[i].target instanceof Doc){
+					docTool.removeDoc(graphData.links[i].target)
 					curTime = (new Date()-sessionStartTime)/1000;
 					provenanceMap[graphData.links[i].target.id].push({"event":"removed_from_graph_by_collapse","time":curTime})
 				}else{
@@ -383,7 +398,9 @@ function collapseNode(node){
 			if(linkCount(graphData.links[i].source)==1){
 				linksToDelete.push(graphData.links[i]);
 				nodesToDelete.push(graphData.links[i].source);			
+				graphData.links[i].source.alreadyExpanded=false;
 				if(graphData.links[i].source instanceof Doc){
+					docTool.removeDoc(graphData.links[i].source);
 					curTime = (new Date()-sessionStartTime)/1000;
 					provenanceMap[graphData.links[i].source.id].push({"event":"removed_from_graph_by_collapse","time":curTime})
 				}else{
@@ -552,7 +569,7 @@ function mouseover(d) {
       		}
       	});
       	}      
-      	/*
+      	
       	d3.selectAll(".node").append("text")
       				  .attr("class","templabel")
 				      .attr("dx", 12)
@@ -572,7 +589,7 @@ function mouseover(d) {
 				      		return i.name ? i.name : i.title; 
 				      	}
 				      });				
-		*/
+		
 }
 
 function mouseout() {
@@ -592,14 +609,41 @@ function mouseClick(d){
 	d.fixed=true;
 	if (d3.event.shiftKey) {
         d.isSelected = true;
-		d3.selectAll(".node").select("text")
+
+        d3.selectAll(".node").each(function(i){
+			if(i==d && i.isSelected==true){
+				d3.select(this)
+					.append("circle")
+					.attr("r",function(d){
+	  				   	 if(d instanceof Alias){
+	  				   	 	return nodeScale(getDocCountForAlias(d))+3;
+	  				   	 }else{
+	  				   	 	return nodeScale(d.aliasList.length)+3;
+	  				  	}
+					})
+					.attr("class","holloweffect")
+					.style("fill","none")
+					.style("stroke",function(i){
+						if(i instanceof Doc){
+							return d3.rgb(i.color).brighter(2);	
+						}else{
+							return d3.rgb(i.mainEnt.color).brighter(2);
+						}
+						
+					})
+					.style("stroke-width","2")
+					.style("z-index","-1");
+			}			
+		});
+
+        /*d3.selectAll(".node").select("text")
 		  .style("stroke",function(i){
 		  	return i.isSelected ? "yellow" : "";
 		  })
 		  .style("stroke-width",function(i){
 		  	return i.isSelected ? "4":"0";
 		  });
-
+		*/
 		if(dateBarClicked==1){
 			if(d instanceof Doc){
 				curTime = (new Date()-sessionStartTime)/1000;
@@ -613,15 +657,43 @@ function mouseClick(d){
 		for(var i=0;i<graphData.nodes.length;i++){
 			graphData.nodes[i].isSelected = false;
 		}
+		d3.selectAll(".node").select(".holloweffect").remove();
 		d.isSelected = true;
-		d3.selectAll(".node").select("text")
-		  .style("stroke",function(i){
-		  	return i.isSelected ? "yellow" : "";
-		  })
-		  .style("stroke-width",function(i){
-		  	return i.isSelected ? "1":"0";
-		  });
+		//d3.select(this).style("outline-color","black").style("outline-width","3px");
 
+		/*
+		d3.selectAll(".node").select("circle")
+		  .style("outline-color",function(i){
+		  	return i.isSelected ? "black" : ""})
+		  .style("outline-width",function(i){
+		  	return i.isSelected ? "3px" : "";
+		  });*/
+		d3.selectAll(".node").each(function(i){
+			if(i==d && i.isSelected==true){
+				d3.select(this)
+					.append("circle")
+					.attr("r",function(d){
+	  				   	 if(d instanceof Alias){
+	  				   	 	return nodeScale(getDocCountForAlias(d))+3;
+	  				   	 }else{
+	  				   	 	return nodeScale(d.aliasList.length)+3;
+	  				  	}
+					})
+					.attr("class","holloweffect")
+					.style("fill","none")
+					.style("stroke",function(i){
+						if(i instanceof Doc){
+							return d3.rgb(i.color).brighter(2);	
+						}else{
+							return d3.rgb(i.mainEnt.color).brighter(2);
+						}
+						
+					})
+					.style("stroke-width","2")
+					.style("z-index","-1");
+			}			
+		});
+		
 		if(dateBarClicked==1){
 			if(d instanceof Doc){
 				curTime = (new Date()-sessionStartTime)/1000;
@@ -728,7 +800,7 @@ function drawGraphViz(){
 	  				   	}
 	  				   	//return color(d.type)
 	  				   });	  				   
-	      
+	  /*
 	  var nodeLabels = node.append("text")
 				      .attr("dx", 12)
 				      .attr("dy", ".35em")
@@ -741,7 +813,7 @@ function drawGraphViz(){
 				      })
 				      .style("font-family","sans-serif")
 				      .text(function(d) { return d.name ? d.name : d.title; });		 
-	
+		*/
 	 function tick() {
       link.attr("x1", function(d) { return d.source.x; })
 	        .attr("y1", function(d) { return d.source.y; })
@@ -789,10 +861,10 @@ function drawGraphViz(){
 
 	  d3.selectAll(".link").style("stroke-width",function(d){
 	      	if(d.source instanceof Doc){
-	      		console.log(d.target.mainEnt,d.source.aliasList)
+	      		//console.log(d.target.mainEnt,d.source.aliasList)
 	      		return linkStrokeScale(getOccuranceCount(d.target.mainEnt,d.source.aliasList));
 	      	}else{
-	      		console.log(d.target.mainEnt,d.source.aliasList)
+	      		//console.log(d.target.mainEnt,d.source.aliasList)
 	      		return linkStrokeScale(getOccuranceCount(d.source.mainEnt,d.target.aliasList))
 	      	}
 	      });
@@ -804,7 +876,7 @@ function drawGraphViz(){
 	  	link = link.data(graphData.links);
 		var exitingLinks = link.exit();
 		exitingLinks.remove();
-		var newLinks = link.enter();		
+		var newLinks = link.enter();
 
 		newLinks.insert("line", ".node").attr("class", "link");
 		
@@ -864,6 +936,7 @@ function drawGraphViz(){
 								//return color(d.type);
 							}
 						});
+		/*
 		var nodeLabels = newNodes.append("text")
 				      .attr("dx", 12)
 				      .attr("dy", ".35em")
@@ -876,7 +949,7 @@ function drawGraphViz(){
 				      })
 				      .style("font-family","sans-serif")
 				      .text(function(d) { return d.name ? d.name : d.title; });							
-
+		*/
 		force.start();		
 		//console.log("duplication")
 
@@ -903,10 +976,10 @@ function drawGraphViz(){
 
 	  	d3.selectAll(".link").style("stroke-width",function(d){
 	      	if(d.source instanceof Doc){
-	      		console.log(d.target.mainEnt,d.source.aliasList)
+	      		//console.log(d.target.mainEnt,d.source.aliasList)
 	      		return linkStrokeScale(getOccuranceCount(d.target.mainEnt,d.source.aliasList));
 	      	}else{
-	      		console.log(d.target.mainEnt,d.source.aliasList)
+	      		//console.log(d.target.mainEnt,d.source.aliasList)
 	      		return linkStrokeScale(getOccuranceCount(d.source.mainEnt,d.target.aliasList))
 	      	}
 	      });
@@ -927,7 +1000,7 @@ function drawGraphViz(){
 	  }
 
 
-	  function doubleClickEvent(d){
+	  function doubleClickEvent(d){	  	
 	  	linkedByIndex = {};
 	  	//console.log(graphData.links.length)
 	  	if(d.expanded==false){
@@ -1000,20 +1073,8 @@ function drawGraphViz(){
 			  				   	}
 								//return color(d.type);
 							}
-						});
-		var nodeLabels = newNodes.append("text")
-				      .attr("dx", 12)
-				      .attr("dy", ".35em")
-				      .style("font-size",function(d){
-				      	if(d instanceof Alias){
-	  				   	 	return nodeTextScale(getDocCountForAlias(d));
-	  				   	 }else{
-	  				   	 	return nodeTextScale(d.aliasList.length);
-	  				   	 }
-				      })
-				      .style("font-family","sans-serif")
-				      .text(function(d) { return d.name ? d.name : d.title; });							
-
+						});						
+				
 		force.start();		
 		//console.log("duplication")
 
@@ -1040,10 +1101,10 @@ function drawGraphViz(){
 
 	  	d3.selectAll(".link").style("stroke-width",function(d){
 	      	if(d.source instanceof Doc){
-	      		console.log(d.target.mainEnt,d.source.aliasList)
+	      		//console.log(d.target.mainEnt,d.source.aliasList)
 	      		return linkStrokeScale(getOccuranceCount(d.target.mainEnt,d.source.aliasList));
 	      	}else{
-	      		console.log(d.target.mainEnt,d.source.aliasList)	      		
+	      		//console.log(d.target.mainEnt,d.source.aliasList)	      		
 	      		return linkStrokeScale(getOccuranceCount(d.source.mainEnt,d.target.aliasList))
 	      	}
 	      });
@@ -1062,6 +1123,25 @@ function drawGraphViz(){
           linkedByIndex[i.target.index + "," + i.source.index] = 1;
       	});
 
+		d3.selectAll(".node").each(function(i){
+			if(i.expanded==true){
+//				console.log(i)
+				if(i.alreadyExpanded!=true){
+					d3.select(this).append("text").attr("dx", 12)
+					      .attr("dy", ".35em")
+					      .style("font-size",function(){
+					      	if(i instanceof Alias){
+		  				   	 	return nodeTextScale(getDocCountForAlias(i));
+		  				   	 }else{
+		  				   	 	return nodeTextScale(i.aliasList.length);
+		  				   	 }
+					      })
+					      .style("font-family","sans-serif")
+					      .text(function() { return i.name ? i.name : i.title; });		
+				}
+			}
+		})
+		d.alreadyExpanded=true;
 	  }
 
 	  $("#addnewnodebutton").on("click",function(){	  	
@@ -1093,7 +1173,7 @@ function drawGraphViz(){
 								//return color(d.type)
 							});
 		
-		nodeLabels = newNodes.append("text")
+		/*nodeLabels = newNodes.append("text")
 				      .attr("dx", 12)
 				      .attr("dy", ".35em")
 				      .style("font-size",function(d){
@@ -1105,17 +1185,17 @@ function drawGraphViz(){
 				      })
 				      .style("font-family","sans-serif")
 				      .text(function(d) { return d.name ? d.name : d.title; });		
-	
+	*/
 
 
 		force.start();
 		d3.selectAll(".link").style("stroke-width",function(d){
 			//console.log(d.source.aliasList)
 	      	if(d.source instanceof Doc){
-	      		console.log(d.target.mainEnt,d.source.aliasList)
+	      	//console.log(d.target.mainEnt,d.source.aliasList)
 	      		return linkStrokeScale(getOccuranceCount(d.target.mainEnt,d.source.aliasList));
 	      	}else{
-	      		console.log(d.target.mainEnt,d.source.aliasList)
+	      	//	console.log(d.target.mainEnt,d.source.aliasList)
 	      		return linkStrokeScale(getOccuranceCount(d.source.mainEnt,d.target.aliasList))
 	      	}
 	      });
@@ -1139,7 +1219,7 @@ function drawGraphViz(){
 	  	
 	  	nodeCircles.on("click",function(d){
 	  		mouseClick(d);
-	  	});
+	  	});	  	
 
 		graphData.links.forEach(function(i) {
           linkedByIndex[i.source.index + "," + i.target.index] = 1;

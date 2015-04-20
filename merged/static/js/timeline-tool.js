@@ -239,11 +239,9 @@ chart.discretebar.dispatch.on("elementClick", function (e) {
             .attr("class", "month")
             .attr("d", monthPath);
 
-        console.log(rect);
 
         rect.filter(function(d) { return d in timedata; })
             .attr("class", function(d) {
-                console.log(timedata[d].length);
                 return "day " + color(timedata[d].length); })
             .select("title")
             .text(function(d) { return d + ": " + percent(timedata[d]); });
