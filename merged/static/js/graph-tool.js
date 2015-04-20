@@ -135,6 +135,16 @@ var delOption =    {
         }
     };
 graphToolContextMenu.push(delOption)
+graphToolContextMenu.push({
+	title:"Add to Doc View",
+	action:function(elm, d, i) {
+		if(d instanceof Doc){
+			docTool.add(d)
+		}else{
+			alert("Can't add an entity to doc view")
+		}
+	}
+});
 $("#cleargraphbutton").on("click",function(){
 	//console.log(graphData.nodes.length)
 	while(graphData.nodes.length!=0){
@@ -791,7 +801,7 @@ function searchNodeInGraph(){
 							}
 						}else{
 							if((d.name.toLowerCase()==selectedVal)){
-								return nodeTextScale(getDocCountForAlias(d.name));
+								return nodeTextScale(getDocCountForAlias(d));
 							}
 						}	      		
 				      })
@@ -1308,6 +1318,20 @@ function neighboring(a, b) {
 function mouseover(d) {
 	  //console.log(linkCount(d))
 	  if(dateBarClicked==0){
+	  	if(d instanceof Doc){
+	  		timeTool.brush([d])
+	  	}else{
+	  		var docListToBrush = [];
+	  		for(var i=0;i<data.documents.length;i++){
+	  			var curAliasList = data.documents[i].aliasList;
+	  			if(getIndexInList(d,curAliasList)!=-1){
+	  				docListToBrush.push(data.documents[i])
+	  			}
+	  		}
+//	  		console.log(docListToBrush)
+	  		timeTool.brush(docListToBrush)	  		
+	  	}
+	  	
 
       d3.selectAll(".link").transition().duration(500)
         .style("opacity", function(o) {
@@ -1335,8 +1359,6 @@ function mouseover(d) {
       			return d.name ? "("+getDocCountForAlias(d)+")" : "("+d.aliasList.length+")";
       		}
       	});
-      	}      
-      	
       	d3.selectAll(".node").append("text")
       				  .attr("class","templabel")
 				      .attr("dx", 12)
@@ -1355,7 +1377,11 @@ function mouseover(d) {
 				      	if(neighboring(d,i)){
 				      		return i.name ? i.name : i.title; 
 				      	}
-				      });				
+				      });		
+
+      	}      
+      	
+      			
 		
 }
 
@@ -1367,6 +1393,7 @@ function mouseout() {
         .style("opacity", 1);
   d3.selectAll(".templabel").remove();  
   d3.selectAll(".countlabel").remove();
+  d3.selectAll('.day.val').style('opacity', 1);
   }
 }
 

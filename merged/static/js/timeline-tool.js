@@ -331,10 +331,36 @@ chart.discretebar.dispatch.on("elementClick", function (e) {
                     }
                 }
                 return d3.select(this).style('opacity');
-            });
+            }).append("text")
+            .attr("class","templabel")
+                      .attr("dx", 12)
+                      .attr("dy", ".35em")
+                      .style("font-size",function(d){
+                        if(d instanceof Doc){                            
+                            if (getIndexInList(d, documents) != -1) {
+                                return nodeTextScale(d.aliasList);
+                            }
+                        }else{
+                            if (getIndexInList(d, aliases) != -1) {
+                                return nodeTextScale(getDocCountForAlias(d))
+                            }                            
+                        }
+                      })
+                      .style("font-family","sans-serif")
+                      .text(function(d) { 
+                        if(d instanceof Doc){
+                        if (getIndexInList(d, documents) != -1) {
+                            return d.title;
+                        }
+                        }else{
+                            if (getIndexInList(d, aliases) != -1) {
+                                return d.name;
+                            }
+                        }
+                      });
 
             d3.selectAll(".link").style('opacity', function (d) {
-                if ((getIndexInList(d.source, aliases) != -1 || getIndexInList(d.source, documentsToShow) != -1) && (getIndexInList(d.target, entitiesToShow) != -1 || getIndexInList(d.target, documentsToShow) != -1)) {
+                if ((getIndexInList(d.source, aliases) != -1 || getIndexInList(d.source, documents) != -1) && (getIndexInList(d.target, aliases) != -1 || getIndexInList(d.target, documents) != -1)) {
                     return val;
                 } else {
                     return d3.select(this).style('opacity');
@@ -346,7 +372,7 @@ chart.discretebar.dispatch.on("elementClick", function (e) {
     function hideBrushDate(d, force){
         if(dateBarClicked == 0 || force === true){
             d3.selectAll('.day').style('opacity',1);
-
+            d3.selectAll('.templabel').remove();
             d3.selectAll(".node").style("opacity",1);
             d3.selectAll(".link").style("opacity",1);
         }
@@ -398,9 +424,9 @@ chart.discretebar.dispatch.on("elementClick", function (e) {
         }
     }
 
-    function unfreezeBrushDate(d){
-        console.log('unfreeze');
-        hideBrushDate(d,true);
-        dateBarClicked = 0;
-    }
+    //function unfreezeBrushDate(d){
+    //    console.log('unfreeze');
+    //    hideBrushDate(d,true);
+    //    dateBarClicked = 0;
+    //}
 })();
