@@ -729,7 +729,7 @@ function drawGraphViz(){
 	  				   	//return color(d.type)
 	  				   });	  				   
 	      
-	  var nodeLabels = node.append("text")
+	  /*var nodeLabels = node.append("text")
 				      .attr("dx", 12)
 				      .attr("dy", ".35em")
 				      .style("font-size",function(d){
@@ -740,7 +740,7 @@ function drawGraphViz(){
 	  				   	 }
 				      })
 				      .style("font-family","sans-serif")
-				      .text(function(d) { return d.name ? d.name : d.title; });		 
+				      .text(function(d) { return d.name ? d.name : d.title; });		 */
 	
 	 function tick() {
       link.attr("x1", function(d) { return d.source.x; })
@@ -864,7 +864,7 @@ function drawGraphViz(){
 								//return color(d.type);
 							}
 						});
-		var nodeLabels = newNodes.append("text")
+		/*var nodeLabels = newNodes.append("text")
 				      .attr("dx", 12)
 				      .attr("dy", ".35em")
 				      .style("font-size",function(d){
@@ -875,7 +875,8 @@ function drawGraphViz(){
 	  				   	 }
 				      })
 				      .style("font-family","sans-serif")
-				      .text(function(d) { return d.name ? d.name : d.title; });							
+				      .text(function(d) { return d.name ? d.name : d.title; });
+				      */
 
 		force.start();		
 		//console.log("duplication")
@@ -1001,7 +1002,7 @@ function drawGraphViz(){
 								//return color(d.type);
 							}
 						});
-		var nodeLabels = newNodes.append("text")
+		/*var nodeLabels = newNodes.append("text")
 				      .attr("dx", 12)
 				      .attr("dy", ".35em")
 				      .style("font-size",function(d){
@@ -1013,7 +1014,7 @@ function drawGraphViz(){
 				      })
 				      .style("font-family","sans-serif")
 				      .text(function(d) { return d.name ? d.name : d.title; });							
-
+		*/
 		force.start();		
 		//console.log("duplication")
 
@@ -1093,6 +1094,7 @@ function drawGraphViz(){
 								//return color(d.type)
 							});
 		
+		/*
 		nodeLabels = newNodes.append("text")
 				      .attr("dx", 12)
 				      .attr("dy", ".35em")
@@ -1105,7 +1107,7 @@ function drawGraphViz(){
 				      })
 				      .style("font-family","sans-serif")
 				      .text(function(d) { return d.name ? d.name : d.title; });		
-	
+		*/
 
 
 		force.start();
