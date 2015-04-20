@@ -106,6 +106,7 @@
                 actions.push(new Action('entity-show-docs', 'Show Documents', true, params));
                 actions.push(new Action('entity-delete', 'Delete Entity', true, params));
                 actions.push(new Action('entity-change-type', 'Change Type', true, params));
+                actions.push(new Action('entity-add-to-graph', 'Add to Graph', true, params));
                 // TODO uncomment if we add multi select for document view
                 //actions.push(new Action('entity-create-alias', 'Create Alias', (params.multi), params));
                 //actions.push(new Action('entity-delete-selected', selRemoveString, (params.multi), params));
@@ -119,6 +120,7 @@
             if($(params.target).hasClass('doc-item-header')){
                 actions.push(new Action('doc-remove', 'Remove Document', true, params));
                 actions.push(new Action('doc-delete', 'Delete Document', true, params));
+                actions.push(new Action('doc-add-to-graph', 'Add to Graph', true, params));
             }
 
         } else if ($(params.target).tmplItem().data instanceof  Alias) {

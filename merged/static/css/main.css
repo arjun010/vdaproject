@@ -278,17 +278,17 @@
 }
 
 #document-btn-group {
-    width: 250px;
+    width: 320px;
     position: absolute;
     left: 50%;
-    margin-left: -100px;
+    margin-left: -120px;
     bottom: 2px;
     display: block;
 }
 
 #document-container{
     position: relative;
-    padding: 20px;
+    padding: 4px;
     overflow: scroll;
     height: 80%;
     width: 100%;
