@@ -6,163 +6,6 @@ function getIndexInList(obj,list){
 	}
 	return -1;
 }
-function drawGraph(time){
-	var dataToUse;
-	if(time==1){
-		dataToUse = [];
-	}else{
-    /*var format = d3.time.format("%Y-%m-%d");
-    //console.log(timelineData[0]["values"])
-    for(var i=0;i<timelineData[0]["values"].length;i++){
-      var curDate = timelineData[0]["values"][i]["date"].split("-")
-      timelineData[0]["values"][i]["date"] = format(new Date(curDate[0], curDate[1], curDate[2]));
-    }*/
-    dataToUse = timelineData;
-	}
-  var format = d3.time.format("%Y-%m-%d");
-  nv.addGraph(function() {
-		var chart = nv.models.discreteBarChart()
-	      .x(function(d) { return d.date})    //Specify the data accessors.
-	      .y(function(d) { return d.count })
-	      .staggerLabels(false)    //Too many bars and not enough room? Try staggering labels.
-	      .tooltips(true)        //Don't show tooltips
-	      .showValues(false) 
-	      .showXAxis(false)     //...instead, show the bar value right on top of each bar.
-	      .tooltipContent(function (key, date, e, graph) {
-	      	if(dateBarClicked==0){
-          var documentsIdsToShow = graph.point.documentList;
-	      	var documentsToShow = [];
-	      	for(var i=0;i<data.documents.length;i++){
-	      		if(getIndexInList(data.documents[i].id,documentsIdsToShow)!=-1){
-	      			documentsToShow.push(data.documents[i]);
-	      		}
-	      	}
-
-	      	var entitiesToShow = [];
-	      	for(var i =0; i<data.documents.length;i++){
-	      		if(getIndexInList(data.documents[i].id,documentsIdsToShow)!=-1){
-	      			for(var j=0;j<data.documents[i].aliasList.length;j++){
-	      				entitiesToShow.push(data.documents[i].aliasList[j])
-	      			}
-	      		}
-	      	}
-	      	
-	      	d3.selectAll(".node").style("opacity",function(d){
-	      		if(d instanceof Doc){
-	      			if(getIndexInList(d,documentsToShow)!=-1){
-	      				return 1;
-	      			}
-	      		}else if(d instanceof Alias){
-	      			if(getIndexInList(d,entitiesToShow)!=-1){
-	      				return 1;
-	      			}
-	      		}
-	      		return 0.2;
-	      	});
-
-	      	d3.selectAll(".link").style("opacity",function(d){
-	      		if((getIndexInList(d.source,entitiesToShow)!=-1 || getIndexInList(d.source,documentsToShow)!=-1) && (getIndexInList(d.target,entitiesToShow)!=-1 || getIndexInList(d.target,documentsToShow)!=-1)) {
-	      			return 1;
-	      		}else{
-	      			return 0.2;
-	      		}
-	      	});
-          }
-
-        return  "<p>" + graph.point.date + "<br>"+ graph.point.count + "<br>" + graph.point.documentList + "</p>";
-		   });
-
-chart.xAxis.rotateLabels(-90);
-/*
-.ticks(d3.time.months)
-    .tickSize(16, 0)
-    .tickFormat(d3.time.format("%B"));*/
-
-chart.discretebar.dispatch.on("elementMouseout", function (e) {
-  if(dateBarClicked==0){
-	 d3.selectAll(".node").style("opacity",1);
-	 d3.selectAll(".link").style("opacity",1);
-  }
-});
-
-
-
-chart.discretebar.dispatch.on("elementClick", function (e) {
-  //console.log(e)  
-  if(dateBarClicked==1){
-    dateBarClicked = 0;
-    d3.selectAll(".discreteBar").style("opacity",1)
-    d3.selectAll(".node").style("opacity",1);
-  d3.selectAll(".link").style("opacity",1);
-  }else{
-    dateBarClicked = 1;
-    var clickedBarDate = e.point.date;
-    d3.selectAll(".discreteBar").style("opacity",function(d){
-      //console.log(d)
-      if(d.date == clickedBarDate){
-        return 1;
-      }
-      return 0.2;
-      //console.log(d)
-    })
-    var documentsIdsToShow = e.point.documentList;
-          var documentsToShow = [];
-          for(var i=0;i<data.documents.length;i++){
-            if(getIndexInList(data.documents[i].id,documentsIdsToShow)!=-1){
-              documentsToShow.push(data.documents[i]);
-            }
-          }
-
-          var entitiesToShow = [];
-          for(var i =0; i<data.documents.length;i++){
-            if(getIndexInList(data.documents[i].id,documentsIdsToShow)!=-1){
-              for(var j=0;j<data.documents[i].aliasList.length;j++){
-                entitiesToShow.push(data.documents[i].aliasList[j])
-              }
-            }
-          }
-          
-          d3.selectAll(".node").style("opacity",function(d){
-            if(d instanceof Doc){
-              if(getIndexInList(d,documentsToShow)!=-1){
-                return 1;
-              }
-            }else if(d instanceof Alias){
-              if(getIndexInList(d,entitiesToShow)!=-1){
-                return 1;
-              }
-            }
-            return 0.1;
-          });
-
-          d3.selectAll(".link").style("opacity",function(d){
-            if((getIndexInList(d.source,entitiesToShow)!=-1 || getIndexInList(d.source,documentsToShow)!=-1) && (getIndexInList(d.target,entitiesToShow)!=-1 || getIndexInList(d.target,documentsToShow)!=-1)) {
-              return 1;
-            }else{
-              return 0.1;
-            }
-          });
-  }
-});
- // chart.xAxis.ticks(d3.time.months, 12)
-
-
-		  d3.select('#viz-timeline svg')
-		      .datum(dataToUse)
-	 	      .call(chart);
-/*
-          d3.select("#viz-timeline svg")
-            .append("text")
-            .attr("x",50)
-            .attr("y",170)
-            .text(function(){return "January"})
-*/
-		  nv.utils.windowResize(chart.update);
-
-		  return chart;
-		});
-	//chart.discretebar.dispatch.on("elementClick", function (e) {
-}
 
 (function () {
 
@@ -333,7 +176,7 @@ chart.discretebar.dispatch.on("elementClick", function (e) {
             });
 
             d3.selectAll(".link").style('opacity', function (d) {
-                if ((getIndexInList(d.source, aliases) != -1 || getIndexInList(d.source, documentsToShow) != -1) && (getIndexInList(d.target, entitiesToShow) != -1 || getIndexInList(d.target, documentsToShow) != -1)) {
+                if ((getIndexInList(d.source, aliases) != -1 || getIndexInList(d.source, documents) != -1) && (getIndexInList(d.target, aliases) != -1 || getIndexInList(d.target, documents) != -1)) {
                     return val;
                 } else {
                     return d3.select(this).style('opacity');
@@ -397,9 +240,9 @@ chart.discretebar.dispatch.on("elementClick", function (e) {
         }
     }
 
-    function unfreezeBrushDate(d){
-        console.log('unfreeze');
-        hideBrushDate(d,true);
-        dateBarClicked = 0;
-    }
+    //function unfreezeBrushDate(d){
+    //    console.log('unfreeze');
+    //    hideBrushDate(d,true);
+    //    dateBarClicked = 0;
+    //}
 })();

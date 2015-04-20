@@ -177,15 +177,25 @@
             </div>
 
             <div id="viz-graph" class="content">
-                <input id="newNodeInputBox" placeholder="new node" style="width:200px;" >
-                <button id="addnewnodebutton" title="add to graph">
-                    <span class="glyphicon glyphicon-plus" style="font-size:16px;margin-left:5px"></span>&nbsp;
-                </button>
-                <button id="cleargraphbutton" title="remove all elements from graph">
-                <span class="glyphicon glyphicon-trash" style="font-sze:14px;"></span>&nbsp;
-                </button>                
-                <span title="search graph" style="position:absolute;margin-left:580px;margin-top:5px;font-size:16px;" class="glyphicon glyphicon-search" style="font-sze:14px;"></span>&nbsp;<input onkeyup="searchNodeInGraph();" style="position:absolute;margin-left:600px" id="searchNode" placeholder="search in graph" style="width:200px;" >
-                <!--<input id="search" placeholder="search in network" title="Type to search for company" style="margin-left:5px;width:174px;">-->
+                <div id="graph-new-node-input">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Add Document or Entity" aria-label="add document or entity">
+                        <div class="input-group-btn">
+                            <button type="button" class="btn btn-default" aria-expanded="false"><span class="glyphicon glyphicon-plus"></span></button>
+                        </div>
+                    </div>
+                </div>
+                <div id="graph-search-node-input">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search In Graph" aria-label="add document or entity" onkeyup="searchNodeInGraph();">
+                        <div class="input-group-btn">
+                            <button type="button" class="btn btn-default" aria-expanded="false"><span class="glyphicon glyphicon-search"></span></button>
+                        </div>
+                    </div>
+                </div>
+                <div id="graph-clear-all">
+                    <button type="button" class="btn btn-default btn-danger" aria-expanded="false"><span class="glyphicon glyphicon-remove"></span>  Remove All</button>
+                </div>
             </div>
 
         </div>
@@ -194,7 +204,7 @@
             <div id="viz-document" class="content">
                 <div id="search-document">
                     <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Search Documents" aria-label="search-term">
+                        <input type="text" class="form-control" placeholder="Search Documents" aria-label="search term">
                         <div class="input-group-btn">
                             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                                 Return <span class="caret"></span>

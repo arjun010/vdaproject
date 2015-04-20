@@ -135,7 +135,7 @@ var delOption =    {
         }
     };
 graphToolContextMenu.push(delOption)
-$("#cleargraphbutton").on("click",function(){
+$("#graph-clear-all button").on("click",function(){
 	//console.log(graphData.nodes.length)
 	while(graphData.nodes.length!=0){
 		for(var i=0;i<graphData.nodes.length;i++){
@@ -653,8 +653,8 @@ function addNewNodeToGraphFromAnotherView(newNodeLabel,newNodeToAdd){
 		d.alreadyExpanded=true;
 	  }
 	  
-	  $("#addnewnodebutton").on("click",function(){	  	
-	  	addNode($("#newNodeInputBox").val());
+	  $("#graph-new-node-input button").on("click",function(){
+	  	addNode($("#graph-new-node-input input").val());
 	  	
 	  	link = link.data(graphData.links);
 		var newLinks = link.enter();
@@ -751,7 +751,7 @@ function searchNodeInGraph(){
 		}
 	}	
 	
-	$("#searchNode").autocomplete({
+	$("#graph-search-node-input input").autocomplete({
 		source: graphnodes
 	});
 	/*$("#searchNode").autocomplete({
@@ -760,7 +760,7 @@ function searchNodeInGraph(){
 		}).focus(function () {
 			$(this).autocomplete("searchNode");
 		});*/
-	var selectedVal = document.getElementById('searchNode').value.toLowerCase();
+	var selectedVal = $("#graph-search-node-input input").val().toLowerCase();
 	if (selectedVal=="") {
 		d3.selectAll(".node").style("opacity",1);
 		d3.selectAll(".templabel").remove();
@@ -1277,7 +1277,7 @@ function addNode(nodeName, newNode){
 		provenanceMap[newNode.title+"_"+newNode.id] = [{"event":"added_to_graph","time":curTime}];
 	}
 	//console.log(provenanceMap)
-	document.getElementById("newNodeInputBox").value="";	
+	$("#graph-new-node-input input").val("");
 }
 
 function dragStarted(d) {
@@ -1945,11 +1945,11 @@ function drawGraphViz(newNodeLabel,newNodeToAdd){
 		d.alreadyExpanded=true;
 	  }
 	  
-	  $("#addnewnodebutton").on("click",function(){	  	
-	  	if($("#newNodeInputBox").val()==""){
+	  $("#graph-new-node-input button").on("click",function(){
+	  	if($("#graph-new-node-input input").val()==""){
 	  		alert("enter something first genius.")
 	  	}
-	  	addNode($("#newNodeInputBox").val());
+	  	addNode($("#graph-new-node-input input").val());
 	  	
 	  	link = link.data(graphData.links);
 		var newLinks = link.enter();
@@ -2132,7 +2132,7 @@ function drawGraphViz(newNodeLabel,newNodeToAdd){
 		}
 		allNodes=unique(allNodes.sort());
 		//console.log(allNodes)		
-		$("#newNodeInputBox").autocomplete({
+		$("#graph-new-node-input input").autocomplete({
 		        source: allNodes
 		});	
 
