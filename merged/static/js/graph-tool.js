@@ -21,7 +21,10 @@ var delOption =    {
 		var exitingNodes = node.exit();
 		exitingNodes.remove();
 		var newNodes = node.enter().insert("g").attr("class", "node").call(drag);
-		
+		newNodes.each(function(d){
+			d.x = Math.random()*300;
+			d.y = Math.random()*200;
+		})
 		nodeCircles = newNodes.append("circle")
 						.attr("r",function(d){
 	  				   	 if(d instanceof Alias){
@@ -186,7 +189,10 @@ $("#graph-clear-all button").on("click",function(){
 		var exitingNodes = node.exit();
 		exitingNodes.remove();
 		var newNodes = node.enter().insert("g").attr("class", "node").call(drag);
-		
+		newNodes.each(function(d){
+			d.x = Math.random()*300;
+			d.y = Math.random()*200;
+		})
 		nodeCircles = newNodes.append("circle")
 						.attr("r",function(d){
 	  				   	 if(d instanceof Alias){
@@ -301,8 +307,7 @@ $("#graph-clear-all button").on("click",function(){
 });
 
 function addNewNodeToGraphFromAnotherView(newNodeLabel,newNodeToAdd){
-		//alert("I'm here")
-		force.gravity(0.5);
+		//alert("I'm here")		
 		addNode(newNodeLabel,newNodeToAdd);
 		link = link.data(graphData.links);
 		var newLinks = link.enter();
@@ -312,7 +317,10 @@ function addNewNodeToGraphFromAnotherView(newNodeLabel,newNodeToAdd){
 		//console.log(graphData.nodes.length)
 		node = node.data(graphData.nodes,function(i){return i.id;});
 		var newNodes = node.enter().insert("g").attr("class", "node").call(drag);
-		
+		newNodes.each(function(d){
+			d.x = Math.random()*300;
+			d.y = Math.random()*200;
+		})
 		nodeCircles = newNodes.append("circle")
 							.attr("r",function(d){
 			  				   	 if(d instanceof Alias){
@@ -405,7 +413,10 @@ function addNewNodeToGraphFromAnotherView(newNodeLabel,newNodeToAdd){
 		var exitingNodes = node.exit();
 		exitingNodes.remove();
 		var newNodes = node.enter().insert("g").attr("class", "node").call(drag);
-		
+		newNodes.each(function(d){
+			d.x = Math.random()*300;
+			d.y = Math.random()*200;
+		})
 		nodeCircles = newNodes.append("circle")
 						.attr("r",function(d){
 	  				   	 if(d instanceof Alias){
@@ -544,7 +555,10 @@ function addNewNodeToGraphFromAnotherView(newNodeLabel,newNodeToAdd){
 		var exitingNodes = node.exit();
 		exitingNodes.remove();
 		var newNodes = node.enter().insert("g").attr("class", "node").call(drag);
-		
+		newNodes.each(function(d){
+			d.x = Math.random()*300;
+			d.y = Math.random()*200;
+		})
 		nodeCircles = newNodes.append("circle")
 						.attr("r",function(d){
 	  				   	 if(d instanceof Alias){
@@ -666,7 +680,7 @@ function addNewNodeToGraphFromAnotherView(newNodeLabel,newNodeToAdd){
 	  
 	  $("#graph-new-node-input button").on("click",function(){
 	  	addNode($("#graph-new-node-input input").val());
-	  	
+	  	console.log("here")
 	  	link = link.data(graphData.links);
 		var newLinks = link.enter();
 
@@ -675,7 +689,10 @@ function addNewNodeToGraphFromAnotherView(newNodeLabel,newNodeToAdd){
 		//console.log(graphData.nodes.length)
 		node = node.data(graphData.nodes,function(i){return i.id;});
 		var newNodes = node.enter().insert("g").attr("class", "node").call(drag);
-		
+		newNodes.each(function(d){
+			d.x = Math.random()*300;
+			d.y = Math.random()*200;
+		})
 		nodeCircles = newNodes.append("circle")
 							.attr("r",function(d){
 			  				   	 if(d instanceof Alias){
@@ -809,38 +826,17 @@ function searchNodeInGraph(){
 				      .style("font-family","sans-serif")
 				      .text(function(d) { 
 				      	if(d instanceof Doc){
-				      		return d.title;
+				      		if(d.title.toLowerCase()==selectedVal){
+				      			//return nodeTextScale(d.aliasList);
+				      			return d.title;
+				      		}
 				      	}else{
-				      		return d.name;
-				      	}				      	
-				      });
-		d3.selectAll(".link").style("opacity",function(d){
-			if(d.source instanceof Doc){
-				if(d.source.title.toLowerCase()==selectedVal){
-					return 1;
-				}else{
-					return 0.1;
-				}
-			}else if(d.target instanceof Doc){
-				if(d.target.title.toLowerCase()==selectedVal){
-					return 1;
-				}else{
-					return 0.1;
-				}
-			}else if(d.source instanceof Alias){
-				if(d.source.name.toLowerCase()==selectedVal){
-					return 1;
-				}else{
-					return 0.1
-				}
-			}else if(d.target instanceof Alias){
-				if(d.target.name.toLowerCase()==selectedVal){
-					return 1;
-				}else{
-					return 0.1
-				}
-			}
-		})
+				      		if(d.name.toLowerCase()==selectedVal){
+				      			//return nodeTextScale(getDocCountForAlias(d));	
+				      			return d.name;
+				      		}
+				      	}
+				      });		
 	}
 }
 
@@ -1688,7 +1684,10 @@ function drawGraphViz(newNodeLabel,newNodeToAdd){
 		var exitingNodes = node.exit();
 		exitingNodes.remove();
 		var newNodes = node.enter().insert("g").attr("class", "node").call(drag);
-		
+		newNodes.each(function(d){
+			d.x = Math.random()*300;
+			d.y = Math.random()*200;
+		})
 		nodeCircles = newNodes.append("circle")
 						.attr("r",function(d){
 	  				   	 if(d instanceof Alias){
@@ -1827,7 +1826,10 @@ function drawGraphViz(newNodeLabel,newNodeToAdd){
 		var exitingNodes = node.exit();
 		exitingNodes.remove();
 		var newNodes = node.enter().insert("g").attr("class", "node").call(drag);
-		
+		newNodes.each(function(d){
+			d.x = Math.random()*300;
+			d.y = Math.random()*200;
+		})
 		nodeCircles = newNodes.append("circle")
 						.attr("r",function(d){
 	  				   	 if(d instanceof Alias){
@@ -1952,6 +1954,7 @@ function drawGraphViz(newNodeLabel,newNodeToAdd){
 	  		alert("enter something first genius.")
 	  	}
 	  	addNode($("#graph-new-node-input input").val());
+	  	console.log("hereNow")
 	  	
 	  	link = link.data(graphData.links);
 		var newLinks = link.enter();
@@ -1961,7 +1964,11 @@ function drawGraphViz(newNodeLabel,newNodeToAdd){
 		//console.log(graphData.nodes.length)
 		node = node.data(graphData.nodes,function(i){return i.id;});
 		var newNodes = node.enter().insert("g").attr("class", "node").call(drag);
-		
+		newNodes.each(function(d){
+			d.x = Math.random()*300;
+			d.y = Math.random()*200;
+		})
+
 		nodeCircles = newNodes.append("circle")
 							.attr("r",function(d){
 			  				   	 if(d instanceof Alias){
@@ -2118,11 +2125,6 @@ function drawGraphViz(newNodeLabel,newNodeToAdd){
     graphTool.draw = function (params) {
     	//generateGraphData();//temporary call
     	//console.log(data.aliases[1] instanceof Doc)
-    	//addNode(data.aliases[1]);
-    	//addNode(data.documents[1]);
-
-    	//addNode(data.aliases[4]);
-    	//addNode(data.documents[0]);
     	//console.log(data.documents[0])
     	//allNodes=unique(optArray.sort());
 		allNodes = []

@@ -245,7 +245,7 @@
     }
 
     function addToGraph(action){
-        addNewNodeToGraphFromAnotherView(action.params.targetItem.name, action.params.targetItem);
+        addNewNodeToGraphFromAnotherView(action.params.targetItem.name, action.params.targetItem.alias);
     }
 
     function edit(action){
