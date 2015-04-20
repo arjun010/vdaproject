@@ -13,7 +13,7 @@
 
     docTool.add = function(doc, docId){
         // If the document object wasn't passed in then find it based on id
-        doc = doc || data.documents.filter(function(d){return docId == d.id;});
+        doc = doc || data.documents.filter(function(d){return docId == d.id;})[0];
         // Create the template for that data item and add it to the document container
         if($('#document-container .doc-item-'+doc.id).length == 0){
             var tmpl = $('#docTemplate').tmpl(doc).appendTo('#document-container');
@@ -80,6 +80,13 @@
                 }
             });
         });
+    };
+
+    docTool.openDoc = function(doc){
+        var docElement = docTool.find(doc, false);
+        if($(docElement).find('.doc-item-text').css('display') === 'none'){
+            docTool.collapse($(docElement).find('.doc-item-header'));
+        }
     };
 
     docTool.collapse = function(d){
@@ -326,7 +333,6 @@
     }
 
     docTool.doSearch = function(){
-        $(".doc-item").remove();
         $.getJSON('/_do_search', {
             term: $('input[name="term"]').val(),
             search_count: $("#search_size option:selected").val(),
@@ -336,7 +342,7 @@
                     var doc = data.documents.filter(function (d) {
                         return d.id == parseInt(ids[i]);
                     });
-                    $('#docTemplate').tmpl(doc).appendTo('#document-container');
+                    docTool.add(doc[0]);
                 }
             }
         );
