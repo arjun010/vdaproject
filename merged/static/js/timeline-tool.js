@@ -6,6 +6,7 @@ function getIndexInList(obj,list){
 	}
 	return -1;
 }
+/*
 function drawGraph(time){
 	var dataToUse;
 	if(time==1){
@@ -16,7 +17,7 @@ function drawGraph(time){
     for(var i=0;i<timelineData[0]["values"].length;i++){
       var curDate = timelineData[0]["values"][i]["date"].split("-")
       timelineData[0]["values"][i]["date"] = format(new Date(curDate[0], curDate[1], curDate[2]));
-    }*/
+    }
     dataToUse = timelineData;
 	}
   var format = d3.time.format("%Y-%m-%d");
@@ -76,7 +77,7 @@ chart.xAxis.rotateLabels(-90);
 /*
 .ticks(d3.time.months)
     .tickSize(16, 0)
-    .tickFormat(d3.time.format("%B"));*/
+    .tickFormat(d3.time.format("%B"));*
 
 chart.discretebar.dispatch.on("elementMouseout", function (e) {
   if(dateBarClicked==0){
@@ -156,14 +157,14 @@ chart.discretebar.dispatch.on("elementClick", function (e) {
             .attr("x",50)
             .attr("y",170)
             .text(function(){return "January"})
-*/
+
 		  nv.utils.windowResize(chart.update);
 
 		  return chart;
 		});
 	//chart.discretebar.dispatch.on("elementClick", function (e) {
 }
-
+*/
 (function () {
 
     timeTool = {};

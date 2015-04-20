@@ -1309,31 +1309,6 @@ function mouseover(d) {
 	  //console.log(linkCount(d))
 	  if(dateBarClicked==0){
 
-	  	if(d instanceof Doc){
-			  d3.selectAll(".discreteBar").style("opacity",function(i){
-			  	if(getIndexInList(d.id,i.documentList)!=-1){
-			  		return 1;
-			  	}else{
-			  		return 0.2;
-			  	}
-			  })
-	  	}else{
-	  		var docList = [];
-	  		for(var i=0;i<data.documents.length;i++){
-	  			if(getIndexInList(d,data.documents[i].aliasList)!=-1){
-	  				docList.push(data.documents[i].id)
-	  			}
-	  		}
-	  		//console.log(docList)
-		  	d3.selectAll(".discreteBar").style("opacity",function(j){
-		  		if(listsContainCommonElements(j.documentList,docList)){
-					return 1;
-			  	}else{
-			  		return 0.2;
-			  	}	
-			})
-	  	}
-
       d3.selectAll(".link").transition().duration(500)
         .style("opacity", function(o) {
         return o.source === d || o.target === d ? 1 : 0.2;
@@ -1385,8 +1360,7 @@ function mouseover(d) {
 }
 
 function mouseout() {
-	if(dateBarClicked==0){
-		d3.selectAll(".discreteBar").style("opacity",1)
+	if(dateBarClicked==0){		
   d3.selectAll(".link").transition().duration(500)
         .style("opacity", 1);
   d3.selectAll(".node").transition().duration(500)

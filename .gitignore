@@ -3,3 +3,4 @@
 vdaproject.iml
 *.pyc
 server/venv
+merged/venv
