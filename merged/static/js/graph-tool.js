@@ -410,27 +410,25 @@ function collapseNode(node){
 	}
 }
 
-function addNode(nodeName){
-	//console.log(node)
-	//data1[0][1] = 'Ford'; // change "Kia" to "Ford" programatically
-	//hot1.render();
-	node = 0;
-	for(var i=0;i<data.documents.length;i++){
-		if(nodeName==data.documents[i].title){
-			node = data.documents[i];
-			//console.log(data.documents[i])
-			docTool.add(data.documents[i]);
-			break;
-		}else{
-			for(var j=0;j<data.documents[i].aliasList.length;j++){
-				if(nodeName==data.documents[i].aliasList[j].name){
-					node = data.documents[i].aliasList[j];
-					//console.log(node)
-					break;		
-				}
-			}
-		}
-	}
+function addNode(nodeName, node){
+	if(!node){
+        for(var i=0;i<data.documents.length;i++){
+            if(nodeName==data.documents[i].title){
+                node = data.documents[i];
+                //console.log(data.documents[i])
+                docTool.add(data.documents[i]);
+                break;
+            }else{
+                for(var j=0;j<data.documents[i].aliasList.length;j++){
+                    if(nodeName==data.documents[i].aliasList[j].name){
+                        node = data.documents[i].aliasList[j];
+                        //console.log(node)
+                        break;
+                    }
+                }
+            }
+        }
+    }
 
 	var startLengthOfNodeList = graphData.nodes.length;
 	if(getIndexInList(node,graphData.nodes)==-1){

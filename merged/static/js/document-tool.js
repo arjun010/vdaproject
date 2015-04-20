@@ -162,6 +162,15 @@
             case 'doc-remove':
                 remove(action);
                 break;
+            case 'doc-add-to-graph':
+                addToGraph(action);
+                break;
+            default:
+            {
+                console.log('Unknown action called!');
+                console.log(action);
+            }
+                break;
         }
     };
 
@@ -194,6 +203,10 @@
             }
         });
     };
+
+    function addToGraph(action){
+        addNode(action.params.targetItem.name, action.params.targetItem);
+    }
 
     function del(action){
         if(confirm('Delete document from analysis?')){

@@ -76,6 +76,9 @@
             case 'entity-delete-selected':
                 deleteSelected(action);
                 break;
+            case 'entity-add-to-graph':
+                addToGraph(action);
+                break;
             default:
             {
                 console.log('Unknown action called!');
@@ -219,6 +222,10 @@
                 changeTypeCallback(event);
             }
         });
+    }
+
+    function addToGraph(action){
+        addNode(action.params.targetItem.name, action.params.targetItem);
     }
 
     function edit(action){
@@ -407,6 +414,8 @@
                 ea.docList.forEach(function(d){
                     i = d.entList.indexOf(ea);
                     if(i != -1)d.entList.splice(i, 1);
+                    i = d.aliasList.indexOf(ea.alias);
+                    if(i != -1)d.aliasList.splice(i, 1);
                 });
             });
         }
