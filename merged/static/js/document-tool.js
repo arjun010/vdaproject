@@ -205,7 +205,9 @@
     };
 
     function addToGraph(action){
-        addNode(action.params.targetItem.name, action.params.targetItem);
+        //addNode(action.params.targetItem.name, action.params.targetItem);        
+        //drawGraphViz(action.params.targetItem.name, action.params.targetItem);
+        addNewNodeToGraphFromAnotherView(action.params.targetItem.title, action.params.targetItem)
     }
 
     function del(action){

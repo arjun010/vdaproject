@@ -145,7 +145,7 @@
                     loadMetadata(m);
                     // Do I need to do any processing here? or should I just draw?
                     entTool.draw(params);
-                    //graphTool.draw(params);
+                    graphTool.draw(params);
                     //timeTool.draw(params);
                     docTool.draw(params);
                 });
@@ -184,7 +184,7 @@
         $('#nav-analysis').addClass('active');
         $('#panel-entity-analysis-document').addClass('active');
         $('#panel-analysis').addClass('active');
-        graphTool.draw(params);
+        //graphTool.draw(params);
         timeTool.draw(params)
     };
 
