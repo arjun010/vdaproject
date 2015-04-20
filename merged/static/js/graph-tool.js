@@ -146,7 +146,6 @@ graphToolContextMenu.push({
 		}
 	}
 });
-$("#cleargraphbutton").on("click",function(){
 $("#graph-clear-all button").on("click",function(){
 	//console.log(graphData.nodes.length)
 	while(graphData.nodes.length!=0){
