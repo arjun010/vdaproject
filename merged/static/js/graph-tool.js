@@ -1,8 +1,7 @@
 function addNewNodeToGraphFromAnotherView(newNodeLabel,newNodeToAdd){
 		//alert("I'm here")
 		addNode(newNodeLabel,newNodeToAdd);
-	  	
-	  	link = link.data(graphData.links);
+		link = link.data(graphData.links);
 		var newLinks = link.enter();
 
 		newLinks.insert("line", ".node").attr("class", "link");
@@ -27,7 +26,6 @@ function addNewNodeToGraphFromAnotherView(newNodeLabel,newNodeToAdd){
 			  				   	}
 								//return color(d.type)
 							});		
-
 		force.start();
 		d3.selectAll(".link").style("stroke-width",function(d){
 			//console.log(d.source.aliasList)
@@ -48,8 +46,8 @@ function addNewNodeToGraphFromAnotherView(newNodeLabel,newNodeToAdd){
 
 	    node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
 	  });
-
-			  nodeCircles.on("dblclick",function(d){	  	
+	  
+	  nodeCircles.on("dblclick",function(d){	  	
 	  	doubleClickEvent(d);	  	
 	  });
 
@@ -876,38 +874,44 @@ function collapseNode(node){
 	}
 }
 
-function addNode(nodeName, node){
-	console.log(nodeName,node)
-	if(!node){
+function addNode(nodeName, newNode){
+	//console.log(nodeName,node)
+	if(!newNode){
         for(var i=0;i<data.documents.length;i++){
             if(nodeName==data.documents[i].title){
-                node = data.documents[i];
+                newNode = data.documents[i];
+                /*newNode.x=document.getElementById("viz-graph").offsetWidth/2;
+	    		newNode.y=document.getElementById("viz-graph").offsetHeight/2;*/
                 //console.log(data.documents[i])
                 docTool.add(data.documents[i]);
                 break;
             }else{
                 for(var j=0;j<data.documents[i].aliasList.length;j++){
                     if(nodeName==data.documents[i].aliasList[j].name){
-                        node = data.documents[i].aliasList[j];
+                        newNode = data.documents[i].aliasList[j];
+                        //newNode.x=document.getElementById("viz-graph").offsetWidth/2;
+	    				//newNode.y=document.getElementById("viz-graph").offsetHeight/2;
                         //console.log(node)
                         break;
                     }
                 }
             }
         }
-    }
-
+    }//else{
+	   // newNode.x=document.getElementById("viz-graph").offsetWidth/2;
+	   // newNode.y=document.getElementById("viz-graph").offsetHeight/2;
+    //}
 	var startLengthOfNodeList = graphData.nodes.length;
-	if(getIndexInList(node,graphData.nodes)==-1){
-			node.expanded = false;
-			node.isSelected = false;
-			graphData.nodes.push(node);
+	if(getIndexInList(newNode,graphData.nodes)==-1){
+			newNode.expanded = false;
+			newNode.isSelected = false;
+			graphData.nodes.push(newNode);
 	}
-	if(node instanceof Alias){
+	if(newNode instanceof Alias){
 		for(var j=0;j<startLengthOfNodeList;j++){
 			if(graphData.nodes[j] instanceof Doc){ // since links can only be formed with documents
-				if(getIndexInList(node,graphData.nodes[j].aliasList)!=-1){// alias exists in document
-					var sourceIndex = getIndexInList(node,graphData.nodes);
+				if(getIndexInList(newNode,graphData.nodes[j].aliasList)!=-1){// alias exists in document
+					var sourceIndex = getIndexInList(newNode,graphData.nodes);
 					var currentLink = {"source":sourceIndex,"target":j}
 					if(linkExistsInGraph(currentLink)==-1){ // check if link doesn't already exist
 						graphData.links.push(currentLink);
@@ -917,14 +921,14 @@ function addNode(nodeName, node){
 		}
 		//console.log((new Date()-sessionStartTime)/1000);
 		curTime = (new Date()-sessionStartTime)/1000;
-		provenanceMap[node.name+"_"+node.id] = [{"event":"added_to_graph","time":curTime}];
+		provenanceMap[newNode.name+"_"+newNode.id] = [{"event":"added_to_graph","time":curTime}];
 		//console.log(provenanceMap)
 
 	}else{
 		for(var i=0;i<startLengthOfNodeList;i++){
 			if(graphData.nodes[i] instanceof Alias){// since links can only be formed with aliases
-				if(getIndexInList(graphData.nodes[i],node.aliasList)!=-1){
-					var sourceIndex = getIndexInList(node,graphData.nodes);
+				if(getIndexInList(graphData.nodes[i],newNode.aliasList)!=-1){
+					var sourceIndex = getIndexInList(newNode,graphData.nodes);
 					var currentLink = {"source":sourceIndex,"target":i}
 					if(linkExistsInGraph(currentLink)==-1){ // check if link doesn't already exist
 						graphData.links.push(currentLink);
@@ -933,10 +937,10 @@ function addNode(nodeName, node){
 			}
 		}
 		curTime = (new Date()-sessionStartTime)/1000;
-		provenanceMap[node.id] = [{"event":"added_to_graph","time":curTime}];
+		provenanceMap[newNode.id] = [{"event":"added_to_graph","time":curTime}];
 	}
 	//console.log(provenanceMap)
-	document.getElementById("newNode").value="";
+	document.getElementById("newNode").value="";	
 }
 
 function dragStarted(d) {
@@ -1063,6 +1067,9 @@ function mouseClick(d){
 
         d3.selectAll(".node").each(function(i){
 			if(i==d && i.isSelected==true){
+				if(i instanceof Doc){
+					docTool.openDoc(i)
+				}				
 				d3.select(this)
 					.append("circle")
 					.attr("r",function(d){
@@ -1107,6 +1114,9 @@ function mouseClick(d){
     }else{
 		for(var i=0;i<graphData.nodes.length;i++){
 			graphData.nodes[i].isSelected = false;
+			if(graphData.nodes[i] instanceof Doc){
+				docTool.collapse(graphData.nodes[i])
+			}
 		}
 		d3.selectAll(".node").select(".holloweffect").remove();
 		d.isSelected = true;
@@ -1121,6 +1131,10 @@ function mouseClick(d){
 		  });*/
 		d3.selectAll(".node").each(function(i){
 			if(i==d && i.isSelected==true){
+				if(i instanceof Doc){
+					console.log(i)
+					docTool.openDoc(i)
+				}				
 				d3.select(this)
 					.append("circle")
 					.attr("r",function(d){
