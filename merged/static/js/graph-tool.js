@@ -1,3 +1,155 @@
+$("#cleargraphbutton").on("click",function(){
+	console.log(graphData.nodes.length)
+	while(graphData.nodes.length!=0){
+		for(var i=0;i<graphData.nodes.length;i++){
+			removeNodeAndLinks(graphData.nodes[i])
+		}
+	}
+	/*for(var i=0;i<graphData.nodes.length;i++){
+		removeNodeAndLinks(graphData.nodes[i])
+	}
+	for(var i=0;i<graphData.nodes.length;i++){
+		removeNodeAndLinks(graphData.nodes[i])
+	}
+	for(var i=0;i<graphData.nodes.length;i++){
+		removeNodeAndLinks(graphData.nodes[i])
+	}
+	for(var i=0;i<graphData.nodes.length;i++){
+		removeNodeAndLinks(graphData.nodes[i])
+	}
+	for(var i=0;i<graphData.nodes.length;i++){
+		removeNodeAndLinks(graphData.nodes[i])
+	}
+	for(var i=0;i<graphData.nodes.length;i++){
+		removeNodeAndLinks(graphData.nodes[i])
+	}*/
+	linkedByIndex = {};
+	  	link = link.data(graphData.links);
+		var exitingLinks = link.exit();
+		exitingLinks.remove();
+		var newLinks = link.enter();
+
+		newLinks.insert("line", ".node").attr("class", "link");
+		
+		//console.log(graphData.nodes.length)
+		node = node.data(graphData.nodes,function(i){return i.id;});
+
+
+		var exitingNodes = node.exit();
+		exitingNodes.remove();
+		var newNodes = node.enter().insert("g").attr("class", "node").call(drag);
+		
+		nodeCircles = newNodes.append("circle")
+						.attr("r",function(d){
+	  				   	 if(d instanceof Alias){
+	  				   	 	return nodeScale(getDocCountForAlias(d));
+	  				   	 }else{
+	  				   	 	return nodeScale(d.aliasList.length);
+	  				   	 }
+	  				   	})
+						.style("fill",function(d){ 
+							if(d instanceof Alias){
+		  				   		return d.mainEnt.color;
+		  				   	}else{
+		  				   		return d.color;
+		  				   	}
+							//return color(d.type)
+						});
+		
+		d3.selectAll(".node").select("circle").style("stroke",function(d){
+							if(d.expanded==true){
+								if(d instanceof Alias){
+			  				   		return d.mainEnt.color;
+			  				   	}else{
+			  				   		return d.color;
+			  				   	}
+								//return color(d.type)
+							}else{
+								return ""
+							}
+						})
+						.style("stroke-width",function(d){
+							if(d.expanded==true){
+								return 2
+							}else{
+								return 0
+							}
+						})
+						.style("fill",function(d){
+							if(d.expanded==true){
+								return "white"
+							}else{
+								if(d instanceof Alias){
+			  				   		return d.mainEnt.color;
+			  				   	}else{
+			  				   		return d.color;
+			  				   	}
+								//return color(d.type);
+							}
+						});
+		/*
+		var nodeLabels = newNodes.append("text")
+				      .attr("dx", 12)
+				      .attr("dy", ".35em")
+				      .style("font-size",function(d){
+				      	if(d instanceof Alias){
+	  				   	 	return nodeTextScale(getDocCountForAlias(d));
+	  				   	 }else{
+	  				   	 	return nodeTextScale(d.aliasList.length);
+	  				   	 }
+				      })
+				      .style("font-family","sans-serif")
+				      .text(function(d) { return d.name ? d.name : d.title; });							
+		*/
+		force.start();		
+		//console.log("duplication")
+
+		nodeCircles.on("dblclick",function(i){
+	  		doubleClickEvent(i);	  			  
+	  	});
+
+	  	nodeCircles.on("contextmenu",function(i){
+	     	d3.event.preventDefault();
+	     	rightClickEvent(i)
+	 	});
+
+	  	nodeCircles.on("mouseout",function(d){	  	
+	  		mouseout(d);
+	  	});
+
+	  	nodeCircles.on("mouseover",function(d){	  	
+	  		mouseover(d);
+	  	});		
+
+	  	nodeCircles.on("click",function(d){
+	  		mouseClick(d);
+	  	});
+
+	  	d3.selectAll(".link").style("stroke-width",function(d){
+	      	if(d.source instanceof Doc){
+	      		//console.log(d.target.mainEnt,d.source.aliasList)
+	      		return linkStrokeScale(getOccuranceCount(d.target.mainEnt,d.source.aliasList));
+	      	}else{
+	      		//console.log(d.target.mainEnt,d.source.aliasList)
+	      		return linkStrokeScale(getOccuranceCount(d.source.mainEnt,d.target.aliasList))
+	      	}
+	      });
+	  	
+	  	force.on("tick", function() {
+	    link.attr("x1", function(d) { return d.source.x; })
+	        .attr("y1", function(d) { return d.source.y; })
+	        .attr("x2", function(d) { return d.target.x; })
+	        .attr("y2", function(d) { return d.target.y; });
+
+	    node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+	  });
+
+		graphData.links.forEach(function(i) {
+          linkedByIndex[i.source.index + "," + i.target.index] = 1;
+          linkedByIndex[i.target.index + "," + i.source.index] = 1;
+      	});
+});
+
 function addNewNodeToGraphFromAnotherView(newNodeLabel,newNodeToAdd){
 		//alert("I'm here")
 		addNode(newNodeLabel,newNodeToAdd);
@@ -740,6 +892,7 @@ function addRelatedNodes(node){
 
 function removeNodeAndLinks(node){
 	node.alreadyExpanded = false;
+	node.fixed = false;
 	if(node instanceof Doc){
 		//docTool.removeDoc(node)
 		curTime = (new Date()-sessionStartTime)/1000;
@@ -756,6 +909,7 @@ function removeNodeAndLinks(node){
 		if(graphData.links[i].source==node){
 			linksToDelete.push(graphData.links[i]);			
 			nodesToDelete.push(graphData.links[i].target);						
+			graphData.links[i].target.fixed=false;
 			graphData.links[i].target.alreadyExpanded = false;
 			if(graphData.links[i].target instanceof Doc){
 				/*if(linkCount(graphData.links[i].target)==1){					
@@ -770,6 +924,7 @@ function removeNodeAndLinks(node){
 		}else if(graphData.links[i].target==node){			
 			linksToDelete.push(graphData.links[i]);
 			nodesToDelete.push(graphData.links[i].source);			
+			graphData.links[i].source.fixed=false;
 			graphData.links[i].source.alreadyExpanded=false;
 			if(graphData.links[i].source instanceof Doc){
 				/*if(linkCount(graphData.links[i].source)){
@@ -831,6 +986,7 @@ function collapseNode(node){
 			if(linkCount(graphData.links[i].target)==1){
 				linksToDelete.push(graphData.links[i]);			
 				nodesToDelete.push(graphData.links[i].target);
+				graphData.links[i].target.fixed = false;
 				graphData.links[i].target.alreadyExpanded = false;
 				if(graphData.links[i].target instanceof Doc){
 					docTool.removeDoc(graphData.links[i].target)
@@ -845,6 +1001,7 @@ function collapseNode(node){
 			if(linkCount(graphData.links[i].source)==1){
 				linksToDelete.push(graphData.links[i]);
 				nodesToDelete.push(graphData.links[i].source);			
+				graphData.links[i].source.fixed= false;
 				graphData.links[i].source.alreadyExpanded=false;
 				if(graphData.links[i].source instanceof Doc){
 					docTool.removeDoc(graphData.links[i].source);
@@ -1132,7 +1289,7 @@ function mouseClick(d){
 		d3.selectAll(".node").each(function(i){
 			if(i==d && i.isSelected==true){
 				if(i instanceof Doc){
-					console.log(i)
+//					console.log(i)
 					docTool.openDoc(i)
 				}				
 				d3.select(this)
