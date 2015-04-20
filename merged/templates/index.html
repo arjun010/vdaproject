@@ -71,6 +71,7 @@
             </div>
             <div class="navbar-right" style="padding: 8px 15px;">
                 <ul class="nav nav-pills">
+                    <button onclick="showACHTable()">Show Table</button>
                     <li id="nav-entity" role="presentation" class="active"><a href="#" onclick="main.showEntityView()">Entity
                         View</a></li>
                     <li id="nav-analysis" role="presentation"><a href="#" onclick="main.showAnalysisView()">Analysis
@@ -232,8 +233,7 @@
     </div>
     <div id="panel-provenance" class="panel switchable col-md-12 col-lg-12">        
         <div id="viz-provenance" class="content">                        
-            <input id="search" onfocus="searchProvView();" onkeyup="searchProvView();" placeholder="search in prov view" style="200px">
-            <!--<button onclick="showACHTable()">Show Table</button>-->
+            <input id="search" onfocus="searchProvView();" onkeyup="searchProvView();" placeholder="search in prov view" style="200px">            
         </div>        
         <div id="dialog">
             <div id="achtable"></div>
@@ -314,8 +314,11 @@
 $(function() {
     $( "#dialog" ).dialog();
 });
-
-    
+*/
+function showACHTable(){
+   $( "#dialog" ).dialog();
+}
+   
     var data1 = [
     ['',''],
     ['','']
@@ -324,12 +327,14 @@ $(function() {
     htOptions = document.querySelectorAll('.handsontableOption');
   settings1 = {
     data: data1,
-    contextMenu:true
+    contextMenu:true,
+    comments: true,
+    search: true
   };
   var hot1;
-var hypoList = data1[0];
 hot1 = new Handsontable(container1, settings1);
-
+hot1.render();
+/*
 for (var i = 0, len = htOptions.length; i<len; i++) {
   Handsontable.Dom.addEvent(htOptions[i], 'change', function () {
     var update = {};
@@ -352,9 +357,7 @@ for (var i = 0, len = htOptions.length; i<len; i++) {
 }
 //hot1.render();
 
-function showACHTable(){
-   $( "#dialog" ).dialog();
-}*/
+*/
 function unique(list) {
     var result = [];
     $.each(list, function(i, e) {
