@@ -329,7 +329,7 @@
 
 .doc-item-header-flash {
     -webkit-animation-name: doc-item-header-flash;
-    -webkit-animation-duration: 900ms;
+    -webkit-animation-duration: 600ms;
     -webkit-animation-iteration-count: 1;
     -webkit-animation-timing-function: ease-in-out;
 }
