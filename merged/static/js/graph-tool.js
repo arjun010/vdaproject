@@ -1,5 +1,142 @@
+var oldHypos = [];
+var graphToolContextMenu=[];
+var delOption =    {
+        title: 'Delete node and partners from graph',
+        action: function(elm, d, i) {
+            //console.log('Item #1 clicked!');
+            //console.log('The data for this node is: ' + d);
+            removeNodeAndLinks(d);
+	  	linkedByIndex = {};
+	  	link = link.data(graphData.links);
+		var exitingLinks = link.exit();
+		exitingLinks.remove();
+		var newLinks = link.enter();
+
+		newLinks.insert("line", ".node").attr("class", "link");
+		
+		//console.log(graphData.nodes.length)
+		node = node.data(graphData.nodes,function(i){return i.id;});
+
+
+		var exitingNodes = node.exit();
+		exitingNodes.remove();
+		var newNodes = node.enter().insert("g").attr("class", "node").call(drag);
+		
+		nodeCircles = newNodes.append("circle")
+						.attr("r",function(d){
+	  				   	 if(d instanceof Alias){
+	  				   	 	return nodeScale(getDocCountForAlias(d));
+	  				   	 }else{
+	  				   	 	return nodeScale(d.aliasList.length);
+	  				   	 }
+	  				   	})
+						.style("fill",function(d){ 
+							if(d instanceof Alias){
+		  				   		return d.mainEnt.color;
+		  				   	}else{
+		  				   		return d.color;
+		  				   	}
+							//return color(d.type)
+						});
+		
+		d3.selectAll(".node").select("circle").style("stroke",function(d){
+							if(d.expanded==true){
+								if(d instanceof Alias){
+			  				   		return d.mainEnt.color;
+			  				   	}else{
+			  				   		return d.color;
+			  				   	}
+								//return color(d.type)
+							}else{
+								return ""
+							}
+						})
+						.style("stroke-width",function(d){
+							if(d.expanded==true){
+								return 2
+							}else{
+								return 0
+							}
+						})
+						.style("fill",function(d){
+							if(d.expanded==true){
+								return "white"
+							}else{
+								if(d instanceof Alias){
+			  				   		return d.mainEnt.color;
+			  				   	}else{
+			  				   		return d.color;
+			  				   	}
+								//return color(d.type);
+							}
+						});
+		/*
+		var nodeLabels = newNodes.append("text")
+				      .attr("dx", 12)
+				      .attr("dy", ".35em")
+				      .style("font-size",function(d){
+				      	if(d instanceof Alias){
+	  				   	 	return nodeTextScale(getDocCountForAlias(d));
+	  				   	 }else{
+	  				   	 	return nodeTextScale(d.aliasList.length);
+	  				   	 }
+				      })
+				      .style("font-family","sans-serif")
+				      .text(function(d) { return d.name ? d.name : d.title; });							
+		*/
+		force.start();		
+		//console.log("duplication")
+
+		nodeCircles.on("dblclick",function(i){
+	  		doubleClickEvent(i);	  			  
+	  	});
+
+	  	/*nodeCircles.on("contextmenu",function(i){
+	     	d3.event.preventDefault();
+	     	rightClickEvent(i)
+	 	});*/
+		nodeCircles.on("contextmenu", d3.contextMenu(graphToolContextMenu));
+
+	  	nodeCircles.on("mouseout",function(d){	  	
+	  		mouseout(d);
+	  	});
+
+	  	nodeCircles.on("mouseover",function(d){	  	
+	  		mouseover(d);
+	  	});		
+
+	  	nodeCircles.on("click",function(d){
+	  		mouseClick(d);
+	  	});
+
+	  	d3.selectAll(".link").style("stroke-width",function(d){
+	      	if(d.source instanceof Doc){
+	      		//console.log(d.target.mainEnt,d.source.aliasList)
+	      		return linkStrokeScale(getOccuranceCount(d.target.mainEnt,d.source.aliasList));
+	      	}else{
+	      		//console.log(d.target.mainEnt,d.source.aliasList)
+	      		return linkStrokeScale(getOccuranceCount(d.source.mainEnt,d.target.aliasList))
+	      	}
+	      });
+	  	
+	  	force.on("tick", function() {
+	    link.attr("x1", function(d) { return d.source.x; })
+	        .attr("y1", function(d) { return d.source.y; })
+	        .attr("x2", function(d) { return d.target.x; })
+	        .attr("y2", function(d) { return d.target.y; });
+
+	    node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+	  });
+
+		graphData.links.forEach(function(i) {
+          linkedByIndex[i.source.index + "," + i.target.index] = 1;
+          linkedByIndex[i.target.index + "," + i.source.index] = 1;
+      	});
+        }
+    };
+graphToolContextMenu.push(delOption)
 $("#cleargraphbutton").on("click",function(){
-	console.log(graphData.nodes.length)
+	//console.log(graphData.nodes.length)
 	while(graphData.nodes.length!=0){
 		for(var i=0;i<graphData.nodes.length;i++){
 			removeNodeAndLinks(graphData.nodes[i])
@@ -108,10 +245,12 @@ $("#cleargraphbutton").on("click",function(){
 	  		doubleClickEvent(i);	  			  
 	  	});
 
+		/*
 	  	nodeCircles.on("contextmenu",function(i){
 	     	d3.event.preventDefault();
 	     	rightClickEvent(i)
-	 	});
+	 	});*/
+		nodeCircles.on("contextmenu", d3.contextMenu(graphToolContextMenu));
 
 	  	nodeCircles.on("mouseout",function(d){	  	
 	  		mouseout(d);
@@ -152,6 +291,7 @@ $("#cleargraphbutton").on("click",function(){
 
 function addNewNodeToGraphFromAnotherView(newNodeLabel,newNodeToAdd){
 		//alert("I'm here")
+		force.gravity(0.5);
 		addNode(newNodeLabel,newNodeToAdd);
 		link = link.data(graphData.links);
 		var newLinks = link.enter();
@@ -203,10 +343,11 @@ function addNewNodeToGraphFromAnotherView(newNodeLabel,newNodeToAdd){
 	  	doubleClickEvent(d);	  	
 	  });
 
-	 nodeCircles.on("contextmenu",function(d){
+	 /*nodeCircles.on("contextmenu",function(d){
      	d3.event.preventDefault();
      	rightClickEvent(d)     	
-	 });
+	 });*/
+	nodeCircles.on("contextmenu", d3.contextMenu(graphToolContextMenu));
 
 	  nodeCircles.on("mouseout",function(d){	  	
 	  	mouseout(d);
@@ -323,10 +464,11 @@ function addNewNodeToGraphFromAnotherView(newNodeLabel,newNodeToAdd){
 	  		doubleClickEvent(i);	  			  
 	  	});
 
-	  	nodeCircles.on("contextmenu",function(i){
+	  	/*nodeCircles.on("contextmenu",function(i){
 	     	d3.event.preventDefault();
 	     	rightClickEvent(i)
-	 	});
+	 	});*/
+		nodeCircles.on("contextmenu", d3.contextMenu(graphToolContextMenu));
 
 	  	nodeCircles.on("mouseout",function(d){	  	
 	  		mouseout(d);
@@ -448,10 +590,11 @@ function addNewNodeToGraphFromAnotherView(newNodeLabel,newNodeToAdd){
 	  		doubleClickEvent(i);
 	  	});
 
-	  	nodeCircles.on("contextmenu",function(i){
+	  	/*nodeCircles.on("contextmenu",function(i){
 	     	d3.event.preventDefault();
 	     	rightClickEvent(i)
-	 	});
+	 	});*/
+		nodeCircles.on("contextmenu", d3.contextMenu(graphToolContextMenu));
 
 	  	nodeCircles.on("mouseout",function(d){	  	
 	  		mouseout(d);
@@ -570,10 +713,11 @@ function addNewNodeToGraphFromAnotherView(newNodeLabel,newNodeToAdd){
 	  		doubleClickEvent(i);
 	  	});
 
-	  	nodeCircles.on("contextmenu",function(i){
+	  	/*nodeCircles.on("contextmenu",function(i){
 	     	d3.event.preventDefault();
 	     	rightClickEvent(i)
-	 	});
+	 	});*/
+		nodeCircles.on("contextmenu", d3.contextMenu(graphToolContextMenu));
 
 	  	nodeCircles.on("mouseout",function(d){	  	
 	  		mouseout(d);
@@ -898,6 +1042,7 @@ function addRelatedNodes(node){
 }
 
 function removeNodeAndLinks(node){
+	console.log("here")
 	node.alreadyExpanded = false;
 	node.fixed = false;
 	if(node instanceof Doc){
@@ -1039,7 +1184,7 @@ function collapseNode(node){
 }
 
 function addNode(nodeName, newNode){
-	//console.log(nodeName,node)
+	//console.log(nodeName,node)	
 	if(!newNode){
         for(var i=0;i<data.documents.length;i++){
             if(nodeName==data.documents[i].title){
@@ -1462,10 +1607,11 @@ function drawGraphViz(newNodeLabel,newNodeToAdd){
 	  	doubleClickEvent(d);	  	
 	  });
 
-	 nodeCircles.on("contextmenu",function(d){
+	 /*nodeCircles.on("contextmenu",function(d){
      	d3.event.preventDefault();
      	rightClickEvent(d)     	
-	 });
+	 });*/
+	 nodeCircles.on("contextmenu", d3.contextMenu(graphToolContextMenu));
 
 	  nodeCircles.on("mouseout",function(d){	  	
 	  	mouseout(d);
@@ -1582,10 +1728,11 @@ function drawGraphViz(newNodeLabel,newNodeToAdd){
 	  		doubleClickEvent(i);	  			  
 	  	});
 
-	  	nodeCircles.on("contextmenu",function(i){
+	  	/*nodeCircles.on("contextmenu",function(i){
 	     	d3.event.preventDefault();
 	     	rightClickEvent(i)
-	 	});
+	 	});*/
+		nodeCircles.on("contextmenu", d3.contextMenu(graphToolContextMenu));
 
 	  	nodeCircles.on("mouseout",function(d){	  	
 	  		mouseout(d);
@@ -1707,10 +1854,11 @@ function drawGraphViz(newNodeLabel,newNodeToAdd){
 	  		doubleClickEvent(i);
 	  	});
 
-	  	nodeCircles.on("contextmenu",function(i){
+	  	/*nodeCircles.on("contextmenu",function(i){
 	     	d3.event.preventDefault();
 	     	rightClickEvent(i)
-	 	});
+	 	});*/
+		nodeCircles.on("contextmenu", d3.contextMenu(graphToolContextMenu));
 
 	  	nodeCircles.on("mouseout",function(d){	  	
 	  		mouseout(d);
@@ -1829,10 +1977,11 @@ function drawGraphViz(newNodeLabel,newNodeToAdd){
 	  		doubleClickEvent(i);
 	  	});
 
-	  	nodeCircles.on("contextmenu",function(i){
+	  	/*nodeCircles.on("contextmenu",function(i){
 	     	d3.event.preventDefault();
 	     	rightClickEvent(i)
-	 	});
+	 	});*/
+		nodeCircles.on("contextmenu", d3.contextMenu(graphToolContextMenu));
 
 	  	nodeCircles.on("mouseout",function(d){	  	
 	  		mouseout(d);
@@ -1954,13 +2103,32 @@ function drawGraphViz(newNodeLabel,newNodeToAdd){
 		//console.log(allNodes)		
 		$("#newNodeInputBox").autocomplete({
 		        source: allNodes
-		});
-	/*	$("#newNodeInputBox").autocomplete({
-			source: allNodes,
-			minLength: 0,
-		}).focus(function () {
-			$(this).autocomplete("newNodeInputBox");
-		});*/
+		});	
+
+		/*
+		var skipHypo = 0;
+		for(var i=0;i<hypoList.length;i++){
+			for(var j=0;j<graphToolContextMenu.length;j++){
+				if(graphToolContextMenu[j].title==hypoList[i]){
+					skipHypo=1;
+					break;					
+				}				
+			}
+			if(skipHypo==1){
+				skipHypo=0;
+			}else{
+				graphToolContextMenu.push({
+					title: hypoList[i],
+					action: function(elm, d, i) {
+						console.log(elm)
+						console.log(d)
+						console.log(i)
+					}
+				})			
+				skipHypo=0	
+			}					
+		}		*/
+		//graphToolContextMenu=[]		
     	if(firstTimeOnView==1){
     		firstTimeOnView = 0;
     		drawGraphViz();

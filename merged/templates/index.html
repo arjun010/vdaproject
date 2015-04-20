@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="{{ url_for ('static', filename='css/main.css')}}">
     <link rel="stylesheet" href="{{ url_for ('static', filename='css/nv.d3.css')}}">
     <link rel="stylesheet" href="{{ url_for ('static', filename='css/handsontable.full.min.css')}}">
+    <link rel="stylesheet" href="{{ url_for ('static', filename='css/d3-context-menu.css')}}">
     <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
     <style>
     .link {
@@ -264,7 +265,7 @@
 <script src="{{ url_for('static', filename='js/timeline-tool.js')}}"></script>
 <script src="{{ url_for('static', filename='js/provenance-tool.js')}}"></script>
 <script src="{{ url_for('static', filename='js/main.js')}}"></script>
-
+<script src="{{ url_for('static', filename='js/vendor/d3.contextMenu.js')}}"></script>
 {% raw %}
 <script>
     //    var params = {data: "data.csv", width:1400,height:800};
@@ -297,20 +298,40 @@ $(function() {
 
     
     var data1 = [
-    ['', 'Kia', 'Nissan', 'Toyota', 'Honda'],
-    ['2008', 10, 11, 12, 13],
-    ['2009', 20, 11, 14, 13],
-    ['2010', 30, 15, 12, 13]
+    ['',''],
+    ['','']
   ];
     container1 = document.getElementById('achtable');
+    htOptions = document.querySelectorAll('.handsontableOption');
   settings1 = {
-    data: data1
+    data: data1,
+    contextMenu:true
   };
   var hot1;
-
+var hypoList = data1[0];
 hot1 = new Handsontable(container1, settings1);
 
-hot1.render();
+for (var i = 0, len = htOptions.length; i<len; i++) {
+  Handsontable.Dom.addEvent(htOptions[i], 'change', function () {
+    var update = {};
+
+    switch (this.value) {
+      case 'true':
+        update[this.name] = true;
+        break;
+
+      case 'false':
+        update[this.name] = false;
+        break;
+
+      default:
+        update[this.name] = this.value;
+    }
+
+    hot1.updateSettings(update);
+  });
+}
+//hot1.render();
 
 function showACHTable(){
    $( "#dialog" ).dialog();

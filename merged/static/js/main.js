@@ -186,7 +186,7 @@
         $('#nav-analysis').addClass('active');
         $('#panel-entity-analysis-document').addClass('active');
         $('#panel-analysis').addClass('active');
-        //graphTool.draw(params);
+        graphTool.draw(params);
         timeTool.draw(params)
     };
 
