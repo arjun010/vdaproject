@@ -204,7 +204,6 @@ chart.discretebar.dispatch.on("elementClick", function (e) {
             .domain([0, maxCount])
             .range(d3.range(5).map(function(d) { return "q" + d + "-11"; }));
 
-        console.log(color);
         var svg = d3.select('#viz-timeline').selectAll("svg")
             .data(d3.range(2004, 2005))
             .enter().append("svg")

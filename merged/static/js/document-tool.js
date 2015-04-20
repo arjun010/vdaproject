@@ -17,7 +17,10 @@
         // Create the template for that data item and add it to the document container
         if($('#document-container .doc-item-'+doc.id).length == 0){
             var tmpl = $('#docTemplate').tmpl(doc).appendTo('#document-container');
-
+            tmpl.find('.doc-item-header').addClass('doc-item-header-flash')
+            setTimeout(function(){
+                tmpl.find('.doc-item-header').removeClass('doc-item-header-flash');
+            }, 1000);
             var contents = tmpl.find('.doc-item-text > p').contents();
             var text = contents[contents.length-1];
 
@@ -347,10 +350,10 @@
         return this.slice(0,i) + s + this.slice(i + s.length);
     }
 
-    docTool.doSearch = function(){
+    docTool.doSearch = function(count){
         $.getJSON('/_do_search', {
-            term: $('input[name="term"]').val(),
-            search_count: $("#search_size option:selected").val(),
+            term: $('#search-document input').val(),
+            search_count: count
             }, function(ret) {
                 var ids = ret.ids
                 for(var i = 0; i < ids.length; i++){

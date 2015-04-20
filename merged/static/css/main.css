@@ -113,7 +113,7 @@
     list-style: none;
     width: 100%;
     margin: 0 0;
-    padding: 0 0;
+    padding: 0 4px;
 }
 
 .entity-column-list > li > div > div > ul > li {
@@ -130,12 +130,24 @@
     font-size: 10px;
 }
 
+.entity-column-list > li > div > div > ul > li > div > div > ul {
+    display: none;
+    padding: 0 0;
+    margin: 0 0;
+}
+
+.entity-column-list > li > div > div > ul > li.ui-selected {
+    background-color: #efefef;
+}
+
 .entity-column-list > li > div > div > ul > li > div .frequency {
     display: none;
 }
 
 .entity-column-list > li > div > div > ul > li:after {
     content: ", ";
+    font-size: 10px;
+    display: inline;
 }
 
 .entity-column-list > li > div > div > ul > li:last-child:after {
@@ -244,37 +256,7 @@
 }
 
 #search-document {
-    padding: 6px;
-    bottom: 2px;
-}
-
-#search-document p{
-    float: left;
-    width: 50%;
-    text-align: center;
-}
-
-#search-control {
-    padding-left: 5px;
-    padding-right: 5px;
-    float: right;
-    width: 30%;
-}
-
-#search-document input{
-    border: 1px solid;
-    float: left;
-    width: 70%;
-}
-
-#search-document button{
-    float: left;
-    width: 100%;
-}
-
-#search-control select{
-    float:right;
-    width: 50%;
+    padding: 2px 6px;
 }
 
 #document-btn-group {
@@ -290,7 +272,7 @@
     position: relative;
     padding: 4px;
     overflow: scroll;
-    height: 80%;
+    height: 87%;
     width: 100%;
 }
 
@@ -327,6 +309,29 @@
     font-weight: 600;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+@-webkit-keyframes doc-item-header-flash {
+    0% {
+        background-color: #0e3b87;
+        opacity:1;
+    }
+    22% {
+        background-color: #bbe4f3;
+    }
+    77% {
+        background-color: #95c2d8;
+    }
+    100% {
+        background-color: #0e3b87;
+    }
+}
+
+.doc-item-header-flash {
+    -webkit-animation-name: doc-item-header-flash;
+    -webkit-animation-duration: 900ms;
+    -webkit-animation-iteration-count: 1;
+    -webkit-animation-timing-function: ease-in-out;
 }
 
 .doc-item-text {

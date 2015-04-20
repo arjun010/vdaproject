@@ -186,17 +186,21 @@
         <div id="panel-document" class="panel collapsible col-md-4 col-lg-4">
             <div id="viz-document" class="content">
                 <div id="search-document">
-                    <input type="text" name=term size="21" maxlength="120">
-                    <div id="search-control">
-                        <p>View:</p>
-                        <select id="search_size">
-                            <option>All</option>
-                            <option>1</option>
-                            <option>5</option>
-                            <option>10</option>
-                        </select>
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search Documents" aria-label="search-term">
+                        <div class="input-group-btn">
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                Return <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="#" onclick="docTool.doSearch(-1);">All</a></li>
+                                <li class="divider"></li>
+                                <li><a href="#" onclick="docTool.doSearch(1);">Top Result</a></li>
+                                <li><a href="#" onclick="docTool.doSearch(5);">Top 5 Results</a></li>
+                                <li><a href="#" onclick="docTool.doSearch(10);">Top 10 Result</a></li>
+                            </ul>
+                        </div>
                     </div>
-                    <button type="button" class="btn btn-default" onclick="docTool.doSearch();">Search</button>
                 </div>
                 <div id="document-container" onscroll="docTool.scrollDocList()">
 

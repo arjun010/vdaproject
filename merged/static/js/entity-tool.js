@@ -109,12 +109,32 @@
         action.params.targetItem.docList.forEach(function(d){
             docTool.add(d);
         });
+
+        if(action.params.targetItem.alias
+            && action.params.targetItem.alias.entList
+            && action.params.targetItem.alias.entList.length > 1){
+            for(var i = 1; i < action.params.targetItem.alias.entList.length; i++){
+                var entity = action.params.targetItem.alias.entList[i];
+                entity.docList.forEach(function(d){
+                    docTool.add(d);
+                });
+            }
+        }
+
         // Then add from the other selections
         if(action.params.multi){
             action.params.addItems.forEach(function(e){
                 e.docList.forEach(function(d){
                     docTool.add(d);
                 });
+                if(e.alias && e.alias.entList && e.alias.entList.length > 1){
+                    for(var i = 1; i < action.params.targetItem.alias.entList.length; i++){
+                        var entity = action.params.targetItem.alias.entList[i];
+                        entity.docList.forEach(function(d){
+                            docTool.add(d);
+                        });
+                    }
+                }
             });
         }
     }
@@ -323,7 +343,10 @@
             if(i == -1) d.aliasList.push(mainE.alias);
         });
 
+        mainE.frequency = concatDocList.length;
+
         if(mainEntVis && subEntVis){
+            entTool.update(mainE,'frequency', mainEntVis);
             // For now just remove the li's of the sub's from the list and add them to a ul of the main?
             subEntVis.remove();
             $('.entity-list-item-'+mainE.id+' > div > div > .alias-list').append(subEntVis);
@@ -494,9 +517,19 @@
 
     entTool.dblClick = function(t,e){
         entTool.select(t, e, true, true);
-        $(t).tmplItem().data.docList.forEach(function(d){
+        var entity = $(t).tmplItem().data;
+        entity.docList.forEach(function(d){
             docTool.add(d);
         });
+
+        if(entity.alias && entity.alias.entList && entity.alias.entList.length > 1){
+            for(var i = 1; i < entity.alias.entList.length; i++){
+                var ea = entity.alias.entList[i];
+                ea.docList.forEach(function(d){
+                    docTool.add(d);
+                });
+            }
+        }
     };
 
     entTool.sort = function(param, sortFun){
