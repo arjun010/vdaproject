@@ -1946,6 +1946,9 @@ function drawGraphViz(newNodeLabel,newNodeToAdd){
 	  }
 	  
 	  $("#addnewnodebutton").on("click",function(){	  	
+	  	if($("#newNodeInputBox").val()==""){
+	  		alert("enter something first genius.")
+	  	}
 	  	addNode($("#newNodeInputBox").val());
 	  	
 	  	link = link.data(graphData.links);
