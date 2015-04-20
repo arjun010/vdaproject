@@ -22,7 +22,8 @@
     }
 
     .ui-autocomplete {
-        max-height: 100px;
+        max-height: 600px;
+        max-width: 200px;
         overflow-y: auto;
         /* prevent horizontal scrollbar */
         overflow-x: hidden;
@@ -175,10 +176,10 @@
             </div>
 
             <div id="viz-graph" class="content">
-                <input id="newNode" placeholder="new node" style="width:174px;" >
+                <input id="newNodeInputBox" placeholder="new node" style="width:200px;" >
                 <button id="addnewnodebutton">add</button>
                 <button id="cleargraphbutton">clear graph</button>
-                <input onkeyup="searchNodeInGraph();" style="position:absolute;margin-left:750px" id="searchNode" placeholder="search in graph" style="width:174px;" >
+                <input onkeyup="searchNodeInGraph();" style="position:absolute;margin-left:750px" id="searchNode" placeholder="search in graph" style="width:200px;" >
                 <!--<input id="search" placeholder="search in network" title="Type to search for company" style="margin-left:5px;width:174px;">-->
             </div>
 
@@ -214,9 +215,9 @@
             </div>
         </div>
     </div>
-    <div id="panel-provenance" class="panel switchable col-md-12 col-lg-12">
-        <div id="viz-provenance" class="content" style="float:left">
-            <input id="search" onkeyup="searchProvView();" placeholder="search in prov view">            
+    <div id="panel-provenance" class="panel switchable col-md-12 col-lg-12">        
+        <div id="viz-provenance" class="content">                        
+            <input id="search" onkeyup="searchProvView();" placeholder="search in prov view" style="200px">
             <button onclick="showACHTable()">Show Table</button>
         </div>        
         <div id="dialog">
@@ -286,6 +287,7 @@
     var params = {};
     var dateBarClicked = 0;
     var provenanceMap = {};
+    var finalDOIMap = {};
     var sessionStartTime = new Date();
     main.init(params);
 /*

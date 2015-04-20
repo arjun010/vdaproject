@@ -511,7 +511,7 @@ function addNewNodeToGraphFromAnotherView(newNodeLabel,newNodeToAdd){
 	  }
 	  
 	  $("#addnewnodebutton").on("click",function(){	  	
-	  	addNode($("#newNode").val());
+	  	addNode($("#newNodeInputBox").val());
 	  	
 	  	link = link.data(graphData.links);
 		var newLinks = link.enter();
@@ -605,10 +605,17 @@ function searchNodeInGraph(){
 		}else{
 			graphnodes.push(graphData.nodes[i].name)
 		}
-	}
+	}	
+	
 	$("#searchNode").autocomplete({
 		source: graphnodes
 	});
+	/*$("#searchNode").autocomplete({
+			source: getSortedKeys(finalDOIMap),
+			minLength: 0,
+		}).focus(function () {
+			$(this).autocomplete("searchNode");
+		});*/
 	var selectedVal = document.getElementById('searchNode').value.toLowerCase();
 	if (selectedVal=="") {
 		d3.selectAll(".node").style("opacity",1);
@@ -781,7 +788,7 @@ function addRelatedNodes(node){
 		provenanceMap[node.name+"_"+node.id].push({"event":"expanded_in_graph","time":curTime})
 	}else{
 		curTime = (new Date()-sessionStartTime)/1000;
-		provenanceMap[node.id].push({"event":"expanded_in_graph","time":curTime})
+		provenanceMap[node.title].push({"event":"expanded_in_graph","time":curTime})
 	}
 
 	node.expanded = true;
@@ -798,12 +805,12 @@ function addRelatedNodes(node){
 					curDoc.isSelected = false;
 					graphData.nodes.push(curDoc); //add new documents to list of graph nodes
 					docTool.add(curDoc,null)
-					if(getIndexInList(curDoc.id,Object.keys(provenanceMap))==-1){
+					if(getIndexInList(curDoc.title,Object.keys(provenanceMap))==-1){
 						curTime = (new Date()-sessionStartTime)/1000;
-						provenanceMap[curDoc.id] = [{"event":"added_to_graph_by_expanding","time":curTime}];
+						provenanceMap[curDoc.title] = [{"event":"added_to_graph_by_expanding","time":curTime}];
 					}else{
 						curTime = (new Date()-sessionStartTime)/1000;
-						provenanceMap[curDoc.id].push({"event":"added_to_graph_by_expanding","time":curTime});
+						provenanceMap[curDoc.title].push({"event":"added_to_graph_by_expanding","time":curTime});
 					}
 					//newAdditions.push(data.documents[i])
 				}else{
@@ -896,7 +903,7 @@ function removeNodeAndLinks(node){
 	if(node instanceof Doc){
 		//docTool.removeDoc(node)
 		curTime = (new Date()-sessionStartTime)/1000;
-		provenanceMap[node.id].push({"event":"removed_from_graph","time":curTime})
+		provenanceMap[node.title].push({"event":"removed_from_graph","time":curTime})
 	}else{
 		curTime = (new Date()-sessionStartTime)/1000;
 		provenanceMap[node.name+"_"+node.id].push({"event":"removed_from_graph","time":curTime})
@@ -916,7 +923,7 @@ function removeNodeAndLinks(node){
 					docTool.removeDoc(graphData.links[i].target)
 				}*/
 				curTime = (new Date()-sessionStartTime)/1000;
-				provenanceMap[graphData.links[i].target.id].push({"event":"removed_from_graph_by_deletion","time":curTime})
+				provenanceMap[graphData.links[i].target.title].push({"event":"removed_from_graph_by_deletion","time":curTime})
 			}else{
 				curTime = (new Date()-sessionStartTime)/1000;
 				provenanceMap[graphData.links[i].target.name+"_"+graphData.links[i].target.id].push({"event":"removed_from_graph_by_deletion","time":curTime})
@@ -931,7 +938,7 @@ function removeNodeAndLinks(node){
 					docTool.removeDoc(graphData.links[i].source)
 				}*/
 				curTime = (new Date()-sessionStartTime)/1000;
-				provenanceMap[graphData.links[i].source.id].push({"event":"removed_from_graph_by_deletion","time":curTime})
+				provenanceMap[graphData.links[i].source.title].push({"event":"removed_from_graph_by_deletion","time":curTime})
 			}else{
 				curTime = (new Date()-sessionStartTime)/1000;
 				provenanceMap[graphData.links[i].source.name+"_"+graphData.links[i].source.id].push({"event":"removed_from_graph_by_deletion","time":curTime})
@@ -973,7 +980,7 @@ function linkCount(node){
 function collapseNode(node){
 	if(node instanceof Doc){
 		curTime = (new Date()-sessionStartTime)/1000;
-		provenanceMap[node.id].push({"event":"collapsed_in_graph","time":curTime})
+		provenanceMap[node.title].push({"event":"collapsed_in_graph","time":curTime})
 	}else{
 		curTime = (new Date()-sessionStartTime)/1000;
 		provenanceMap[node.name+"_"+node.id].push({"event":"collapsed_in_graph","time":curTime})
@@ -991,7 +998,7 @@ function collapseNode(node){
 				if(graphData.links[i].target instanceof Doc){
 					docTool.removeDoc(graphData.links[i].target)
 					curTime = (new Date()-sessionStartTime)/1000;
-					provenanceMap[graphData.links[i].target.id].push({"event":"removed_from_graph_by_collapse","time":curTime})
+					provenanceMap[graphData.links[i].target.title].push({"event":"removed_from_graph_by_collapse","time":curTime})
 				}else{
 					curTime = (new Date()-sessionStartTime)/1000;
 					provenanceMap[graphData.links[i].target.name+"_"+graphData.links[i].target.id].push({"event":"removed_from_graph_by_collapse","time":curTime})
@@ -1006,7 +1013,7 @@ function collapseNode(node){
 				if(graphData.links[i].source instanceof Doc){
 					docTool.removeDoc(graphData.links[i].source);
 					curTime = (new Date()-sessionStartTime)/1000;
-					provenanceMap[graphData.links[i].source.id].push({"event":"removed_from_graph_by_collapse","time":curTime})
+					provenanceMap[graphData.links[i].source.title].push({"event":"removed_from_graph_by_collapse","time":curTime})
 				}else{
 					curTime = (new Date()-sessionStartTime)/1000;
 					provenanceMap[graphData.links[i].source.name+"_"+graphData.links[i].source.id].push({"event":"removed_from_graph_by_collapse","time":curTime})
@@ -1094,10 +1101,10 @@ function addNode(nodeName, newNode){
 			}
 		}
 		curTime = (new Date()-sessionStartTime)/1000;
-		provenanceMap[newNode.id] = [{"event":"added_to_graph","time":curTime}];
+		provenanceMap[newNode.title] = [{"event":"added_to_graph","time":curTime}];
 	}
 	//console.log(provenanceMap)
-	document.getElementById("newNode").value="";	
+	document.getElementById("newNodeInputBox").value="";	
 }
 
 function dragStarted(d) {
@@ -1262,7 +1269,7 @@ function mouseClick(d){
 		if(dateBarClicked==1){
 			if(d instanceof Doc){
 				curTime = (new Date()-sessionStartTime)/1000;
-				provenanceMap[d.id].push({"event":"clicked_with_time_freeze","time":curTime})
+				provenanceMap[d.title].push({"event":"clicked_with_time_freeze","time":curTime})
 			}else{
 				curTime = (new Date()-sessionStartTime)/1000;
 				provenanceMap[d.name+"_"+d.id].push({"event":"clicked_with_time_freeze","time":curTime})
@@ -1319,7 +1326,7 @@ function mouseClick(d){
 		if(dateBarClicked==1){
 			if(d instanceof Doc){
 				curTime = (new Date()-sessionStartTime)/1000;
-				provenanceMap[d.id].push({"event":"clicked_with_time_freeze","time":curTime})
+				provenanceMap[d.title].push({"event":"clicked_with_time_freeze","time":curTime})
 			}else{
 				curTime = (new Date()-sessionStartTime)/1000;
 				provenanceMap[d.name+"_"+d.id].push({"event":"clicked_with_time_freeze","time":curTime})
@@ -1763,7 +1770,7 @@ function drawGraphViz(newNodeLabel,newNodeToAdd){
 	  }
 	  
 	  $("#addnewnodebutton").on("click",function(){	  	
-	  	addNode($("#newNode").val());
+	  	addNode($("#newNodeInputBox").val());
 	  	
 	  	link = link.data(graphData.links);
 		var newLinks = link.enter();
@@ -1944,11 +1951,16 @@ function drawGraphViz(newNodeLabel,newNodeToAdd){
 		    }        
 		}
 		allNodes=unique(allNodes.sort());
-		//console.log(allNodes)
-		$("#newNode").autocomplete({
+		//console.log(allNodes)		
+		$("#newNodeInputBox").autocomplete({
 		        source: allNodes
 		});
-
+	/*	$("#newNodeInputBox").autocomplete({
+			source: allNodes,
+			minLength: 0,
+		}).focus(function () {
+			$(this).autocomplete("newNodeInputBox");
+		});*/
     	if(firstTimeOnView==1){
     		firstTimeOnView = 0;
     		drawGraphViz();

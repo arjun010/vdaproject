@@ -1,3 +1,8 @@
+function getSortedKeys(obj) {
+    var keys = []; for(var key in obj) keys.push(key);
+    return keys.sort(function(a,b){return obj[b]-obj[a]});
+}
+
 (function () {
 
     provTool = {};
@@ -8,6 +13,25 @@
 
     provTool.draw = function (params) {
 		drawProvenanceView();    	
+		/*
+		$("#search").autocomplete({
+			source: Object.keys(provenanceMap)
+		});
+		$('#search').on( "focus", function( event, ui ) {
+		    $(this).trigger(jQuery.Event("keydown"));
+		   // Since I know keydown opens the menu, might as well fire a keydown event to the element
+		});
+		*/
+		/*
+		finalDOIMap.sort(function(a, b) {
+	    	return b.value - a.value;
+		});*/
+		$("#search").autocomplete({
+			source: getSortedKeys(finalDOIMap),
+			minLength: 0,
+		}).focus(function () {
+			$(this).autocomplete("search");
+		});
 //		drawACHTable();
 		//hot1.render();
     };
@@ -53,8 +77,9 @@ function drawProvenanceView(){
 		curProvObjectEventList = provenanceMap[provenanceObjects[j]];
 		tempDOIMap = {};
 		tempDOIMap["name"] = provenanceObjects[j];
-		for(var i=0;i<parallels.length;i++){ // for each parallel line
+		for(var i=1;i<parallels.length;i++){ // for each parallel line
 			curDOI = 0;
+			prevLimit = parallels[i-1];
 			curLimit = parallels[i]; // current parallel's limit
 			for(var eventIndex=0;eventIndex<curProvObjectEventList.length;eventIndex++){//for each event of the current provenance object
 				if(parseInt(curProvObjectEventList[eventIndex]["time"])<curLimit){// if it falls witin the current time parallel
@@ -66,18 +91,20 @@ function drawProvenanceView(){
 					}
 				}
 			}
-			tempDOIMap[""+curLimit] = curDOI;			
+			tempDOIMap[prevLimit+"-"+curLimit+"sec"] = curDOI;			
 		}
-		pcJson.push(tempDOIMap)		
+		pcJson.push(tempDOIMap)
 	}
+	for(var i=0;i<pcJson.length;i++){
+		finalDOIMap[pcJson[i]["name"]] = pcJson[i][parallels[parallels.length-2]+"-"+parallels[parallels.length-1]+"sec"];
+	}
+	console.log(finalDOIMap)
 	drawProvenanceView_actual(pcJson)
 }
 
-
-
 function drawProvenanceView_actual (cars) {
 	//console.log(cars)
-	var margin = {top: 30, right: 10, bottom: 10, left: 10},
+	var margin = {top: 30, right: 10, bottom: 10, left: 180},
     width = 960 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
@@ -120,7 +147,7 @@ var svg = d3.select("#viz-provenance").append("svg")
       .attr("d", path);
 
   foreground.on("mouseover",function(d){
-  	console.log(d)
+//  	console.log(d)
   })
   // Add a group element for each dimension.
   var g = svg.selectAll(".dimension")
@@ -164,10 +191,7 @@ function brush() {
 }
 
 
-function searchProvView(){
-	$("#search").autocomplete({
-		source: Object.keys(provenanceMap)
-	});
+function searchProvView(){		
 	var selectedVal = document.getElementById('search').value.toLowerCase();
 	if (selectedVal=="") {
 		d3.selectAll(".dataline").style("opacity",1).style("stroke","steelblue");
@@ -214,7 +238,7 @@ function searchProvView(){
 function  drawDonut(dataToUse) {
 	//console.log(dataToUse)
 	if(dataToUse.length==0){
-		d3.select("#donutchart").selectAll("svg").style("opacity",0)
+		d3.select("#donutchart").selectAll("svg").style("opacity",0)		
 	}else{
 		d3.select("#donutchart").selectAll("svg").style("opacity",1)
 	}
@@ -233,7 +257,12 @@ function  drawDonut(dataToUse) {
 		        .datum(dataToUse)
 		        .transition().duration(350)
 		        .call(chart);
-
+		        if(dataToUse.length==0){
+		        	//console.log("ZERO")
+		        	chart.tooltips(false);
+		        }else{
+		        	chart.tooltips(true);
+		        }
 		  return chart;
 	});
 }
