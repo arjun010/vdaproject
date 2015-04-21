@@ -119,7 +119,7 @@ function getIndexInList(obj,list){
             .attr("class", function(d) {
                 return 'day val day-'+d+' month-'+month(new Date(d))+' '+ color(timeTool.data [d].length); })
             .select("title")
-            .text(function(d) { return d + ": " + percent(timeTool.data [d]);});
+            .text(function(d) { return d;});
 
         function monthPath(t0) {
             var t1 = new Date(t0.getFullYear(), t0.getMonth() + 1, 0),

@@ -2,7 +2,7 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
-    <title>Stego Text Analyzer</title>
+    <title>PUNGA- Provenance Supporting Undirected Node Graph Analytics</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="{{ url_for ('static', filename='css/handsontable.full.min.css')}}">
     <link rel="stylesheet" href="{{ url_for ('static', filename='css/d3-context-menu.css')}}">
     <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+    <link rel="icon" href="{{ url_for ('static', filename='css/punga.png')}}" type="image/png" sizes="16x16">
     <style>
     .link {
       stroke: #ccc;
@@ -61,13 +62,12 @@
 
     </style>
 </head>
-<body>
-
+<body>  
 <div class="container-fluid">
     <nav class="navbar navbar-default">
         <div class="container-fluid">
             <div class="navbar-header">
-                <a class="navbar-brand" href="#">Stego Text Analyzer</a>
+                <a class="navbar-brand" href="#"><img width="30px" height="30px" src="{{ url_for ('static', filename='css/punga.png')}}" style="float:left"><span style="position:absolute;margin-top:10px">UNGA</span></a>
             </div>
             <div class="navbar-right" style="padding: 10px 15px;">
                 <div class="btn-group">
@@ -346,7 +346,9 @@ function showACHTable(){
     comments: true,
     search: true,
     manualColumnResize: true,
-    manualRowResize: true
+    manualRowResize: true,
+    rowHeaders: true,
+    colHeaders: true
   };
   var hot1;
 hot1 = new Handsontable(container1, settings1);
