@@ -221,7 +221,6 @@
                     </div>
                 </div>
                 <div id="document-container" onscroll="docTool.scrollDocList()">
-
                 </div>
                 <div id="document-btn-group" class="btn-group" role="group" aria-label="Document Buttons">
                     <button type="button" class="btn btn-default" onclick="docTool.addAll()">Add All</button>
@@ -234,16 +233,16 @@
     <div id="panel-provenance" class="panel switchable col-md-12 col-lg-12">        
         <div id="viz-provenance" class="content">                        
             <input id="search" onfocus="searchProvView();" onkeyup="searchProvView();" placeholder="search in prov view" style="200px">            
-        </div>        
-        <div id="dialog">
-            <div id="achtable"></div>
-        </div>
+        </div>         
         <div id="donutchart" style="position:absolute;margin-top:50px;margin-left:1000px;width:500px;height:250px"><svg></svg><div id="focusentity" align="center"></div>
         </div>        
         <table id="event_table" style="position:absolute;margin-top:300px;margin-left:1000px;width:300px;height:250px">
         <tr>            
         </tr>        
         </table>
+    </div>
+    <div id="dialog">
+        <div id="achtable"></div>
     </div>
 </div>
 
@@ -304,11 +303,15 @@
         });});
         }
     */
+
+    var sessionEvents = [];
+
     var params = {};
     var dateBarClicked = 0;
     var provenanceMap = {};
     var finalDOIMap = {};
     var sessionStartTime = new Date();
+    sessionEvents.push({"event":"Session started","time":sessionStartTime});
     main.init(params);
 /*
 $(function() {
@@ -334,6 +337,7 @@ function showACHTable(){
   var hot1;
 hot1 = new Handsontable(container1, settings1);
 hot1.render();
+
 /*
 for (var i = 0, len = htOptions.length; i<len; i++) {
   Handsontable.Dom.addEvent(htOptions[i], 'change', function () {
