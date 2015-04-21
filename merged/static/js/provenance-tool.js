@@ -46,7 +46,11 @@ scoreMap  = {
 	"removed_from_graph_by_collapse":-0.5,
 	"collapsed_in_graph":-2,
 	"expanded_in_graph":2,
-	"clicked_with_time_freeze":2
+	"clicked_with_time_freeze":2,
+	"document_opened":1,
+	"document_removed_from_doc_view":-1,
+	"document_deleted":0,
+	"searched_for":0.05
 }
 
 
@@ -84,7 +88,7 @@ function drawProvenanceView(){
 			for(var eventIndex=0;eventIndex<curProvObjectEventList.length;eventIndex++){//for each event of the current provenance object
 				if(parseInt(curProvObjectEventList[eventIndex]["time"])<curLimit){// if it falls witin the current time parallel
 					curEvent = curProvObjectEventList[eventIndex]["event"]; // stores the current event
-					if(curEvent=="removed_from_graph"){ // if event is removed, make the provenance object's score 0
+					if(curEvent=="removed_from_graph" || curEvent=="document_deleted"){ // if event is removed, make the provenance object's score 0
 						curDOI = 0;
 					}else{// else add the current event's score to the current DOI
 						curDOI += scoreMap[curEvent];
@@ -211,7 +215,11 @@ function searchProvView(){
 					"removed_from_graph_by_collapse":0,
 					"collapsed_in_graph":0,
 					"expanded_in_graph":0,
-					"clicked_with_time_freeze":0
+					"clicked_with_time_freeze":0,
+					"document_opened":0,
+					"document_removed_from_doc_view":0,
+					"document_deleted":0,
+					"searched_for":0
 				};
 				for(var eIndex=0;eIndex<provObject.length;eIndex++){
 					countMap[provObject[eIndex]["event"]] += 1

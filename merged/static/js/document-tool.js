@@ -103,8 +103,12 @@
             var newHeight = doc.height() + text.height();
             doc.height(newHeight);//open
             var curTime = (new Date()-sessionStartTime)/1000;
-            provenanceMap[doc.title+"_"+doc.id].push({"event":"document_opened","time":curTime})            
-            sessionEvents.push({"event":"document_read","value":doc.title,"time":new Date()});
+            if(getIndexInList(doc.tmplItem().data.title+"_"+doc.tmplItem().data.id,Object.keys(provenanceMap))!=-1){
+                provenanceMap[doc.tmplItem().data.title+"_"+doc.tmplItem().data.id].push({"event":"document_opened","time":curTime})
+            }else{
+                provenanceMap[doc.tmplItem().data.title+"_"+doc.tmplItem().data.id] = [{"event":"document_opened","time":curTime}]
+            }
+            sessionEvents.push({"event":"document_read","value":doc.tmplItem().data.title,"time":new Date()});
         } else {
             var newHeight = doc.height() - text.height();
             doc.height(newHeight);//close

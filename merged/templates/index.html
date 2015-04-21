@@ -70,8 +70,12 @@
                 <a class="navbar-brand" href="#">Stego Text Analyzer</a>
             </div>
             <div class="navbar-right" style="padding: 10px 15px;">
+                <button class="btn btn-default" onclick="downloadSessionInfo()"><span class="glyphicon glyphicon-download-alt"></span></button>
+            </div>
+            <div class="navbar-right" style="padding: 10px 15px;">
                 <button class="btn btn-default" onclick="showACHTable()"><span class="glyphicon glyphicon-th-large"></span></button>
             </div>
+            <a id="downloadlink" style="display:none"></a>         
             <div class="navbar-right" style="padding: 8px 15px;">
                 <ul class="nav nav-pills">
 
@@ -322,6 +326,7 @@ $(function() {
 });
 */
 function showACHTable(){
+    //console.log(sessionEvents)
    $( "#dialog" ).dialog();
 }
    
@@ -340,6 +345,34 @@ function showACHTable(){
   var hot1;
 hot1 = new Handsontable(container1, settings1);
 hot1.render();
+
+
+function downloadSessionInfo(){
+
+    var textFile = null,
+    makeTextFile = function (text) {
+      var data = new Blob([text], {type: 'text/plain'});
+
+      if (textFile !== null) {
+        window.URL.revokeObjectURL(textFile);
+      }
+
+      textFile = window.URL.createObjectURL(data);
+
+      return textFile;
+    };
+    var optStr = "";
+    for(var i=0;i<sessionEvents.length;i++){
+      optStr += JSON.stringify(sessionEvents[i])+"\n";
+    }
+    var totalSessionTime = ((sessionEvents[sessionEvents.length-1]["time"]-sessionEvents[0]["time"])/1000)/60;
+
+    optStr += JSON.stringify({"total_session_time":totalSessionTime+"  min"})
+    var link = document.getElementById('downloadlink');
+    link.href = makeTextFile(optStr);        
+    link.download = "sessionLogs.txt"
+    link.click();
+}
 
 /*
 for (var i = 0, len = htOptions.length; i<len; i++) {
