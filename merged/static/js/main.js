@@ -19,6 +19,7 @@
         graphTool.init(params);
         timeTool.init(params);
         docTool.init(params);
+        provTool.init(params);
 
         console.log(timeTool);
 
@@ -95,13 +96,15 @@
         if(params.targetItem instanceof  Entity){
             if($(params.target).hasClass('entity-list-item')){
                 var selRemoveString = (params.multi)? 'Delete '+(params.addItems.length+1)+' Selected' : 'Delete Selected';
+                var selGraphString = (params.multi)? 'Add '+(params.addItems.length+1)+' Selected to Graph' : 'Add Selected to Graph';
                 actions.push(new Action('entity-edit', 'Edit Entity', true, params));
                 actions.push(new Action('entity-show-docs', 'Show Documents', true, params));
                 actions.push(new Action('entity-delete', 'Delete Entity', true, params));
+                actions.push(new Action('entity-add-to-graph', 'Add to Graph', true, params));
                 actions.push(new Action('entity-change-type', 'Change Type', true, params));
                 actions.push(new Action('entity-create-alias', 'Create Alias', (params.multi), params));
                 actions.push(new Action('entity-delete-selected', selRemoveString, (params.multi), params));
-                actions.push(new Action('entity-add-to-graph', 'Add to Graph', true, params));
+                //actions.push(new Action('entity-add-to-graph', selGraphString, (params.multi), params));
             } else if ($(params.target).hasClass('doc-entity-item')) {
                 actions.push(new Action('entity-edit', 'Edit Entity', true, params));
                 actions.push(new Action('entity-show-docs', 'Show Documents', true, params));

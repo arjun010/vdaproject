@@ -6,165 +6,6 @@ function getIndexInList(obj,list){
 	}
 	return -1;
 }
-/*
-function drawGraph(time){
-	var dataToUse;
-	if(time==1){
-		dataToUse = [];
-	}else{
-    /*var format = d3.time.format("%Y-%m-%d");
-    //console.log(timelineData[0]["values"])
-    for(var i=0;i<timelineData[0]["values"].length;i++){
-      var curDate = timelineData[0]["values"][i]["date"].split("-")
-      timelineData[0]["values"][i]["date"] = format(new Date(curDate[0], curDate[1], curDate[2]));
-    }
-    dataToUse = timelineData;
-	}
-  var format = d3.time.format("%Y-%m-%d");
-  nv.addGraph(function() {
-		var chart = nv.models.discreteBarChart()
-	      .x(function(d) { return d.date})    //Specify the data accessors.
-	      .y(function(d) { return d.count })
-	      .staggerLabels(false)    //Too many bars and not enough room? Try staggering labels.
-	      .tooltips(true)        //Don't show tooltips
-	      .showValues(false) 
-	      .showXAxis(false)     //...instead, show the bar value right on top of each bar.
-	      .tooltipContent(function (key, date, e, graph) {
-	      	if(dateBarClicked==0){
-          var documentsIdsToShow = graph.point.documentList;
-	      	var documentsToShow = [];
-	      	for(var i=0;i<data.documents.length;i++){
-	      		if(getIndexInList(data.documents[i].id,documentsIdsToShow)!=-1){
-	      			documentsToShow.push(data.documents[i]);
-	      		}
-	      	}
-
-	      	var entitiesToShow = [];
-	      	for(var i =0; i<data.documents.length;i++){
-	      		if(getIndexInList(data.documents[i].id,documentsIdsToShow)!=-1){
-	      			for(var j=0;j<data.documents[i].aliasList.length;j++){
-	      				entitiesToShow.push(data.documents[i].aliasList[j])
-	      			}
-	      		}
-	      	}
-	      	
-	      	d3.selectAll(".node").style("opacity",function(d){
-	      		if(d instanceof Doc){
-	      			if(getIndexInList(d,documentsToShow)!=-1){
-	      				return 1;
-	      			}
-	      		}else if(d instanceof Alias){
-	      			if(getIndexInList(d,entitiesToShow)!=-1){
-	      				return 1;
-	      			}
-	      		}
-	      		return 0.2;
-	      	});
-
-	      	d3.selectAll(".link").style("opacity",function(d){
-	      		if((getIndexInList(d.source,entitiesToShow)!=-1 || getIndexInList(d.source,documentsToShow)!=-1) && (getIndexInList(d.target,entitiesToShow)!=-1 || getIndexInList(d.target,documentsToShow)!=-1)) {
-	      			return 1;
-	      		}else{
-	      			return 0.2;
-	      		}
-	      	});
-          }
-
-        return  "<p>" + graph.point.date + "<br>"+ graph.point.count + "<br>" + graph.point.documentList + "</p>";
-		   });
-
-chart.xAxis.rotateLabels(-90);
-/*
-.ticks(d3.time.months)
-    .tickSize(16, 0)
-    .tickFormat(d3.time.format("%B"));*
-
-chart.discretebar.dispatch.on("elementMouseout", function (e) {
-  if(dateBarClicked==0){
-	 d3.selectAll(".node").style("opacity",1);
-	 d3.selectAll(".link").style("opacity",1);
-  }
-});
-
-
-
-chart.discretebar.dispatch.on("elementClick", function (e) {
-  //console.log(e)  
-  if(dateBarClicked==1){
-    dateBarClicked = 0;
-    d3.selectAll(".discreteBar").style("opacity",1)
-    d3.selectAll(".node").style("opacity",1);
-  d3.selectAll(".link").style("opacity",1);
-  }else{
-    dateBarClicked = 1;
-    var clickedBarDate = e.point.date;
-    d3.selectAll(".discreteBar").style("opacity",function(d){
-      //console.log(d)
-      if(d.date == clickedBarDate){
-        return 1;
-      }
-      return 0.2;
-      //console.log(d)
-    })
-    var documentsIdsToShow = e.point.documentList;
-          var documentsToShow = [];
-          for(var i=0;i<data.documents.length;i++){
-            if(getIndexInList(data.documents[i].id,documentsIdsToShow)!=-1){
-              documentsToShow.push(data.documents[i]);
-            }
-          }
-
-          var entitiesToShow = [];
-          for(var i =0; i<data.documents.length;i++){
-            if(getIndexInList(data.documents[i].id,documentsIdsToShow)!=-1){
-              for(var j=0;j<data.documents[i].aliasList.length;j++){
-                entitiesToShow.push(data.documents[i].aliasList[j])
-              }
-            }
-          }
-          
-          d3.selectAll(".node").style("opacity",function(d){
-            if(d instanceof Doc){
-              if(getIndexInList(d,documentsToShow)!=-1){
-                return 1;
-              }
-            }else if(d instanceof Alias){
-              if(getIndexInList(d,entitiesToShow)!=-1){
-                return 1;
-              }
-            }
-            return 0.1;
-          });
-
-          d3.selectAll(".link").style("opacity",function(d){
-            if((getIndexInList(d.source,entitiesToShow)!=-1 || getIndexInList(d.source,documentsToShow)!=-1) && (getIndexInList(d.target,entitiesToShow)!=-1 || getIndexInList(d.target,documentsToShow)!=-1)) {
-              return 1;
-            }else{
-              return 0.1;
-            }
-          });
-  }
-});
- // chart.xAxis.ticks(d3.time.months, 12)
-
-
-		  d3.select('#viz-timeline svg')
-		      .datum(dataToUse)
-	 	      .call(chart);
-/*
-          d3.select("#viz-timeline svg")
-            .append("text")
-            .attr("x",50)
-            .attr("y",170)
-            .text(function(){return "January"})
-
-		  nv.utils.windowResize(chart.update);
-
-		  return chart;
-		});
-	//chart.discretebar.dispatch.on("elementClick", function (e) {
-}
-*/
 (function () {
 
     timeTool = {};
@@ -184,10 +25,13 @@ chart.discretebar.dispatch.on("elementClick", function (e) {
         var day = d3.time.format("%w"),
             week = d3.time.format("%U"),
             year = d3.time.format("%Y"),
+            month = d3.time.format('%m'),
+            monthName = d3.time.format('%b'),
             percent = d3.format(".1%"),
             format = d3.time.format("%Y-%m-%d");
 
         timeTool.format = format;
+        timeTool.month = month;
 
         timeTool.data = d3.nest()
             .key(function(d){return format(d.date)})
@@ -211,7 +55,6 @@ chart.discretebar.dispatch.on("elementClick", function (e) {
         var svg = d3.select('#viz-timeline').selectAll("svg")
             .data(d3.range(2004, 2005))
             .enter().append("svg")
-            //.on('click', unfreezeBrushDate)
             .attr("width", timeTool.dimens.width)
             .attr("height", timeTool.dimens.height)
             .attr("class", "RdYlGn")
@@ -227,7 +70,7 @@ chart.discretebar.dispatch.on("elementClick", function (e) {
         var rect = svg.selectAll(".day")
             .data(function(d) { return d3.time.days(new Date(d, 0, 1), new Date(d + 1, 0, 1)); })
             .enter().append("rect")
-            .attr("class", function(d){ return "day day-"+format(d);})
+            .attr("class", function(d){ return "day day-"+format(d)+' month-'+month(d);})
             .attr("width", timeTool.dimens.cellSize)
             .attr("height", timeTool.dimens.cellSize)
             .attr("x", function(d) { return week(d) * timeTool.dimens.cellSize; })
@@ -240,18 +83,43 @@ chart.discretebar.dispatch.on("elementClick", function (e) {
         rect.append("title")
             .text(function(d) { return d; });
 
-        svg.selectAll(".month")
-            .data(function(d) { return d3.time.months(new Date(d, 0, 1), new Date(d + 1, 0, 1)); })
-            .enter().append("path")
-            .attr("class", "month")
+        var monthEnter = svg.selectAll(".month")
+            .data(function(d) { return d3.time.months(new Date(d, 0, 1), new Date(d + 1, 0, 1)); }).enter();
+
+        monthEnter.append("path")
+            .attr("class", function(d){
+                return "month month-path";
+            })
             .attr("d", monthPath);
 
+        monthEnter = monthEnter.append('g')
+            .attr('class', function(d){
+                return 'month month-text month-'+month(d);
+            })
+            .attr('transform', function(t0){
+                var t1 = new Date(t0.getFullYear(), t0.getMonth() + 1, 0);
+                var center = parseFloat(week(t0));
+                center += (parseFloat(week(t1)) - parseFloat(week(t0)))/2;
+                return 'translate('+ (center * timeTool.dimens.cellSize) + ', -15)';
+            });
+
+        monthEnter.append('text')
+            .text(function(d){ return monthName(d);});
+
+        monthEnter.append('rect')
+            .attr('width', timeTool.dimens.cellSize * 2)
+            .attr('height', timeTool.dimens.cellSize)
+            .attr('rx', 5)
+            .attr('ry', 5)
+            .on('click', freezeBrushMonth)
+            .on('mouseenter', showBrushMonth)
+            .on('mouseout', hideBrushMonth);
 
         rect.filter(function(d) { return d in timeTool.data; })
             .attr("class", function(d) {
-                return "day val day-"+d+" "+ color(timeTool.data [d].length); })
+                return 'day val day-'+d+' month-'+month(new Date(d))+' '+ color(timeTool.data [d].length); })
             .select("title")
-            .text(function(d) { return d + ": " + percent(timeTool.data [d]); });
+            .text(function(d) { return d + ": " + percent(timeTool.data [d]);});
 
         function monthPath(t0) {
             var t1 = new Date(t0.getFullYear(), t0.getMonth() + 1, 0),
@@ -263,8 +131,6 @@ chart.discretebar.dispatch.on("elementClick", function (e) {
                 + "H" + (w1 + 1) * timeTool.dimens.cellSize + "V" + 0
                 + "H" + (w0 + 1) * timeTool.dimens.cellSize + "Z";
         }
-
-        //d3.select(self.frameElement).style("height", "2910px");
     };
 
     /**
@@ -336,18 +202,18 @@ chart.discretebar.dispatch.on("elementClick", function (e) {
                       .attr("dx", 12)
                       .attr("dy", ".35em")
                       .style("font-size",function(d){
-                        if(d instanceof Doc){                            
+                        if(d instanceof Doc){
                             if (getIndexInList(d, documents) != -1) {
                                 return nodeTextScale(d.aliasList);
                             }
                         }else{
                             if (getIndexInList(d, aliases) != -1) {
                                 return nodeTextScale(getDocCountForAlias(d))
-                            }                            
+                            }
                         }
                       })
                       .style("font-family","sans-serif")
-                      .text(function(d) { 
+                      .text(function(d) {
                         if(d instanceof Doc){
                         if (getIndexInList(d, documents) != -1) {
                             return d.title;
@@ -380,7 +246,6 @@ chart.discretebar.dispatch.on("elementClick", function (e) {
 
     function freezeBrushDate(d){
         if(dateBarClicked == 0){
-            console.log('Click received');
             if ($('.val.day-' + d).length > 0) {
                 timeTool.clicked.push(d);
                 showBrushDate(d);
@@ -395,9 +260,6 @@ chart.discretebar.dispatch.on("elementClick", function (e) {
                     break;
                 }
             }
-
-            console.log('Ctrl key pressed '+d3.event.ctrlKey);
-            console.log(d3.event);
 
             // See if we are using the ctrlkey - and if this is a date with a value
             if((d3.event.ctrlKey || d3.event.metaKey) && $('.val.day-' + d).length > 0){
@@ -418,15 +280,47 @@ chart.discretebar.dispatch.on("elementClick", function (e) {
                     timeTool.clicked.push(d);
                     showBrushDate(d, true);
                 } else {
+                    d3.select('.month-text.selected').classed('selected',false);
                     dateBarClicked = 0;
                 }
             }
         }
     }
 
-    //function unfreezeBrushDate(d){
-    //    console.log('unfreeze');
-    //    hideBrushDate(d,true);
-    //    dateBarClicked = 0;
-    //}
+    function freezeBrushMonth(m){
+
+        if(d3.select('.month-text.month-'+timeTool.month(m)).attr('class').indexOf('selected') == -1){
+            // Unselect the old one
+            d3.select('.month-text.selected').classed('selected',false);
+            // Select this one
+            d3.select('.month-text.month-'+timeTool.month(m)).classed('selected',true);
+            showBrushMonth(m, true);
+            dateBarClicked = 1;
+        } else {
+            d3.select('.month-text.selected').classed('selected',false);
+            hideBrushMonth(m,true);
+            dateBarClicked = 0;
+        }
+    }
+
+    function showBrushMonth(m, force){
+        if(dateBarClicked == 0 || force === true) {
+            d3.selectAll('.day.val').style('opacity', 0.2);
+            d3.selectAll('.node').style('opacity', 0.2);
+            d3.selectAll('.link').style('opacity', 0.2);
+
+            d3.selectAll('.day.val.month-' + timeTool.month(m))[0].forEach(function (d) {
+                brushDate(d3.select(d).data()[0], 1);
+            });
+        }
+    }
+    function hideBrushMonth(m, force) {
+        if (dateBarClicked == 0 || force === true) {
+            console.log(dateBarClicked);
+            d3.selectAll('.day.val').style('opacity', 1);
+            d3.selectAll('.node').style('opacity', 1);
+            d3.selectAll('.link').style('opacity', 1);
+        }
+    }
+
 })();

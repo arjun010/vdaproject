@@ -87,8 +87,8 @@
 
     docTool.openDoc = function(doc){
         var docElement = docTool.find(doc, false);
-        if($(docElement).find('.doc-item-text').css('display') === 'none'){
-            docTool.collapse($(docElement).find('.doc-item-header'));
+        if($(docElement).find('.doc-item-text').css('display') === 'none'){                    
+            docTool.collapse($(docElement).find('.doc-item-header'));//open
         }
     };
 
@@ -101,10 +101,17 @@
             doc.tmplItem().data.views++;
             $(d).find(".views").html(doc.tmplItem().data.views);
             var newHeight = doc.height() + text.height();
-            doc.height(newHeight);
+            doc.height(newHeight);//open
+            var curTime = (new Date()-sessionStartTime)/1000;
+            if(getIndexInList(doc.tmplItem().data.title+"_"+doc.tmplItem().data.id,Object.keys(provenanceMap))!=-1){
+                provenanceMap[doc.tmplItem().data.title+"_"+doc.tmplItem().data.id].push({"event":"document_opened","time":curTime})
+            }else{
+                provenanceMap[doc.tmplItem().data.title+"_"+doc.tmplItem().data.id] = [{"event":"document_opened","time":curTime}]
+            }
+            sessionEvents.push({"event":"document_read","value":doc.tmplItem().data.title,"time":new Date()});
         } else {
             var newHeight = doc.height() - text.height();
-            doc.height(newHeight);
+            doc.height(newHeight);//close
         }
         text.slideToggle();
         //doc.parent().update();
@@ -215,12 +222,18 @@
 
     function del(action){
         if(confirm('Delete document from analysis?')){
+            var curTime = (new Date()-sessionStartTime)/1000;
+            provenanceMap[action.params.targetItem.title+"_"+action.params.targetItem.id].push({"event":"document_deleted","time":curTime})            
+            sessionEvents.push({"event":"document_deleted","value":action.params.targetItem.title,"time":new Date()});
             delDocument(action.params.targetItem, docTool.find(action.params.targetItem, false), null, null);
         }
     }
 
     function remove(action){
-        removeDocument(action.params.targetItem, docTool.find(action.params.targetItem, false), null, null);
+        var curTime = (new Date()-sessionStartTime)/1000;
+        sessionEvents.push({"event":"document_removed","value":action.params.targetItem.title,"time":new Date()});
+        provenanceMap[action.params.targetItem.title+"_"+action.params.targetItem.id].push({"event":"document_removed_from_doc_view","time":curTime})            
+        removeDocument(action.params.targetItem, docTool.find(action.params.targetItem, false), null, null);        
     }
 
     function delDocument(d, docVis, graphVis, timeVis, proVis){

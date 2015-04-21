@@ -69,6 +69,13 @@
             <div class="navbar-header">
                 <a class="navbar-brand" href="#">Stego Text Analyzer</a>
             </div>
+            <div class="navbar-right" style="padding: 10px 15px;">
+                <div class="btn-group">
+                    <button class="btn btn-default" onclick="showACHTable()"><span class="glyphicon glyphicon-th-large"></span></button>
+                    <button class="btn btn-default" onclick="downloadSessionInfo()"><span class="glyphicon glyphicon-download-alt"></span></button>
+                </div>
+            </div>
+            <a id="downloadlink" style="display:none"></a>         
             <div class="navbar-right" style="padding: 8px 15px;">
                 <ul class="nav nav-pills">
                     <li id="nav-entity" role="presentation" class="active"><a href="#" onclick="main.showEntityView()">Entity
@@ -101,7 +108,7 @@
                             <sub>rev</sub><span class="glyphicon glyphicon-sort-by-alphabet" aria-hidden="true"></span>
                         </button>
                         <button type="button" class="btn btn-default btn-sm" onclick="entTool.sort('freq')">
-                            <span class="glyphicon glyphicon-sort-by-order" aria-hidden="true"></span>
+                            <span class="glyphicon glyphicon-sort-by-attributes-alt" aria-hidden="true"></span>
                         </button>
                     </div>
                 </div>
@@ -230,20 +237,24 @@
             </div>
         </div>
     </div>
-    <div id="panel-provenance" class="panel switchable col-md-12 col-lg-12">        
-        <div id="viz-provenance" class="content">                        
-            <input id="search" onkeyup="searchProvView();" placeholder="search in prov view" style="200px">
-            <!--<button onclick="showACHTable()">Show Table</button>-->
-        </div>        
-        <div id="dialog">
-            <div id="achtable"></div>
+    <div id="panel-provenance" class="panel switchable col-md-12 col-lg-12">
+        <div id="viz-provenance" class="content">
+            <div id="prov-search">
+                <div class="input-group">
+                    <input id="search" type="text" class="form-control" onfocus="searchProvView();" onkeyup="searchProvView();" placeholder="Find Entity or Document" aria-expanded="false">
+                    <div class="input-group-btn">
+                        <button type="button" class="btn btn-default" aria-expanded="false"><span class="glyphicon glyphicon-search"></span></button>
+                    </div>
+                </div>
+            </div>
+            <div id="donutchart">
+                <svg></svg>
+            </div>
+            <div id="prov-grid"></div>
         </div>
-        <div id="donutchart" style="position:absolute;margin-top:50px;margin-left:1000px;width:500px;height:250px"><svg></svg><div id="focusentity" align="center"></div>
-        </div>        
-        <table id="event_table" style="position:absolute;margin-top:300px;margin-left:1000px;width:300px;height:250px">
-        <tr>            
-        </tr>        
-        </table>
+    </div>
+    <div id="dialog">
+        <div id="achtable"></div>
     </div>
 </div>
 
@@ -304,18 +315,25 @@
         });});
         }
     */
+
+    var sessionEvents = [];
+
     var params = {};
     var dateBarClicked = 0;
     var provenanceMap = {};
     var finalDOIMap = {};
     var sessionStartTime = new Date();
+    sessionEvents.push({"event":"Session started","time":sessionStartTime});
     main.init(params);
 /*
 $(function() {
     $( "#dialog" ).dialog();
 });
-
-    
+*/
+function showACHTable(){
+   $( "#dialog" ).dialog();
+}
+   
     var data1 = [
     ['',''],
     ['','']
@@ -324,12 +342,45 @@ $(function() {
     htOptions = document.querySelectorAll('.handsontableOption');
   settings1 = {
     data: data1,
-    contextMenu:true
+    contextMenu:true,
+    comments: true,
+    search: true,
+    manualColumnResize: true,
+    manualRowResize: true
   };
   var hot1;
-var hypoList = data1[0];
 hot1 = new Handsontable(container1, settings1);
+hot1.render();
 
+
+function downloadSessionInfo(){
+
+    var textFile = null,
+    makeTextFile = function (text) {
+      var data = new Blob([text], {type: 'text/plain'});
+
+      if (textFile !== null) {
+        window.URL.revokeObjectURL(textFile);
+      }
+
+      textFile = window.URL.createObjectURL(data);
+
+      return textFile;
+    };
+    var optStr = "";
+    for(var i=0;i<sessionEvents.length;i++){
+      optStr += JSON.stringify(sessionEvents[i])+"\n";
+    }
+    var totalSessionTime = ((sessionEvents[sessionEvents.length-1]["time"]-sessionEvents[0]["time"])/1000)/60;
+
+    optStr += JSON.stringify({"total_session_time":totalSessionTime+"  min"})
+    var link = document.getElementById('downloadlink');
+    link.href = makeTextFile(optStr);        
+    link.download = "sessionLogs.txt"
+    link.click();
+}
+
+/*
 for (var i = 0, len = htOptions.length; i<len; i++) {
   Handsontable.Dom.addEvent(htOptions[i], 'change', function () {
     var update = {};
@@ -352,9 +403,7 @@ for (var i = 0, len = htOptions.length; i<len; i++) {
 }
 //hot1.render();
 
-function showACHTable(){
-   $( "#dialog" ).dialog();
-}*/
+*/
 function unique(list) {
     var result = [];
     $.each(list, function(i, e) {

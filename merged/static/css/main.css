@@ -23,6 +23,16 @@
     height: 69.8%;
 }
 
+.navbar.navbar-default .nav.nav-pills a{
+    color: #333333;
+}
+
+.navbar.navbar-default .btn,
+.navbar.navbar-default .nav.nav-pills .active a{
+    background-color: #777777;
+    color: #fefefe;
+}
+
 #graph-new-node-input{
     display: block;
     width: 300px;
@@ -58,7 +68,7 @@
 
 .content {
     width: 100%;
-    background: #e0e0e0;
+    background: #f4f4f4;
     position: absolute;
     display: block;
     border-radius: 5px;
@@ -326,7 +336,7 @@
 }
 
 .doc-item-header > span {
-    color: #cccccc;
+    color: #f8f8f8;
     margin-left: 4px;
     font-size: 14px;
 }
@@ -502,20 +512,105 @@
 }
 
 .day {
-    fill: #fff;
+    fill: #fffbea;
     stroke: #ccc;
 }
 
-.month {
+.month-path {
     fill: none;
-    stroke: #000;
+    stroke: #999;
     stroke-width: 2px;
 }
 
+.month-text.selected rect {
+    opacity: 0.75;
+}
+
+.month-text rect {
+    opacity: 0;
+    fill: #2171b5;
+    transform: translate(-6.5px,-11.5px);
+}
+
+.month-text {
+    cursor: pointer;
+}
+
+.month-text text{
+    font-size: 11px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: normal;
+}
 
 
-.RdYlGn .q0-11{fill:#9ecae1}
-.RdYlGn .q1-11{fill:#6baed6}
-.RdYlGn .q2-11{fill:#4292c6}
-.RdYlGn .q3-11{fill:#2171b5}
-.RdYlGn .q4-11{fill:#084594}
+.q0-11{fill:#9ecae1}
+.q1-11{fill:#6baed6}
+.q2-11{fill:#4292c6}
+.q3-11{fill:#2171b5}
+.q4-11{fill:#084594}
+
+#prov-grid {
+    color: #333333;
+    clear: both;
+    position: relative;
+    font-family: Arial, Helvetica, sans-serif;
+    width: 75%;
+    height: 40%;
+    top: 60%;
+    left: 0;
+}
+
+#prov-grid .header {
+    font-weight: 600;
+}
+
+#prov-grid .header,
+#prov-grid .row {
+    clear: left;
+    font-size: 12px;
+    line-height: 16px;
+    height: 18px;
+    margin: 5px;
+    width: 100%;
+}
+
+#prov-grid .cell{
+    float: left;
+    overflow: hidden;
+    white-space: nowrap;
+    width: 120px;
+    height: 22px;
+}
+
+#prov-grid .col-0 {
+    width: 280px;
+}
+
+#prov-search{
+    display: block;
+    width: 300px;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+#viz-provenance svg {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 74%;
+    height: 60%;
+}
+
+#donutchart{
+    position: absolute;
+    left: 75%;
+    width: 25%;
+    height: 100%;
+}
+
+.row:nth-child(odd) {
+    background: rgba(0, 0, 0, 0.25);
+}
+
