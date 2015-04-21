@@ -19,6 +19,7 @@
         graphTool.init(params);
         timeTool.init(params);
         docTool.init(params);
+        provTool.init(params);
 
         console.log(timeTool);
 
