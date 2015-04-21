@@ -70,15 +70,14 @@
                 <a class="navbar-brand" href="#">Stego Text Analyzer</a>
             </div>
             <div class="navbar-right" style="padding: 10px 15px;">
-                <button class="btn btn-default" onclick="downloadSessionInfo()"><span class="glyphicon glyphicon-download-alt"></span></button>
-            </div>
-            <div class="navbar-right" style="padding: 10px 15px;">
-                <button class="btn btn-default" onclick="showACHTable()"><span class="glyphicon glyphicon-th-large"></span></button>
+                <div class="btn-group">
+                    <button class="btn btn-default" onclick="showACHTable()"><span class="glyphicon glyphicon-th-large"></span></button>
+                    <button class="btn btn-default" onclick="downloadSessionInfo()"><span class="glyphicon glyphicon-download-alt"></span></button>
+                </div>
             </div>
             <a id="downloadlink" style="display:none"></a>         
             <div class="navbar-right" style="padding: 8px 15px;">
                 <ul class="nav nav-pills">
-
                     <li id="nav-entity" role="presentation" class="active"><a href="#" onclick="main.showEntityView()">Entity
                         View</a></li>
                     <li id="nav-analysis" role="presentation"><a href="#" onclick="main.showAnalysisView()">Analysis
