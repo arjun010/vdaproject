@@ -256,7 +256,11 @@ scoreMap  = {
 	"removed_from_graph_by_collapse":-0.5,
 	"collapsed_in_graph":-2,
 	"expanded_in_graph":2,
-	"clicked_with_time_freeze":2
+	"clicked_with_time_freeze":2,
+    "document_opened":1,
+    "document_removed_from_doc_view":-1,
+    "document_deleted":0,
+    "searched_for":0.1
 }
 
 
