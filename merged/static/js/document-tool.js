@@ -232,7 +232,7 @@
     function remove(action){
         var curTime = (new Date()-sessionStartTime)/1000;
         sessionEvents.push({"event":"document_removed","value":action.params.targetItem.title,"time":new Date()});
-        provenanceMap[action.params.targetItem.title+"_"+action.params.targetItem.id].push({"event":"document_removed_from_doc_view","time":curTime})            
+        //provenanceMap[action.params.targetItem.title+"_"+action.params.targetItem.id].push({"event":"document_removed_from_doc_view","time":curTime})
         removeDocument(action.params.targetItem, docTool.find(action.params.targetItem, false), null, null);        
     }
 

@@ -205,6 +205,12 @@
         provTool.draw();
     };
 
+    main.resizeWindow = function(event){
+        var h = $(window).height() - 78;
+
+        $('.panel').css('min-height', h + 'px');
+    };
+
     /**
      * Initialize the entity types for the default values, may allow to add to this object later
      */
